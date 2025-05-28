@@ -1,6 +1,6 @@
-# Serverless Web Resume
+# My AWS Cloud Resume Challenge
 
-A serverless web application that hosts your resume, built using AWS services and modern DevOps practices. This project demonstrates how to migrate a legacy application via lift-and-shift and deploy on AWS using AWS RDS, AWS Lambda, AWS API Gateway, AWS Route 53, Terraform, GitHub Actions, and JavaScript.
+A serverless web application that hosts my resume, built using AWS services and modern DevOps practices. This project demonstrates how to migrate a legacy application via lift-and-shift and deploy on AWS using AWS RDS, AWS Lambda, AWS API Gateway, AWS Route 53, Terraform, GitHub Actions, and JavaScript.
 
 ## Overview
 
