@@ -1,0 +1,9 @@
+node_modules/
+venv/
+visitors.db
+.terraform/
+*.tfstate
+*.tfstate.backup
+crash.log
+override.tf
+override.tf.json
