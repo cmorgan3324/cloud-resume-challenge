@@ -1,0 +1,79 @@
+module.api_backend.archive_file.lambda_zip: Refreshing state... [id=8b3907e8919a831977aa8e98d3c040ae9e5f9526]
+module.static_site.data.aws_route53_zone.primary: Reading...
+module.static_site.aws_cloudfront_origin_access_identity.oai: Refreshing state... [id=E6L3KAFRGZDLA]
+module.api_backend.aws_apigatewayv2_api.http_api: Refreshing state... [id=56y7wocza7]
+module.static_site.aws_iam_role.cloudfront_role: Refreshing state... [id=vibebycory-resume-content-cf-role]
+module.api_backend.aws_iam_role.lambda_role: Refreshing state... [id=resume-counter-function-dev-role]
+module.static_site.aws_acm_certificate.site_cert: Refreshing state... [id=arn:aws:acm:us-east-1:864899872694:certificate/e32843a2-831b-4563-b01c-61e684945089]
+module.api_backend.aws_dynamodb_table.counter_table: Refreshing state... [id=resume-visitor-counter]
+module.static_site.aws_s3_bucket.site: Refreshing state... [id=vibebycory-resume-content]
+module.api_backend.aws_apigatewayv2_stage.default: Refreshing state... [id=$default]
+module.api_backend.aws_iam_role_policy_attachment.lambda_dynamo: Refreshing state... [id=resume-counter-function-dev-role-20250529214048263400000002]
+module.api_backend.aws_iam_role_policy_attachment.lambda_logs: Refreshing state... [id=resume-counter-function-dev-role-20250529214048325200000003]
+module.static_site.data.aws_route53_zone.primary: Read complete after 1s [id=Z0184558A8BYZ5FK96SD]
+module.static_site.aws_route53_record.cert_validation: Refreshing state... [id=Z0184558A8BYZ5FK96SD__3afcfe0e8e2e44d0e7f246b31e9cd4b8.vibebycory.dev._CNAME]
+module.api_backend.aws_lambda_function.counter: Refreshing state... [id=resume-counter-function]
+module.static_site.aws_acm_certificate_validation.site_cert_validation: Refreshing state... [id=2025-05-29 23:35:06.484 +0000 UTC]
+module.static_site.aws_s3_bucket_public_access_block.site: Refreshing state... [id=vibebycory-resume-content]
+module.static_site.aws_s3_bucket_policy.site_policy: Refreshing state... [id=vibebycory-resume-content]
+module.static_site.aws_s3_bucket_ownership_controls.site: Refreshing state... [id=vibebycory-resume-content]
+module.static_site.aws_s3_bucket_website_configuration.site: Refreshing state... [id=vibebycory-resume-content]
+module.static_site.aws_cloudfront_distribution.site_cdn: Refreshing state... [id=E2KHS1IAHTASEL]
+module.api_backend.aws_lambda_permission.apigw: Refreshing state... [id=AllowAPIGatewayInvoke]
+module.api_backend.aws_apigatewayv2_integration.lambda_integration: Refreshing state... [id=c406fzr]
+module.api_backend.aws_apigatewayv2_route.get_count: Refreshing state... [id=3isj2bb]
+module.static_site.aws_s3_bucket_acl.site_acl: Refreshing state... [id=vibebycory-resume-content,private]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  # module.static_site.aws_iam_role.cloudfront_role will be destroyed
+  # (because aws_iam_role.cloudfront_role is not in configuration)
+  - resource "aws_iam_role" "cloudfront_role" {
+      - arn                   = "arn:aws:iam::864899872694:role/vibebycory-resume-content-cf-role" -> null
+      - assume_role_policy    = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = "sts:AssumeRole"
+                      - Effect    = "Allow"
+                      - Principal = {
+                          - Service = "cloudfront.amazonaws.com"
+                        }
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - create_date           = "2025-05-29T22:16:18Z" -> null
+      - force_detach_policies = false -> null
+      - id                    = "vibebycory-resume-content-cf-role" -> null
+      - managed_policy_arns   = [] -> null
+      - max_session_duration  = 3600 -> null
+      - name                  = "vibebycory-resume-content-cf-role" -> null
+      - path                  = "/" -> null
+      - tags                  = {} -> null
+      - tags_all              = {} -> null
+      - unique_id             = "AROA4SYAMW63IWVFFXNXM" -> null
+        # (3 unchanged attributes hidden)
+    }
+
+Plan: 0 to add, 0 to change, 1 to destroy.
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: 
+module.static_site.aws_iam_role.cloudfront_role: Destroying... [id=vibebycory-resume-content-cf-role]
+module.static_site.aws_iam_role.cloudfront_role: Destruction complete after 0s
+
+Apply complete! Resources: 0 added, 0 changed, 1 destroyed.
+
+Outputs:
+
+site_bucket = "vibebycory-resume-content"
+site_cdn = "dl312ot44uu0d.cloudfront.net"

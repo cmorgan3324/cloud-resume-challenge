@@ -3,5 +3,5 @@ output "site_bucket" {
 }
 
 output "site_cdn" {
-  value = module.static_site.cloudfront_domain
+  value = module.static_site.cloudfront_domain_name
 }

@@ -1,0 +1,187 @@
+var.domain_name
+  custom domain for resume site
+
+  Enter a value: 
+var.public_bucket_name
+  name for S3 bucket to host site
+
+  Enter a value: 
+var.zone_name
+  route53 hosted zone name (vibebycory.dev)
+
+  Enter a value: 
+module.api_backend.archive_file.lambda_zip: Refreshing state... [id=8b3907e8919a831977aa8e98d3c040ae9e5f9526]
+module.static_site.data.aws_route53_zone.primary: Reading...
+module.static_site.aws_cloudfront_origin_access_identity.oai: Refreshing state... [id=E6L3KAFRGZDLA]
+module.api_backend.aws_apigatewayv2_api.http_api: Refreshing state... [id=56y7wocza7]
+module.static_site.aws_iam_role.cloudfront_role: Refreshing state... [id=vibebycory-resume-content-cf-role]
+module.api_backend.aws_iam_role.lambda_role: Refreshing state... [id=resume-counter-function-dev-role]
+module.api_backend.aws_dynamodb_table.counter_table: Refreshing state... [id=resume-visitor-counter]
+module.static_site.aws_s3_bucket.site: Refreshing state... [id=vibebycory-resume-content]
+module.api_backend.aws_apigatewayv2_stage.default: Refreshing state... [id=$default]
+module.api_backend.aws_iam_role_policy_attachment.lambda_logs: Refreshing state... [id=resume-counter-function-dev-role-20250529214048325200000003]
+module.api_backend.aws_iam_role_policy_attachment.lambda_dynamo: Refreshing state... [id=resume-counter-function-dev-role-20250529214048263400000002]
+module.api_backend.aws_lambda_function.counter: Refreshing state... [id=resume-counter-function]
+module.api_backend.aws_lambda_permission.apigw: Refreshing state... [id=AllowAPIGatewayInvoke]
+module.api_backend.aws_apigatewayv2_integration.lambda_integration: Refreshing state... [id=c406fzr]
+module.static_site.aws_s3_bucket_public_access_block.site: Refreshing state... [id=vibebycory-resume-content]
+module.static_site.aws_s3_bucket_policy.site_policy: Refreshing state... [id=vibebycory-resume-content]
+module.static_site.aws_s3_bucket_ownership_controls.site: Refreshing state... [id=vibebycory-resume-content]
+module.static_site.aws_s3_bucket_website_configuration.site: Refreshing state... [id=vibebycory-resume-content]
+module.api_backend.aws_apigatewayv2_route.get_count: Refreshing state... [id=3isj2bb]
+module.static_site.aws_s3_bucket_acl.site_acl: Refreshing state... [id=vibebycory-resume-content,public-read]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+  ~ update in-place
+
+Terraform planned the following actions, but then encountered a problem:
+
+  # module.static_site.aws_acm_certificate.site_cert will be created
+  + resource "aws_acm_certificate" "site_cert" {
+      + arn                       = (known after apply)
+      + domain_name               = "vibebycory.dev"
+      + domain_validation_options = [
+          + {
+              + domain_name           = "vibebycory.dev"
+              + resource_record_name  = (known after apply)
+              + resource_record_type  = (known after apply)
+              + resource_record_value = (known after apply)
+            },
+        ]
+      + id                        = (known after apply)
+      + key_algorithm             = (known after apply)
+      + not_after                 = (known after apply)
+      + not_before                = (known after apply)
+      + pending_renewal           = (known after apply)
+      + renewal_eligibility       = (known after apply)
+      + renewal_summary           = (known after apply)
+      + status                    = (known after apply)
+      + subject_alternative_names = [
+          + "vibebycory.dev",
+        ]
+      + tags                      = {
+          + "Name" = "TLS cert for vibebycory.dev"
+        }
+      + tags_all                  = {
+          + "Name" = "TLS cert for vibebycory.dev"
+        }
+      + type                      = (known after apply)
+      + validation_emails         = (known after apply)
+      + validation_method         = "DNS"
+
+      + options (known after apply)
+    }
+
+  # module.static_site.aws_iam_policy.s3_read_policy will be created
+  + resource "aws_iam_policy" "s3_read_policy" {
+      + arn              = (known after apply)
+      + attachment_count = (known after apply)
+      + description      = "policy allowing cloudfront to read from S3 bucket"
+      + id               = (known after apply)
+      + name             = "vibebycory-resume-content-cloudfront-s3-read"
+      + name_prefix      = (known after apply)
+      + path             = "/"
+      + policy           = jsonencode(
+            {
+              + Statement = [
+                  + {
+                      + Action    = [
+                          + "s3:GetObject",
+                        ]
+                      + Effect    = "Allow"
+                      + Principal = {
+                          + AWS = "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity E6L3KAFRGZDLA"
+                        }
+                      + Resource  = [
+                          + "arn:aws:s3:::vibebycory-resume-content/*",
+                        ]
+                    },
+                ]
+              + Version   = "2012-10-17"
+            }
+        )
+      + policy_id        = (known after apply)
+      + tags_all         = (known after apply)
+    }
+
+  # module.static_site.aws_iam_role_policy_attachment.attach_s3_read will be created
+  + resource "aws_iam_role_policy_attachment" "attach_s3_read" {
+      + id         = (known after apply)
+      + policy_arn = (known after apply)
+      + role       = "vibebycory-resume-content-cf-role"
+    }
+
+  # module.static_site.aws_s3_bucket_acl.site_acl will be updated in-place
+  ~ resource "aws_s3_bucket_acl" "site_acl" {
+      ~ acl                   = "public-read" -> "private"
+        id                    = "vibebycory-resume-content,public-read"
+        # (2 unchanged attributes hidden)
+
+      ~ access_control_policy (known after apply)
+      - access_control_policy {
+          - grant {
+              - permission = "READ" -> null
+
+              - grantee {
+                    id            = null
+                  - type          = "Group" -> null
+                  - uri           = "http://acs.amazonaws.com/groups/global/AllUsers" -> null
+                    # (2 unchanged attributes hidden)
+                }
+            }
+          - grant {
+              - permission = "FULL_CONTROL" -> null
+
+              - grantee {
+                  - display_name  = "cmorgan3324" -> null
+                  - id            = "15ffb558ec2e69422b7125c78d0930b47d4ec1b779a37ef4ad3b3896724da809" -> null
+                  - type          = "CanonicalUser" -> null
+                    # (2 unchanged attributes hidden)
+                }
+            }
+          - owner {
+              - display_name = "cmorgan3324" -> null
+              - id           = "15ffb558ec2e69422b7125c78d0930b47d4ec1b779a37ef4ad3b3896724da809" -> null
+            }
+        }
+    }
+
+  # module.static_site.aws_s3_bucket_policy.site_policy will be updated in-place
+  ~ resource "aws_s3_bucket_policy" "site_policy" {
+        id     = "vibebycory-resume-content"
+      ~ policy = jsonencode(
+          ~ {
+              ~ Statement = [
+                  ~ {
+                      ~ Principal = "*" -> {
+                          + AWS = "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity E6L3KAFRGZDLA"
+                        }
+                        # (3 unchanged attributes hidden)
+                    },
+                ]
+                # (1 unchanged attribute hidden)
+            }
+        )
+        # (1 unchanged attribute hidden)
+    }
+
+  # module.static_site.aws_s3_bucket_public_access_block.site will be updated in-place
+  ~ resource "aws_s3_bucket_public_access_block" "site" {
+      ~ block_public_acls       = false -> true
+      ~ block_public_policy     = false -> true
+        id                      = "vibebycory-resume-content"
+      ~ ignore_public_acls      = false -> true
+      ~ restrict_public_buckets = false -> true
+        # (1 unchanged attribute hidden)
+    }
+
+Plan: 3 to add, 3 to change, 0 to destroy.
+
+Error: no matching Route 53 Hosted Zone found
+
+  with module.static_site.data.aws_route53_zone.primary,
+  on ../../modules/static-site/acm.tf line 2, in data "aws_route53_zone" "primary":
+   2: data "aws_route53_zone" "primary" {
+

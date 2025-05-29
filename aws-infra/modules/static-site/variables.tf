@@ -9,6 +9,6 @@ variable "public_bucket_name" {
 }
 
 variable "zone_name" {
-  description = "route53 hosted zone name (e.g. example.com)"
+  description = "route53 hosted zone name (vibebycory.com)"
   type        = string
 }

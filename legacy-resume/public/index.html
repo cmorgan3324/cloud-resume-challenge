@@ -167,7 +167,7 @@
                 </footer>
                 <script>
                   // on-page load, fetch/update the count
-                  fetch('/api/count')
+                  fetch('https://dl312ot44uu0d.cloudfront.net/count')
                     .then(res => res.json())
                     .then(data => {
                       document.getElementById('count').textContent = data.count;

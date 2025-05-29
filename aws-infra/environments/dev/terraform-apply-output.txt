@@ -1,0 +1,316 @@
+var.domain_name
+  custom domain for resume site
+
+  Enter a value: 
+var.public_bucket_name
+  name for S3 bucket to host site
+
+  Enter a value: 
+var.zone_name
+  route53 hosted zone name (vibebycory.dev)
+
+  Enter a value: 
+module.api_backend.archive_file.lambda_zip: Refreshing state... [id=8b3907e8919a831977aa8e98d3c040ae9e5f9526]
+module.static_site.aws_cloudfront_origin_access_identity.oai: Refreshing state... [id=E6L3KAFRGZDLA]
+module.api_backend.aws_apigatewayv2_api.http_api: Refreshing state... [id=56y7wocza7]
+module.api_backend.aws_iam_role.lambda_role: Refreshing state... [id=resume-counter-function-dev-role]
+module.static_site.aws_iam_role.cloudfront_role: Refreshing state... [id=yes-cf-role]
+module.api_backend.aws_dynamodb_table.counter_table: Refreshing state... [id=resume-visitor-counter]
+module.api_backend.aws_apigatewayv2_stage.default: Refreshing state... [id=$default]
+module.api_backend.aws_iam_role_policy_attachment.lambda_logs: Refreshing state... [id=resume-counter-function-dev-role-20250529214048325200000003]
+module.api_backend.aws_iam_role_policy_attachment.lambda_dynamo: Refreshing state... [id=resume-counter-function-dev-role-20250529214048263400000002]
+module.api_backend.aws_lambda_function.counter: Refreshing state... [id=resume-counter-function]
+module.api_backend.aws_lambda_permission.apigw: Refreshing state... [id=AllowAPIGatewayInvoke]
+module.api_backend.aws_apigatewayv2_integration.lambda_integration: Refreshing state... [id=c406fzr]
+module.api_backend.aws_apigatewayv2_route.get_count: Refreshing state... [id=3isj2bb]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+  ~ update in-place
+-/+ destroy and then create replacement
+
+Terraform will perform the following actions:
+
+  # module.static_site.aws_cloudfront_distribution.site_cdn will be created
+  + resource "aws_cloudfront_distribution" "site_cdn" {
+      + aliases                         = [
+          + "vibebycory.dev",
+        ]
+      + arn                             = (known after apply)
+      + caller_reference                = (known after apply)
+      + continuous_deployment_policy_id = (known after apply)
+      + default_root_object             = "index.html"
+      + domain_name                     = (known after apply)
+      + enabled                         = true
+      + etag                            = (known after apply)
+      + hosted_zone_id                  = (known after apply)
+      + http_version                    = "http2"
+      + id                              = (known after apply)
+      + in_progress_validation_batches  = (known after apply)
+      + is_ipv6_enabled                 = true
+      + last_modified_time              = (known after apply)
+      + price_class                     = "PriceClass_All"
+      + retain_on_delete                = false
+      + staging                         = false
+      + status                          = (known after apply)
+      + tags                            = {
+          + "Environment" = "dev"
+          + "Name"        = "CloudFront for vibebycory.dev"
+        }
+      + tags_all                        = {
+          + "Environment" = "dev"
+          + "Name"        = "CloudFront for vibebycory.dev"
+        }
+      + trusted_key_groups              = (known after apply)
+      + trusted_signers                 = (known after apply)
+      + wait_for_deployment             = true
+
+      + default_cache_behavior {
+          + allowed_methods        = [
+              + "GET",
+              + "HEAD",
+            ]
+          + cached_methods         = [
+              + "GET",
+              + "HEAD",
+            ]
+          + compress               = false
+          + default_ttl            = (known after apply)
+          + max_ttl                = (known after apply)
+          + min_ttl                = 0
+          + target_origin_id       = "s3-vibebycory-resume-content"
+          + trusted_key_groups     = (known after apply)
+          + trusted_signers        = (known after apply)
+          + viewer_protocol_policy = "redirect-to-https"
+
+          + forwarded_values {
+              + headers                 = (known after apply)
+              + query_string            = false
+              + query_string_cache_keys = (known after apply)
+
+              + cookies {
+                  + forward           = "none"
+                  + whitelisted_names = (known after apply)
+                }
+            }
+
+          + grpc_config (known after apply)
+        }
+
+      + origin {
+          + connection_attempts      = 3
+          + connection_timeout       = 10
+          + domain_name              = (known after apply)
+          + origin_id                = "s3-vibebycory-resume-content"
+            # (2 unchanged attributes hidden)
+
+          + s3_origin_config {
+              + origin_access_identity = "origin-access-identity/cloudfront/E6L3KAFRGZDLA"
+            }
+        }
+
+      + restrictions {
+          + geo_restriction {
+              + locations        = (known after apply)
+              + restriction_type = "none"
+            }
+        }
+
+      + viewer_certificate {
+          + cloudfront_default_certificate = true
+          + minimum_protocol_version       = "TLSv1.2_2021"
+          + ssl_support_method             = "sni-only"
+        }
+    }
+
+  # module.static_site.aws_cloudfront_origin_access_identity.oai will be updated in-place
+  ~ resource "aws_cloudfront_origin_access_identity" "oai" {
+      ~ comment                         = "OAI for yes" -> "OAI for vibebycory-resume-content"
+        id                              = "E6L3KAFRGZDLA"
+        # (6 unchanged attributes hidden)
+    }
+
+  # module.static_site.aws_iam_policy.s3_read_policy will be created
+  + resource "aws_iam_policy" "s3_read_policy" {
+      + arn              = (known after apply)
+      + attachment_count = (known after apply)
+      + description      = "policy allowing cloudfront to read from S3 bucket"
+      + id               = (known after apply)
+      + name             = "vibebycory-resume-content-cloudfront-s3-read"
+      + name_prefix      = (known after apply)
+      + path             = "/"
+      + policy           = (known after apply)
+      + policy_id        = (known after apply)
+      + tags_all         = (known after apply)
+    }
+
+  # module.static_site.aws_iam_role.cloudfront_role must be replaced
+-/+ resource "aws_iam_role" "cloudfront_role" {
+      ~ arn                   = "arn:aws:iam::864899872694:role/yes-cf-role" -> (known after apply)
+      ~ create_date           = "2025-05-29T21:40:47Z" -> (known after apply)
+      ~ id                    = "yes-cf-role" -> (known after apply)
+      ~ managed_policy_arns   = [] -> (known after apply)
+      ~ name                  = "yes-cf-role" -> "vibebycory-resume-content-cf-role" # forces replacement
+      + name_prefix           = (known after apply)
+      - tags                  = {} -> null
+      ~ tags_all              = {} -> (known after apply)
+      ~ unique_id             = "AROA4SYAMW63NEXXRQJVU" -> (known after apply)
+        # (6 unchanged attributes hidden)
+
+      ~ inline_policy (known after apply)
+    }
+
+  # module.static_site.aws_iam_role_policy_attachment.attach_s3_read will be created
+  + resource "aws_iam_role_policy_attachment" "attach_s3_read" {
+      + id         = (known after apply)
+      + policy_arn = (known after apply)
+      + role       = "vibebycory-resume-content-cf-role"
+    }
+
+  # module.static_site.aws_s3_bucket.site will be created
+  + resource "aws_s3_bucket" "site" {
+      + acceleration_status         = (known after apply)
+      + acl                         = (known after apply)
+      + arn                         = (known after apply)
+      + bucket                      = "vibebycory-resume-content"
+      + bucket_domain_name          = (known after apply)
+      + bucket_prefix               = (known after apply)
+      + bucket_regional_domain_name = (known after apply)
+      + force_destroy               = false
+      + hosted_zone_id              = (known after apply)
+      + id                          = (known after apply)
+      + object_lock_enabled         = (known after apply)
+      + policy                      = (known after apply)
+      + region                      = (known after apply)
+      + request_payer               = (known after apply)
+      + tags                        = {
+          + "Environment" = "dev"
+          + "Name"        = "Static resume site"
+        }
+      + tags_all                    = {
+          + "Environment" = "dev"
+          + "Name"        = "Static resume site"
+        }
+      + website_domain              = (known after apply)
+      + website_endpoint            = (known after apply)
+
+      + cors_rule (known after apply)
+
+      + grant (known after apply)
+
+      + lifecycle_rule (known after apply)
+
+      + logging (known after apply)
+
+      + object_lock_configuration (known after apply)
+
+      + replication_configuration (known after apply)
+
+      + server_side_encryption_configuration (known after apply)
+
+      + versioning (known after apply)
+
+      + website (known after apply)
+    }
+
+  # module.static_site.aws_s3_bucket_acl.site_acl will be created
+  + resource "aws_s3_bucket_acl" "site_acl" {
+      + acl    = "public-read"
+      + bucket = (known after apply)
+      + id     = (known after apply)
+
+      + access_control_policy (known after apply)
+    }
+
+  # module.static_site.aws_s3_bucket_ownership_controls.site will be created
+  + resource "aws_s3_bucket_ownership_controls" "site" {
+      + bucket = (known after apply)
+      + id     = (known after apply)
+
+      + rule {
+          + object_ownership = "ObjectWriter"
+        }
+    }
+
+  # module.static_site.aws_s3_bucket_policy.site_policy will be created
+  + resource "aws_s3_bucket_policy" "site_policy" {
+      + bucket = (known after apply)
+      + id     = (known after apply)
+      + policy = (known after apply)
+    }
+
+  # module.static_site.aws_s3_bucket_public_access_block.site will be created
+  + resource "aws_s3_bucket_public_access_block" "site" {
+      + block_public_acls       = false
+      + block_public_policy     = false
+      + bucket                  = (known after apply)
+      + id                      = (known after apply)
+      + ignore_public_acls      = false
+      + restrict_public_buckets = false
+    }
+
+  # module.static_site.aws_s3_bucket_website_configuration.site will be created
+  + resource "aws_s3_bucket_website_configuration" "site" {
+      + bucket           = (known after apply)
+      + id               = (known after apply)
+      + routing_rules    = (known after apply)
+      + website_domain   = (known after apply)
+      + website_endpoint = (known after apply)
+
+      + error_document {
+          + key = "error.html"
+        }
+
+      + index_document {
+          + suffix = "index.html"
+        }
+
+      + routing_rule (known after apply)
+    }
+
+Plan: 10 to add, 1 to change, 1 to destroy.
+
+Changes to Outputs:
+  + site_bucket = (known after apply)
+  + site_cdn    = (known after apply)
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: 
+module.static_site.aws_iam_role.cloudfront_role: Destroying... [id=yes-cf-role]
+module.static_site.aws_cloudfront_origin_access_identity.oai: Modifying... [id=E6L3KAFRGZDLA]
+module.static_site.aws_s3_bucket.site: Creating...
+module.static_site.aws_iam_role.cloudfront_role: Destruction complete after 1s
+module.static_site.aws_iam_role.cloudfront_role: Creating...
+module.static_site.aws_iam_role.cloudfront_role: Creation complete after 0s [id=vibebycory-resume-content-cf-role]
+module.static_site.aws_cloudfront_origin_access_identity.oai: Modifications complete after 2s [id=E6L3KAFRGZDLA]
+module.static_site.aws_s3_bucket.site: Creation complete after 2s [id=vibebycory-resume-content]
+module.static_site.aws_s3_bucket_policy.site_policy: Creating...
+module.static_site.aws_s3_bucket_public_access_block.site: Creating...
+module.static_site.aws_s3_bucket_ownership_controls.site: Creating...
+module.static_site.aws_iam_policy.s3_read_policy: Creating...
+module.static_site.aws_s3_bucket_website_configuration.site: Creating...
+module.static_site.aws_s3_bucket_public_access_block.site: Creation complete after 0s [id=vibebycory-resume-content]
+module.static_site.aws_s3_bucket_website_configuration.site: Creation complete after 0s [id=vibebycory-resume-content]
+module.static_site.aws_cloudfront_distribution.site_cdn: Creating...
+module.static_site.aws_s3_bucket_ownership_controls.site: Creation complete after 0s [id=vibebycory-resume-content]
+module.static_site.aws_s3_bucket_acl.site_acl: Creating...
+module.static_site.aws_s3_bucket_policy.site_policy: Creation complete after 0s [id=vibebycory-resume-content]
+module.static_site.aws_s3_bucket_acl.site_acl: Creation complete after 0s [id=vibebycory-resume-content,public-read]
+
+Error: creating IAM Policy (vibebycory-resume-content-cloudfront-s3-read): operation error IAM: CreatePolicy, https response error StatusCode: 400, RequestID: 399f763f-0357-44d3-bf66-9f6bc7034a8e, MalformedPolicyDocument: Policy document should not specify a principal.
+
+  with module.static_site.aws_iam_policy.s3_read_policy,
+  on ../../modules/static-site/cloudfront.tf line 8, in resource "aws_iam_policy" "s3_read_policy":
+   8: resource "aws_iam_policy" "s3_read_policy" {
+
+
+Error: creating CloudFront Distribution: operation error CloudFront: CreateDistributionWithTags, https response error StatusCode: 400, RequestID: a065acfe-ad0e-4ee6-a087-ecbe76aa183e, InvalidArgument: The parameter Origin DomainName does not refer to a valid S3 bucket.
+
+  with module.static_site.aws_cloudfront_distribution.site_cdn,
+  on ../../modules/static-site/cloudfront.tf line 51, in resource "aws_cloudfront_distribution" "site_cdn":
+  51: resource "aws_cloudfront_distribution" "site_cdn" {
+
