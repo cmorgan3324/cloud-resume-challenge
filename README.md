@@ -115,22 +115,10 @@ This repository demonstrates my attempt migrating a simple, on-premises “legac
 4. **CI/CD Workflows (GitHub Actions)**  
    - **Front-end** (`.github/workflows/deploy-frontend.yml`):  
      • Trigger: any change under `legacy-resume/public/`  
-     • Steps:  
-       1. Checkout repository  
-       2. Configure AWS credentials via `${{ secrets.AWS_ACCESS_KEY_ID }}`, `${{ secrets.AWS_SECRET_ACCESS_KEY }}`, `${{ secrets.AWS_REGION }}`  
-       3. `aws s3 sync legacy-resume/public/ s3://${{ secrets.S3_BUCKET }} --delete --acl public-read`  
-       4. `aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DIST_ID }} --paths "/*"`  
+     
    - **Back-end** (`.github/workflows/deploy-backend.yml`):  
      • Trigger: any change under `aws-infra/`  
-     • Steps:  
-       1. Checkout repository  
-       2. Set up Python 3.9 & install `pytest moto boto3`  
-       3. Run `pytest aws-infra/environments/dev/tests/` (fails build on errors)  
-       4. Configure AWS credentials (`secrets.AWS_ACCESS_KEY_ID`, `secrets.AWS_SECRET_ACCESS_KEY`, `secrets.AWS_REGION`)  
-       5. Install Terraform (`hashicorp/setup-terraform@v2`)  
-       6. `terraform init -input=false` in `aws-infra/environments/dev/`  
-       7. `terraform validate` & `terraform plan -out=tfplan -input=false`  
-       8. `terraform apply -input=false tfplan`  
+     
 
 ---
 
