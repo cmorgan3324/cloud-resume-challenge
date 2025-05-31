@@ -1,0 +1,58 @@
+name: Deploy Back-end (Terraform → Lambda/API)
+
+on:
+  push:
+    paths:
+      - 'aws-infra/**'
+      - '.github/workflows/deploy-backend.yml'
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }} 
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Python dependencies (pytest, moto, boto3)
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest boto3 'moto[all]'
+
+      # run unit tests for lambda
+      - name: Run Lambda unit tests
+        run: pytest aws-infra/environments/dev/
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: '1.12.1'
+
+      - name: Terraform Init
+        working-directory: aws-infra/environments/dev
+        run: terraform init -input=false
+
+      - name: Terraform Validate & Plan
+        working-directory: aws-infra/environments/dev
+        run: |
+          terraform validate
+          terraform plan -out=tfplan -input=false
+
+      - name: Terraform Apply
+        working-directory: aws-infra/environments/dev
+        run: terraform apply -input=false tfplan

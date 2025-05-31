@@ -18,15 +18,6 @@ resource "aws_acm_certificate" "site_cert" {
   }
 }
 
-# create DNS validation record in route53
-# resource "aws_route53_record" "cert_validation" {
-#   zone_id = data.aws_route53_zone.primary.zone_id
-#   name    = element(aws_acm_certificate.site_cert.domain_validation_options, 0).resource_record_name
-#   type    = element(aws_acm_certificate.site_cert.domain_validation_options, 0).resource_record_type
-#   ttl     = 300
-#   records = [element(aws_acm_certificate.site_cert.domain_validation_options, 0).resource_record_value]
-# }
-
 resource "aws_route53_record" "cert_validation" {
   zone_id = data.aws_route53_zone.primary.zone_id
   name    = tolist(aws_acm_certificate.site_cert.domain_validation_options)[0].resource_record_name
