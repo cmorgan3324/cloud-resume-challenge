@@ -136,11 +136,11 @@ This repository demonstrates my attempt migrating a simple, on-premises “legac
 
 ## Future Improvements
 
-  • Integrate CloudWatch alarms (Lambda errors, throttles, budget thresholds) with Slack or PagerDuty for real-time notifications.
-  • Revamp site to better reflect VIBEbyCory.dev brand
-  • Include a resume pdf download button
-  • Move Terraform state to a dedicated S3 bucket and DynamoDB lock table (production-level state management)
-  • Add Terraform staging and production workspaces and GitHub environment protections (manual approvals) before deploying to the live domain.
+ • Integrate CloudWatch alarms (Lambda errors, throttles, budget thresholds) with Slack or PagerDuty for real-time notifications.
+ • Revamp site to better reflect VIBEbyCory.dev brand
+ • Include a resume pdf download button
+ • Move Terraform state to a dedicated S3 bucket and DynamoDB lock table (production-level state management)
+ • Add Terraform staging and production workspaces and GitHub environment protections (manual approvals) before deploying to the live domain
 
 
 ## License
