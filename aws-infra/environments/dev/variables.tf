@@ -9,7 +9,7 @@ variable "public_bucket_name" {
 }
 
 variable "zone_name" {
-  description = "route53 hosted zone name (vibebycory.dev)"
+  description = "route53 hosted zone name"
   type = string
 }
 
