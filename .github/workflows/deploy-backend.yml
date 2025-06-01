@@ -1,3 +1,72 @@
+# name: Deploy Back-end (Terraform → Lambda/API)
+
+# on:
+#   push:
+#     paths:
+#       - 'aws-infra/**'
+#       - '.github/workflows/deploy-backend.yml'
+
+# jobs:
+#   test-and-deploy:
+#     runs-on: ubuntu-latest
+
+#     env:
+#       AWS_REGION: ${{ secrets.AWS_REGION }}
+#       AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       - name: Set up Python 3.9
+#         uses: actions/setup-python@v4
+#         with:
+#           python-version: '3.9'
+
+#       - name: Install Python dependencies (pytest, moto, boto3)
+#         run: |
+#           python -m pip install --upgrade pip
+#           pip install pytest boto3 'moto[all]'
+
+#       # run unit tests for lambda
+#       - name: Run Lambda unit tests
+#         run: pytest aws-infra/environments/dev/
+
+#       - name: Configure AWS Credentials
+#         uses: aws-actions/configure-aws-credentials@v2
+#         with:
+#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#           aws-region: ${{ secrets.AWS_REGION }}
+
+#       - name: Setup Terraform
+#         uses: hashicorp/setup-terraform@v2
+#         with:
+#           terraform_version: '1.12.1'
+
+#       - name: Terraform Init (w/ remote S3 backend)
+#         working-directory: aws-infra/environments/dev
+#         run: |
+#           terraform init \
+#             -input=false \
+#             -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
+#             -backend-config="key=serverless-web-resume/dev/terraform.tfstate" \
+#             -backend-config="region=${{ secrets.AWS_REGION }}" \
+#             -backend-config="dynamodb_table=${{ secrets.TF_LOCK_TABLE }}"
+
+      
+
+#       - name: Terraform Validate & Plan
+#         working-directory: aws-infra/environments/dev
+#         run: |
+#           terraform validate
+#           terraform plan -out=tfplan -input=false
+
+#       - name: Terraform Apply
+#         working-directory: aws-infra/environments/dev
+#         run: terraform apply -input=false tfplan
+
 name: Deploy Back-end (Terraform → Lambda/API)
 
 on:
@@ -13,7 +82,6 @@ jobs:
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
-
 
     steps:
       - name: Checkout code
@@ -55,7 +123,16 @@ jobs:
             -backend-config="region=${{ secrets.AWS_REGION }}" \
             -backend-config="dynamodb_table=${{ secrets.TF_LOCK_TABLE }}"
 
-      
+      - name: Debug list module files
+        working-directory: aws-infra/environments/dev
+        run: |
+          echo "Current working directory: $(pwd)"
+          echo ""
+          echo "--- Listing aws-infra/modules/api-backend directory ---"
+          ls -R ../../modules/api-backend || true
+          echo ""
+          echo "--- Showing first 30 lines of main.tf in modules/api-backend ---"
+          sed -n '1,30p' ../../modules/api-backend/main.tf || true
 
       - name: Terraform Validate & Plan
         working-directory: aws-infra/environments/dev
