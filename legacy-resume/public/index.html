@@ -81,6 +81,21 @@
 
                     <section>
                         <h2>Projects</h2>
+
+                        <div class="project"> <h3>AWS Cloud Resume Challenge | <a href="https://github.com/cmorgan3324/cloud-resume-challenge">Project Link</a></h3> 
+                            <ul> 
+                                <li>Engineered a lift-and-shift migration of a local Node.js/SQLite resume app to AWS, designing Terraform modules for a private S3 bucket (static site hosting), CloudFront distribution (with OAI), Route 53 DNS, and ACM certificate for <em>www.vibebycory.dev</em>.</li> 
+                                <li>Built a fully serverless visitor counter backend: provisioned a DynamoDB table, IAM roles, and a Python 3.9 Lambda that increments and returns visit counts via HTTP API Gateway.</li> 
+                                <li>Configured GitHub Actions CI/CD pipelines: 
+                                    <ul> 
+                                        <li>Front-end workflow: on changes to <code>legacy-resume/public/</code>, sync HTML/CSS to S3 and invalidate CloudFront.</li> 
+                                        <li>Back-end workflow: on changes to <code>aws-infra/</code>, install dependencies, run Lambda tests, then Terraform init/plan/apply to update all AWS resources.</li>
+                                    </ul> 
+                                </li> 
+                                <li>Stored Terraform state in a dedicated S3 bucket with server-side encryption enabled, and used DynamoDB for state locking. </li> 
+                                <li>Integrated CloudWatch Alarms for Lambda errors, DynamoDB throttles, and monthly budget thresholds; implemented AWS Chatbot to send real‐time notifications to Slack (and an optional PagerDuty forwarder Lambda for incident management).</li> 
+                            </ul> 
+                        </div>
                         
                         <div class="project">
                             <h3>Video Instance Segmentation Model | <a href="https://github.com/cmorgan3324/Video-Instance-Segmentation">Project Link</a></h3>
@@ -163,7 +178,7 @@
                     </section>
                 </div>
                 <footer>
-                  <p>Visitor count: <span id="count">…</span></p>
+                  <p><span id="count">…</span> people have viewed this site!</p>
                 </footer>
                 <script>
                   // on-page load, fetch/update the count
