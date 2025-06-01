@@ -113,6 +113,12 @@ jobs:
         with:
           terraform_version: '1.12.1'
 
+      - name: Clean old Terraform cache
+        working-directory: aws-infra/environments/dev
+        run: |
+          rm -rf .terraform
+          rm -f terraform.tfplan    
+
       - name: Terraform Init (w/ remote S3 backend)
         working-directory: aws-infra/environments/dev
         run: |
@@ -143,6 +149,14 @@ jobs:
           echo ""
           echo "--- Specifically check dev/lambda exists ---"
           ls lambda || echo ">>> environments/dev/lambda does not exist!"
+
+      - name: Show Terraform root path
+        working-directory: aws-infra/environments/dev
+        run: |
+          echo "Working dir: $(pwd)"
+          terraform init -input=false -backend=false
+          echo "Terraform path.root = $(terraform console -no-color <<< "path.root")"
+          echo "Does source folder exist? $(ls ${path.root}/lambda || echo 'missing')"
 
       - name: Terraform Validate & Plan
         working-directory: aws-infra/environments/dev
