@@ -49,11 +49,12 @@ jobs:
           rm -rf .terraform
           rm -f terraform.tfplan
 
-      - name: Terraform Init (w/ remote S3 backend)
+      - name: Terraform Init (w/ remote S3 backend, no locks)
         working-directory: aws-infra/environments/dev
         run: |
           terraform init \
             -input=false \
+            -reconfigure \
             -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
             -backend-config="key=serverless-web-resume/dev/terraform.tfstate" \
             -backend-config="region=${{ secrets.AWS_REGION }}" \
@@ -79,8 +80,8 @@ jobs:
         working-directory: aws-infra/environments/dev
         run: |
           terraform validate
-          terraform plan -out=tfplan -input=false
+          terraform plan -lock=false -out=tfplan -input=false
 
       - name: Terraform Apply
         working-directory: aws-infra/environments/dev
-        run: terraform apply -auto-approve tfplan
+        run: terraform apply -lock=false -auto-approve tfplan
