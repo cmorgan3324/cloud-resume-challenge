@@ -78,6 +78,12 @@ resource "aws_lambda_function" "counter" {
 resource "aws_apigatewayv2_api" "http_api" {
   name          = var.api_name
   protocol_type = "HTTP"
+
+  cors_configuration {
+    allow_origins = ["https://vibebycory.dev"]
+    allow_methods = ["GET"]
+    allow_headers = ["*"]
+  }
 }
 
 resource "aws_apigatewayv2_integration" "lambda_integration" {
