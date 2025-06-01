@@ -93,4 +93,4 @@ jobs:
 
       - name: Terraform Apply
         working-directory: aws-infra/environments/dev
-        run: terraform apply -auto-approve tfplan 
+        run: terraform apply -auto-approve tfplan
