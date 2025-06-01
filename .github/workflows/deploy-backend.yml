@@ -123,7 +123,7 @@ jobs:
             -backend-config="region=${{ secrets.AWS_REGION }}" \
             -backend-config="dynamodb_table=${{ secrets.TF_LOCK_TABLE }}"
 
-      - name: Debug: list module files
+      - name: Debug list module files
         working-directory: aws-infra/environments/dev
         run: |
           echo "Current working directory: $(pwd)"
@@ -134,7 +134,7 @@ jobs:
           echo "--- Showing first 30 lines of main.tf in modules/api-backend ---"
           sed -n '1,30p' ../../modules/api-backend/main.tf || true
 
-      - name: Debug: show lambda source in root
+      - name: Debug show lambda source in root
         working-directory: aws-infra/environments/dev
         run: |
           echo "--- Listing environments/dev directory ---"
