@@ -13,10 +13,10 @@ variable "zone_name" {
   type = string
 }
 
-# variable "lambda_source_dir" {
-#   description = "local path to the folder containing Lambda code"
-#   type        = string
-# }
+variable "lambda_source_dir" {
+  description = "local path to the folder containing Lambda code"
+  type        = string
+}
 
 variable "lambda_function_name" {
   description = "lambda function name"
