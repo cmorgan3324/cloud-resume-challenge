@@ -167,7 +167,7 @@
                 </footer>
                 <script>
                   // on-page load, fetch/update the count
-                  fetch('https://vzp1lb97xb.execute-api.us-east-1.amazonaws.com/$default/count')
+                  fetch('https://vzp1lb97xb.execute-api.us-east-1.amazonaws.com/count')
                     .then(res => res.json())
                     .then(data => {
                       document.getElementById('count').textContent = data.count;
