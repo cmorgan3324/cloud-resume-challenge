@@ -10,7 +10,7 @@ terraform {
 # package lambda code as zip
 resource "archive_file" "lambda_zip" {
   type        = "zip"
-  source_dir  = var.lambda_source_dir
+  source_dir  = "${path.module}/lambda"
   output_path = "${path.module}/lambda.zip"
 }
 
