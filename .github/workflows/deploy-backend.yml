@@ -76,15 +76,6 @@ jobs:
           echo "--- Check that environments/dev/lambda exists ---"
           ls lambda || echo ">>> environments/dev/lambda is missing!"
 
-      - name: Show Terraform root path
-        working-directory: aws-infra/environments/dev
-        run: |
-            echo "Working dir: $(pwd)"
-            terraform init -input=false -backend=false
-  
-            # Pipe “path.root” into terraform console so it won’t hang:
-            echo "path.root" | terraform console -no-color -lock=false
-
       - name: Terraform Validate & Plan
         working-directory: aws-infra/environments/dev
         run: |
