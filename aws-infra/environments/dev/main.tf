@@ -2,6 +2,16 @@ provider "aws" {
   region = "us-east-1"
 }
 
+terraform {
+  backend "s3" {
+    bucket = "vibebycory-terraform-state-bucket"
+    key    = "serverless-web-resume/dev/terraform.tfstate"
+    region = "us-east-1"
+    dynamodb_table = "vibebycory-terraform-locks"
+    encrypt        = true
+  }
+}
+
 module "static_site" {
   source = "../../modules/static-site"
   domain_name = var.domain_name
