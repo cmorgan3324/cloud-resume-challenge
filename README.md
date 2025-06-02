@@ -2,7 +2,7 @@
 
 ### Overview
 
-This repository demonstrates my attempt migrating a simple, on-premises “legacy” resume site into a fully serverless AWS cloud hosted site as my AWS Cloud Resume Challenge. (visit at [VIBEbyCory.dev] (https://vibebycory.dev)) 
+This repository demonstrates my attempt migrating a simple, on-premises “legacy” resume site into a fully serverless AWS cloud hosted site as my AWS Cloud Resume Challenge. (visit at <https://VIBEbyCory.dev>) 
 
 This monorepo contains:
 
