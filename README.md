@@ -77,7 +77,7 @@ This monorepo contains:
 
 - **`aws-infra/modules/`**  
   - **`static-site/`**  
-    • Provisions a private S3 bucket, a CloudFront distribution with OAI, an ACM certificate (DNS-validated via Route 53), and the A-alias record for `resume.vibebycory.dev`.  
+    • Provisions a private S3 bucket, a CloudFront distribution with OAI, an ACM certificate (DNS-validated via Route 53), and the A-alias record for `vibebycory.dev`.  
   - **`api-backend/`**  
     • Creates a DynamoDB table, IAM role policies, packages and deploys a Python Lambda, and configures an HTTP API Gateway route (`GET /count`) to invoke that Lambda.  
 
