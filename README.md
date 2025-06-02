@@ -2,7 +2,9 @@
 
 ### Overview
 
-This repository demonstrates my attempt migrating a simple, on-premises “legacy” resume site into a fully serverless AWS environment as my AWS Cloud Resume Challenge. It combines:
+This repository demonstrates my attempt migrating a simple, on-premises “legacy” resume site into a fully serverless AWS cloud hosted site as my AWS Cloud Resume Challenge. (visit at VIBEbyCory.dev[https://vibebycory.dev]) 
+
+This monorepo contains:
 
 - **`legacy-resume/`**  
   A Node.js/Express app (HTML/CSS + SQLite) serving as the original local version of the resume and visitor counter.
@@ -20,7 +22,7 @@ This repository demonstrates my attempt migrating a simple, on-premises “legac
 - **Static Website Hosting**  
   • S3 bucket configured as private, with Public Access Block enabled  
   • CloudFront distribution (OAI) serving content over HTTPS  
-  • Custom domain mapped via Route 53 A-alias at `resume.vibebycory.dev` (ACM certificate requested & validated automatically)
+  • Custom domain mapped via Route 53 A-alias at `www.vibebycory.dev` (ACM certificate requested & validated automatically)
 
 - **Visitor Counter**  
   • DynamoDB table (`resume-visitor-counter`) storing a single “counter” item  
