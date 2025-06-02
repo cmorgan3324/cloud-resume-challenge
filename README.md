@@ -91,9 +91,9 @@ This monorepo contains:
    - Terraform modules in `static-site/` create:  
      • A private S3 bucket with “Block Public Access” enabled  
      • An Origin Access Identity (OAI) for CloudFront to fetch objects  
-     • A CloudFront distribution pointing at the S3 REST endpoint, with `aliases = ["resume.vibebycory.dev"]`  
-     • An ACM certificate in `us-east-1` for `resume.vibebycory.dev`, automatically validated via a Route 53 DNS record in `vibebycory.dev`  
-     • A Route 53 “A alias” record mapping `resume.vibebycory.dev` → CloudFront distribution  
+     • A CloudFront distribution pointing at the S3 REST endpoint, with `aliases = ["vibebycory.dev"]`  
+     • An ACM certificate in `us-east-1` for `vibebycory.dev`, automatically validated via a Route 53 DNS record in `vibebycory.dev`  
+     • A Route 53 “A alias” record mapping `vibebycory.dev` → CloudFront distribution  
 
 2. **Visitor Counter API**  
    - Terraform modules in `api-backend/` create:  
