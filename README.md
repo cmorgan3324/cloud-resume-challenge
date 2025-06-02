@@ -43,6 +43,12 @@ This monorepo contains:
 
 ---
 
+## Project Diagram
+
+![AWS Cloud Resume Diagram](./cloud-architecture-diagram.png)
+
+---
+
 ## Project Architecture
 
 ```
