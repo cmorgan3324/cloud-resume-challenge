@@ -30,10 +30,10 @@ resource "aws_iam_role_policy" "chatbot_sns_read" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "chatbot_service" {
-  role       = aws_iam_role.chatbot_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSChatbotServiceRolePolicy"
-}
+# resource "aws_iam_role_policy_attachment" "chatbot_service" {
+#   role       = aws_iam_role.chatbot_role.name
+#   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSChatbotServiceRolePolicy"
+# }
 
 
 # configure the slack channel in AWS Chatbot

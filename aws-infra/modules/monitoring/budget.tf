@@ -6,7 +6,7 @@ resource "aws_budgets_budget" "monthly_cost" {
   limit_unit   = "USD"
 
   time_unit = "MONTHLY"
-  time_period_start = formatdate("YYYY-MM-DD", timestamp())  # today’s date
+  time_period_start = formatdate("2006-01-02_15:04", timestamp())  # today’s date
 
   cost_types {
     include_tax              = true
