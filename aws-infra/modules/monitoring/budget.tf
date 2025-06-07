@@ -22,7 +22,7 @@ resource "aws_budgets_budget" "monthly_cost" {
     threshold           = var.budget_threshold_percentage 
     threshold_type      = "PERCENTAGE"
     notification_type   = "ACTUAL"
-    subscriber_sns_topic_arns = aws_sns_topic.alarms.arn
+    subscriber_sns_topic_arns = [ aws_sns_topic.alarms.arn ]
 
     # subscriber {
     #   subscription_type = "SNS"

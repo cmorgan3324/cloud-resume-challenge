@@ -4,7 +4,7 @@ resource "aws_cloudwatch_metric_alarm" "lambda_errors" {
   namespace           = "AWS/Lambda"
   metric_name         = "Errors"
   dimensions = {
-    FunctionName = module.api_backend.lambda_function_name
+    FunctionName = var.lambda_function_name
   }
   statistic           = "Sum"
   period              = 300
@@ -13,7 +13,7 @@ resource "aws_cloudwatch_metric_alarm" "lambda_errors" {
   comparison_operator = "GreaterThanOrEqualToThreshold"
   alarm_actions       = [ aws_sns_topic.alarms.arn ]
 
-  depends_on = [ module.api_backend ] 
+#   depends_on = [ module.api_backend ] 
 }
 
 resource "aws_cloudwatch_metric_alarm" "lambda_throttles" {
@@ -21,7 +21,7 @@ resource "aws_cloudwatch_metric_alarm" "lambda_throttles" {
   namespace           = "AWS/Lambda"
   metric_name         = "Throttles"
   dimensions = {
-    FunctionName = module.api_backend.lambda_function_name
+    FunctionName = var.lambda_function_name
   }
   statistic           = "Sum"
   period              = 300
@@ -29,5 +29,5 @@ resource "aws_cloudwatch_metric_alarm" "lambda_throttles" {
   threshold           = 1
   comparison_operator = "GreaterThanOrEqualToThreshold"
   alarm_description   = "Triggered when Lambda is throttled"
-  alarm_actions       = [ aws_sns_topic.alarm.arn ]
+  alarm_actions       = [ aws_sns_topic.alarms.arn ]
 }
