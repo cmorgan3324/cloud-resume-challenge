@@ -32,8 +32,6 @@ module "monitoring" {
   source           = "../../modules/monitoring"
   slack_team_id    = var.slack_team_id
   slack_channel_id = var.slack_channel_id
-  # pagerduty_api_token = var.pagerduty_api_token
-  # pagerduty_escalation_policy_id = var.pagerduty_escalation_policy_id
   budget_limit                = var.budget_limit
   budget_threshold_percentage = var.budget_threshold_percentage
   lambda_function_name        = module.api_backend.lambda_function_name
