@@ -135,8 +135,8 @@ This monorepo contains:
 Terraform modules in `monitoring/` create:  
    - An SNS topic (`cloud-resume-alarms`) to aggregate all alerts
    -  CloudWatch alarms on the visitor-counter Lambda:
-     - Errors (any invocation failures) 
-     - Throttles (exceeded concurrency)
+      - Errors (any invocation failures) 
+      - Throttles (exceeded concurrency)
    - An AWS Budget configured monthly with an alert at your chosen threshold (e.g., 80%)
    - An IAM role trusted by AWS Chatbot
    - An AWS Chatbot Slack channel configuration that subscribes to the SNS topic and posts every alert into your chosen Slack channel
