@@ -19,32 +19,33 @@ This monorepo contains:
 
 ## Features
 
-- **Static Website Hosting**  
+### Static Site Hosting
   • S3 bucket configured as private, with Public Access Block enabled  
   • CloudFront distribution (OAI) serving content over HTTPS  
   • Custom domain mapped via Route 53 A-alias at `www.vibebycory.dev` (ACM certificate requested & validated automatically)
 
-- **Visitor Counter**  
+### Visitor Counter API
   • DynamoDB table (`resume-visitor-counter`) storing a single “counter” item  
   • Python Lambda (runtime 3.9) updates and returns visitor count  
   • HTTP API (API Gateway v2) exposing `GET /count` endpoint
 
-- **Infrastructure as Code (IaC)**  
+### Infrastructure as Code (IaC)  
   • Terraform modules for front-end (`static-site`) and back-end (`api-backend`)  
   • Environment workspace (`aws-infra/environments/dev`) orchestrates both modules
 
-- **Unit Testing**  
+### Unit Testing
   • Pytest + moto mocks DynamoDB locally to verify Lambda logic before any deploy  
   • Tests ensure initial counter creation, increment behavior, and error on missing environment variables
 
-- **CI/CD Pipelines (GitHub Actions)**  
-  • **Front-end workflow**: On changes under `legacy-resume/public/`, sync to S3 & invalidate CloudFront  
-  • **Back-end workflow**: On changes under `aws-infra/`, run unit tests, then Terraform init/plan/apply
-
-- **Monitoring & Alerts**
+### Monitoring & Alerts
   Terraform modules in `monitoring/` create:\
     • An SNS topic (cloud-resume-alarms) to aggregate all alerts
     • **Back-end workflow**: On changes under `aws-infra/`, run unit tests, then Terraform init/plan/apply  
+
+### CI/CD Pipelines (GitHub Actions)  
+  • **Front-end workflow**: On changes under `legacy-resume/public/`, sync to S3 & invalidate CloudFront  
+  • **Back-end workflow**: On changes under `aws-infra/`, run unit tests, then Terraform init/plan/apply
+
 
 ---
 
@@ -100,15 +101,15 @@ This monorepo contains:
 
 ### Static Site Hosting
    - Terraform modules in `static-site/` create:  
-     • A private S3 bucket with “Block Public Access” enabled  
-     • An Origin Access Identity (OAI) for CloudFront to fetch objects  
-     • A CloudFront distribution pointing at the S3 REST endpoint, with `aliases = ["vibebycory.dev"]`  
-     • An ACM certificate in `us-east-1` for `vibebycory.dev`, automatically validated via a Route 53 DNS record in `vibebycory.dev`  
-     • A Route 53 “A alias” record mapping `vibebycory.dev` → CloudFront distribution  
+      - A private S3 bucket with “Block Public Access” enabled  
+      - An Origin Access Identity (OAI) for CloudFront to fetch objects  
+      - A CloudFront distribution pointing at the S3 REST endpoint, with `aliases = ["vibebycory.dev"]`  
+      - An ACM certificate in `us-east-1` for `vibebycory.dev`, automatically validated via a Route 53 DNS record in `vibebycory.dev`  
+      - A Route 53 “A alias” record mapping `vibebycory.dev` → CloudFront distribution  
 
 ### Visitor Counter API
    - Terraform modules in `api-backend/` create:  
-     • A DynamoDB table (`id` as the partition key, PAY_PER_REQUEST billing) to store a single `{"id":"counter","count":N}` item  
+      - A DynamoDB table (`id` as the partition key, PAY_PER_REQUEST billing) to store a single `{"id":"counter","count":N}` item  
      • An IAM role and policies granting the Lambda execution and DynamoDB access rights  
      • A ZIP of all files under `environments/dev/lambda/` (using Terraform’s `archive_file`) for deployment  
      • A Python 3.9 Lambda function that:  
@@ -125,12 +126,6 @@ This monorepo contains:
      • Verifies increment logic (e.g., `count` 5 → 6) when an item is pre-seeded  
      • Verifies missing `TABLE_NAME` environment variable triggers `KeyError`  
 
-### CI/CD Workflows (GitHub Actions)
-   - **Front-end** (`.github/workflows/deploy-frontend.yml`):  
-     • Trigger: any change under `legacy-resume/public/`  
-   - **Back-end** (`.github/workflows/deploy-backend.yml`):  
-     • Trigger: any change under `aws-infra/`  
-     
 ### Monitoring & Alarms
 Terraform modules in `monitoring/` create:  
    - An SNS topic (`cloud-resume-alarms`) to aggregate all alerts
@@ -140,6 +135,13 @@ Terraform modules in `monitoring/` create:
    - An AWS Budget configured monthly with an alert at your chosen threshold (e.g., 80%)
    - An IAM role trusted by AWS Chatbot
    - An AWS Chatbot Slack channel configuration that subscribes to the SNS topic and posts every alert into your chosen Slack channel
+
+### CI/CD Workflows (GitHub Actions)
+   - **Front-end** (`.github/workflows/deploy-frontend.yml`):  
+     • Trigger: any change under `legacy-resume/public/`  
+   - **Back-end** (`.github/workflows/deploy-backend.yml`):  
+     • Trigger: any change under `aws-infra/`  
+     
 
 ---
 
