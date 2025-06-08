@@ -41,6 +41,11 @@ This monorepo contains:
   • **Front-end workflow**: On changes under `legacy-resume/public/`, sync to S3 & invalidate CloudFront  
   • **Back-end workflow**: On changes under `aws-infra/`, run unit tests, then Terraform init/plan/apply
 
+- **Monitoring & Alerts** *(NEW)*
+  Terraform modules in `monitoring/` create:
+  • An SNS topic (cloud-resume-alarms) to aggregate all alerts
+  • **Back-end workflow**: On changes under `aws-infra/`, run unit tests, then Terraform init/plan/apply  
+
 ---
 
 ## Project Diagram
@@ -123,16 +128,23 @@ This monorepo contains:
 4. **CI/CD Workflows (GitHub Actions)**  
    - **Front-end** (`.github/workflows/deploy-frontend.yml`):  
      • Trigger: any change under `legacy-resume/public/`  
-     
    - **Back-end** (`.github/workflows/deploy-backend.yml`):  
      • Trigger: any change under `aws-infra/`  
      
+5. **Monitoring & Alarms** *(NEW)*
+  Terraform modules in `monitoring/` create:  
+   - An SNS topic (`cloud-resume-alarms`) to aggregate all alerts
+   -  CloudWatch alarms on the visitor-counter Lambda:
+     • Errors (any invocation failures) 
+     • Throttles (exceeded concurrency)
+   - An AWS Budget configured monthly with an alert at your chosen threshold (e.g., 80%)
+   - An IAM role trusted by AWS Chatbot
+   - An AWS Chatbot Slack channel configuration that subscribes to the SNS topic and posts every alert into your chosen Slack channel
 
 ---
 
 ## Future Improvements
 
- - Integrate CloudWatch alarms (Lambda errors, throttles, budget thresholds) with Slack or PagerDuty for real-time notifications.
  - Revamp site to better reflect VIBEbyCory.dev brand
  - Include a resume pdf download button
  - Add Terraform staging and production workspaces and GitHub environment protections (manual approvals) before deploying to the live domain
