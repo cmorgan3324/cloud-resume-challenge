@@ -42,7 +42,7 @@ This monorepo contains:
   • **Back-end workflow**: On changes under `aws-infra/`, run unit tests, then Terraform init/plan/apply
 
 - **Monitoring & Alerts**
-  Terraform modules in `monitoring/` create:
+  Terraform modules in `monitoring/` create:\
     • An SNS topic (cloud-resume-alarms) to aggregate all alerts
     • **Back-end workflow**: On changes under `aws-infra/`, run unit tests, then Terraform init/plan/apply  
 
@@ -131,8 +131,8 @@ This monorepo contains:
    - **Back-end** (`.github/workflows/deploy-backend.yml`):  
      • Trigger: any change under `aws-infra/`  
      
-5. **Monitoring & Alarms**
-  Terraform modules in `monitoring/` create:  
+5. **Monitoring & Alarms**\
+Terraform modules in `monitoring/` create:  
    - An SNS topic (`cloud-resume-alarms`) to aggregate all alerts
    -  CloudWatch alarms on the visitor-counter Lambda:
      • Errors (any invocation failures) 
