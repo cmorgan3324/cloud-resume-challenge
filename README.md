@@ -98,7 +98,7 @@ This monorepo contains:
 
 ## Implementation Details
 
-1. **Static Site Hosting**  
+### Static Site Hosting
    - Terraform modules in `static-site/` create:  
      • A private S3 bucket with “Block Public Access” enabled  
      • An Origin Access Identity (OAI) for CloudFront to fetch objects  
@@ -106,7 +106,7 @@ This monorepo contains:
      • An ACM certificate in `us-east-1` for `vibebycory.dev`, automatically validated via a Route 53 DNS record in `vibebycory.dev`  
      • A Route 53 “A alias” record mapping `vibebycory.dev` → CloudFront distribution  
 
-2. **Visitor Counter API**  
+### Visitor Counter API
    - Terraform modules in `api-backend/` create:  
      • A DynamoDB table (`id` as the partition key, PAY_PER_REQUEST billing) to store a single `{"id":"counter","count":N}` item  
      • An IAM role and policies granting the Lambda execution and DynamoDB access rights  
@@ -118,25 +118,25 @@ This monorepo contains:
      • An HTTP API Gateway v2 “AWS_PROXY” integration routing `GET /count` → Lambda  
      • A Lambda permission allowing API Gateway to invoke the function  
 
-3. **Unit Testing**  
+### Unit Testing
    - Located in `aws-infra/environments/dev/tests/test_lambda.py`  
    - Uses **pytest** and **moto** to spin up an in-memory DynamoDB:  
      • Verifies initial invocation sets `count = 1` when no item exists  
      • Verifies increment logic (e.g., `count` 5 → 6) when an item is pre-seeded  
      • Verifies missing `TABLE_NAME` environment variable triggers `KeyError`  
 
-4. **CI/CD Workflows (GitHub Actions)**  
+### CI/CD Workflows (GitHub Actions)
    - **Front-end** (`.github/workflows/deploy-frontend.yml`):  
      • Trigger: any change under `legacy-resume/public/`  
    - **Back-end** (`.github/workflows/deploy-backend.yml`):  
      • Trigger: any change under `aws-infra/`  
      
-5. **Monitoring & Alarms**\
+### Monitoring & Alarms
 Terraform modules in `monitoring/` create:  
    - An SNS topic (`cloud-resume-alarms`) to aggregate all alerts
    -  CloudWatch alarms on the visitor-counter Lambda:
-     • Errors (any invocation failures) 
-     • Throttles (exceeded concurrency)
+     - Errors (any invocation failures) 
+     - Throttles (exceeded concurrency)
    - An AWS Budget configured monthly with an alert at your chosen threshold (e.g., 80%)
    - An IAM role trusted by AWS Chatbot
    - An AWS Chatbot Slack channel configuration that subscribes to the SNS topic and posts every alert into your chosen Slack channel
