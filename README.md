@@ -37,8 +37,8 @@ This monorepo contains:
   - Pytest + moto mocks DynamoDB locally to verify Lambda logic before any deploy  
   - Tests ensure initial counter creation, increment behavior, and error on missing environment variables
 
-### Monitoring & Alerts
-  - Terraform modules in `monitoring/` create:\
+### Monitoring & Alarms
+  - Terraform modules in `monitoring/` create:
       - An SNS topic (cloud-resume-alarms) to aggregate all alerts
       - **Back-end workflow**: On changes under `aws-infra/`, run unit tests, then Terraform init/plan/apply  
 
@@ -78,22 +78,22 @@ This monorepo contains:
 ## High-Level Directory Summary
 
 - **`legacy-resume/`**  
-  • Static HTML/CSS under `public/`  
-  • `server.js` with a local SQLite (`visitors.db`) visitor counter  
+    - Static HTML/CSS under `public/`  
+    - `server.js` with a local SQLite (`visitors.db`) visitor counter  
 
 - **`aws-infra/modules/`**  
   - **`static-site/`**  
-    • Provisions a private S3 bucket, a CloudFront distribution with OAI, an ACM certificate (DNS-validated via Route 53), and the A-alias record for `vibebycory.dev`.  
+      - Provisions a private S3 bucket, a CloudFront distribution with OAI, an ACM certificate (DNS-validated via Route 53), and the A-alias record for `vibebycory.dev`.  
   - **`api-backend/`**  
-    • Creates a DynamoDB table, IAM role policies, packages and deploys a Python Lambda, and configures an HTTP API Gateway route (`GET /count`) to invoke that Lambda.  
+      - Creates a DynamoDB table, IAM role policies, packages and deploys a Python Lambda, and configures an HTTP API Gateway route (`GET /count`) to invoke that Lambda.  
 
 - **`aws-infra/environments/dev/`**  
-  • Calls both modules with environment-specific values (domain, bucket name, table name, etc.).  
-  • Contains the Python `lambda_function.py` and its corresponding pytest tests under `tests/`.  
+    - Calls both modules with environment-specific values (domain, bucket name, table name, etc.).  
+    - Contains the Python `lambda_function.py` and its corresponding pytest tests under `tests/`.  
 
 - **`.github/workflows/`**  
-  • **`deploy-frontend.yml`**: Triggers on changes to front-end files → syncs them to S3 and invalidates CloudFront.  
-  • **`deploy-backend.yml`**: Triggers on changes to Terraform/Lambda code → installs dependencies, runs moto tests, then Terraform deploy.
+    - **`deploy-frontend.yml`**: Triggers on changes to front-end files → syncs them to S3 and invalidates CloudFront.  
+    - **`deploy-backend.yml`**: Triggers on changes to Terraform/Lambda code → installs dependencies, runs moto tests, then Terraform deploy.
 
 ---
 
@@ -127,14 +127,14 @@ This monorepo contains:
       - Verifies missing `TABLE_NAME` environment variable triggers `KeyError`  
 
 ### Monitoring & Alarms
-Terraform modules in `monitoring/` create:  
-   - An SNS topic (`cloud-resume-alarms`) to aggregate all alerts
-   -  CloudWatch alarms on the visitor-counter Lambda:
-      - Errors (any invocation failures) 
-      - Throttles (exceeded concurrency)
-   - An AWS Budget configured monthly with an alert at your chosen threshold (e.g., 80%)
-   - An IAM role trusted by AWS Chatbot
-   - An AWS Chatbot Slack channel configuration that subscribes to the SNS topic and posts every alert into your chosen Slack channel
+   - Terraform modules in `monitoring/` create:  
+      - An SNS topic (`cloud-resume-alarms`) to aggregate all alerts
+      -  CloudWatch alarms on the visitor-counter Lambda:
+          - Errors (any invocation failures) 
+          - Throttles (exceeded concurrency)
+      - An AWS Budget configured monthly with an alert at your chosen threshold (e.g., 80%)
+      - An IAM role trusted by AWS Chatbot
+      - An AWS Chatbot Slack channel configuration that subscribes to the SNS topic and posts every alert into your chosen Slack channel
 
 ### CI/CD Workflows (GitHub Actions)
    - **Front-end** (`.github/workflows/deploy-frontend.yml`):  
