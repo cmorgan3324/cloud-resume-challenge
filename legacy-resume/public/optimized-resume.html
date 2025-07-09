@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cory Morgan | Resume (PDF Version)</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cory Morgan | Resume (PDF Version)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
 body {
       margin: 0;
@@ -143,5 +144,16 @@ a { color: #000; text-decoration: none; }
     <p><strong>Rochester Institute of Technology</strong> – B.S. in Business Management & Marketing</p>
   </section>
  </div>
+
+<script>
+  function generatePDF() {
+    html2pdf().set({
+      margin: 0,
+      filename: 'Cory_Morgan_Resume.pdf',
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    }).from(document.getElementById('pdf-resume')).save();
+  }
+</script>
 </body>
 </html>
