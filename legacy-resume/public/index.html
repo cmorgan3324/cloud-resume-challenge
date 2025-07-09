@@ -15,7 +15,7 @@
     <!-- PDF Download button -->
     <div style="text-align: right; margin: 1rem 0;">
       <button id="download-btn" style="padding: 10px 20px; font-weight: bold; border: none; background-color: #00bcd4; color: white; border-radius: 8px; cursor: pointer;">
-        Download single page resume.
+        Download 1-page resume
       </button>
     </div>
 
@@ -167,9 +167,14 @@
   </div>
   
   <!-- Iframe for resume download -->
-  <iframe id="pdf-frame" src="/optimized-resume.html" style="display: none;"></iframe>
+  <iframe 
+    id="pdf-frame" 
+    src="/optimized-resume.html" 
+    style="display: none;"
+    onerror="console.error('Failed to load optimized-resume.html: check path')"
+></iframe>
 
-  <!-- Visitor Count Scipt -->
+  <!-- Visitor Count Script -->
   <script>
     fetch('https://vzp1lb97xb.execute-api.us-east-1.amazonaws.com/count')
       .then(res => res.json())
@@ -181,30 +186,56 @@
 
 <!-- Generate PDF script -->
   <script>
-  document.getElementById('download-btn').addEventListener('click', () => {
-    const iframe = document.getElementById('pdf-frame');
+  // wait until your DOM is fully parsed
+  document.addEventListener('DOMContentLoaded', () => {
+    const downloadBtn = document.getElementById('download-btn');
+    const iframe     = document.getElementById('pdf-frame');
 
-    const handleDownload = () => {
-      const pdfContent = iframe.contentWindow.document.getElementById('pdf-resume');
+    if (!downloadBtn) {
+      console.error('❌ #download-btn not found in DOM');
+      return;
+    }
+    if (!iframe) {
+      console.error('❌ #pdf-frame not found in DOM');
+      return;
+    }
 
-      const options = {
-        margin:       0.5,
-        filename:     'Cory_Morgan_Resume.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    downloadBtn.addEventListener('click', () => {
+      console.log('➡️ Download button clicked');
+
+      const generatePDF = () => {
+        console.log('➡️ Iframe ready, generating PDF…');
+        const doc = iframe.contentWindow?.document;
+        if (!doc) {
+          console.error('❌ Cannot access iframe document');
+          return;
+        }
+
+        const pdfContent = doc.getElementById('pdf-resume');
+        if (!pdfContent) {
+          console.error('❌ <div id="pdf-resume"> not found in pdf-resume.html');
+          return;
+        }
+
+        const options = {
+          margin:       0.5,
+          filename:     'Cory_Morgan_Resume.pdf',
+          image:        { type: 'jpeg', quality: 0.98 },
+          html2canvas:  { scale: 2 },
+          jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+
+        html2pdf().set(options).from(pdfContent).save();
       };
 
-      html2pdf().set(options).from(pdfContent).save();
-    };
-
-    if (iframe.contentWindow.document.readyState === 'complete') {
-      // If iframe already loaded, trigger manually
-      handleDownload();
-    } else {
-      // wait for it
-      iframe.onload = handleDownload;
-    }
+      // if pdf-resume.html is already loaded
+      if (iframe.contentWindow.document.readyState === 'complete') {
+        generatePDF();
+      } else {
+        console.log('⏳ Waiting for iframe to load…');
+        iframe.onload = generatePDF;
+      }
+    });
   });
 </script>
 
