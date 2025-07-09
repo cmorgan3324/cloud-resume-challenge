@@ -80,9 +80,10 @@ resource "aws_apigatewayv2_api" "http_api" {
   protocol_type = "HTTP"
 
   cors_configuration {
-    allow_origins = ["https://vibebycory.dev"]
-    allow_methods = ["GET"]
+    allow_origins = ["https://vibebycory.dev", "http://localhost:8000"]
+    allow_methods = ["GET", "OPTIONS"]
     allow_headers = ["*"]
+    max_age       = 3600
   }
 }
 
