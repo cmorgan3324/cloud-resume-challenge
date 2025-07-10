@@ -7,14 +7,28 @@
         <title>Cory Morgan | AWS Certified Solutions Architect - Associate</title>
         <link rel="stylesheet" href="black-panther-theme.css" />
         <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet" />
-        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script> -->
 </head>
 <body>
   <div class="container">
 
     <!-- PDF Download button -->
     <div style="text-align: right; margin: 1rem 0;">
-      <button id="download-btn" style="padding: 10px 20px; font-weight: bold; border: none; background-color: #00bcd4; color: white; border-radius: 8px; cursor: pointer;">
+      <button
+        id="download-btn"
+        style="
+            padding: 0.6rem 1.2rem;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #ffffff;
+            background-color: #8A2BE2;
+            border: 1px solid #222;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(138,43,226,0.6);
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;"
+        onmouseover="this.style.backgroundColor='#6799FF'; this.style.boxShadow='0 0 8px rgba(103,153,255,0.6)';"
+        onmouseout="this.style.backgroundColor='#8A2BE2'; this.style.boxShadow='0 0 10px rgba(138,43,226,0.6)';">
         Download 1-page resume
       </button>
     </div>
@@ -185,60 +199,6 @@
   </script>
 
 <!-- Generate PDF script -->
-  <!-- <script>
-  // wait until your DOM is fully parsed
-  document.addEventListener('DOMContentLoaded', () => {
-    const downloadBtn = document.getElementById('download-btn');
-    const iframe     = document.getElementById('pdf-frame');
-
-    if (!downloadBtn) {
-      console.error('❌ #download-btn not found in DOM');
-      return;
-    }
-    if (!iframe) {
-      console.error('❌ #pdf-frame not found in DOM');
-      return;
-    }
-
-    downloadBtn.addEventListener('click', () => {
-      console.log('➡️ Download button clicked');
-
-      const generatePDF = () => {
-        console.log('➡️ Iframe ready, generating PDF…');
-        const doc = iframe.contentWindow?.document;
-        if (!doc) {
-          console.error('❌ Cannot access iframe document');
-          return;
-        }
-
-        const pdfContent = doc.getElementById('pdf-resume');
-        if (!pdfContent) {
-          console.error('❌ <div id="pdf-resume"> not found in optimized-resume.html');
-          return;
-        }
-
-        const options = {
-          margin:       0,
-          filename:     'Cory_Morgan_Resume.pdf',
-          image:        { type: 'jpeg', quality: 0.98 },
-          html2canvas:  { scale: 2, useCORS: true },
-          jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
-
-        html2pdf().set(options).from(pdfContent).save();
-      };
-
-      // if pdf-resume.html is already loaded
-      if (iframe.contentWindow.document.readyState === 'complete') {
-        generatePDF();
-      } else {
-        console.log('⏳ Waiting for iframe to load…');
-        iframe.onload = generatePDF;
-      }
-    });
-  });
-</script> -->
-
 <script>
   document.getElementById('download-btn').addEventListener('click', () => {
     const iframe = document.getElementById('pdf-frame');
