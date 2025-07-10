@@ -48,7 +48,7 @@ This monorepo contains:
   - **Front-end workflow**: On changes under `legacy-resume/public/`, sync to S3 & invalidate CloudFront  
   - **Back-end workflow**: On changes under `aws-infra/`, run unit tests, then Terraform init/plan/apply
 
-### Download Resume button added **NEW**
+### Download Resume button added *NEW*
   - Added responsive "Download 1-page resume" button for potential recruiters
 
 
