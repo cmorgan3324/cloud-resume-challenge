@@ -4,7 +4,7 @@
 
 This repository demonstrates my attempt migrating a simple, on-premises “legacy” resume site into a fully serverless AWS cloud hosted site as my AWS Cloud Resume Challenge. (visit at <https://VIBEbyCory.dev>)
 
-Visit my blog at <https://dev.to/cmorgan3324/my-aws-cloud-resume-challenge-journey-2i7f> for a deep dive into 
+Visit my (blog)[https://dev.to/cmorgan3324/my-aws-cloud-resume-challenge-journey-2i7f] for a deep dive into my process of developing this VIBE!
 
 This monorepo contains:
 
@@ -48,7 +48,7 @@ This monorepo contains:
   - **Front-end workflow**: On changes under `legacy-resume/public/`, sync to S3 & invalidate CloudFront  
   - **Back-end workflow**: On changes under `aws-infra/`, run unit tests, then Terraform init/plan/apply
 
-### Download Resume button added *NEW*
+### Download Resume Button *NEW*
   - Added responsive "Download 1-page resume" button for potential recruiters
 
 
