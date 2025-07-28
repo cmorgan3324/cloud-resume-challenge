@@ -43,6 +43,44 @@ a { color: #000; text-decoration: none; }
 .two-col { display: flex; justify-content: space-between; gap: 1rem; }
 .two-col > div { flex: 1; }
   </style>
+  <style>
+  @page {
+  size: letter portrait;
+  margin: 0;
+  }
+
+  @media print {
+    body {
+      width: 8.5in;
+      height: 11in;
+      zoom: 0.85;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    #pdf-resume {
+      width: 100%;
+      height: auto;
+      padding: 0.4in;
+      box-sizing: border-box;
+      page-break-after: avoid;
+    }
+
+    a {
+      color: black;
+      text-decoration: none;
+    }
+  }
+
+  /* Optional override to apply desktop layout for PDF generation */
+  .pdf-export {
+    width: 8.5in !important;
+    min-height: 11in !important;
+    padding: 0.4in !important;
+    zoom: 0.85;
+  }
+</style>
 </head>
 <body>
  <div id="pdf-resume">
@@ -164,14 +202,30 @@ a { color: #000; text-decoration: none; }
  </div>
 
 <script>
-  function generatePDF() {
+   function generatePDF() {
+    const resume = document.getElementById('pdf-resume');
+    resume.classList.add('pdf-export');
+
     html2pdf().set({
       margin: 0,
       filename: 'Cory_Morgan_Resume.pdf',
       html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-    }).from(document.getElementById('pdf-resume')).save();
+    })
+    .from(resume)
+    .save()
+    .then(() => {
+      resume.classList.remove('pdf-export');
+    });
   }
+  // function generatePDF() {
+  //   html2pdf().set({
+  //     margin: 0,
+  //     filename: 'Cory_Morgan_Resume.pdf',
+  //     html2canvas: { scale: 2, useCORS: true },
+  //     jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+  //   }).from(document.getElementById('pdf-resume')).save();
+  // }
 </script>
 </body>
 </html>
