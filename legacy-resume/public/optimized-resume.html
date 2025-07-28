@@ -45,26 +45,26 @@ a { color: #000; text-decoration: none; }
   </style>
   <style>
   @page {
-  size: letter portrait;
-  margin: 0;
+    size: letter portrait;
+    margin: 0;
   }
 
   @media print {
-    body {
-      width: 8.5in;
-      height: 11in;
-      zoom: 0.85;
+    html, body {
       margin: 0;
       padding: 0;
+      width: 8.5in;
+      height: 11in;
       overflow: hidden;
     }
 
     #pdf-resume {
+      box-sizing: border-box;
       width: 100%;
       height: auto;
-      padding: 0.4in;
-      box-sizing: border-box;
+      padding: 0.4in;         /* ≈38px */
       page-break-after: avoid;
+      page-break-inside: avoid;
     }
 
     a {
@@ -73,12 +73,12 @@ a { color: #000; text-decoration: none; }
     }
   }
 
-  /* Optional override to apply desktop layout for PDF generation */
+  /* Desktop-sized override for html2pdf capture */
   .pdf-export {
+    box-sizing: border-box;
     width: 8.5in !important;
-    min-height: 11in !important;
+    height: 11in !important;
     padding: 0.4in !important;
-    zoom: 0.85;
   }
 </style>
 </head>
@@ -202,19 +202,36 @@ a { color: #000; text-decoration: none; }
  </div>
 
 <script>
-   function generatePDF() {
+  function generatePDF() {
     const resume = document.getElementById('pdf-resume');
+
+    // force the element to desktop dimensions
     resume.classList.add('pdf-export');
 
+    // measure its full width/height in CSS pixels
+    const W = resume.offsetWidth;
+    const H = resume.offsetHeight;
+
     html2pdf().set({
-      margin: 0,
-      filename: 'Cory_Morgan_Resume.pdf',
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      margin:       0,
+      filename:     'Cory_Morgan_Resume.pdf',
+      html2canvas: {
+        scale:        2,
+        useCORS:      true,
+        // ensure html2canvas renders the whole 8.5×11in area, not the mobile viewport
+        windowWidth:  W,
+        windowHeight: H
+      },
+      jsPDF: {
+        unit:         'in',
+        format:       'letter',
+        orientation:  'portrait'
+      }
     })
     .from(resume)
     .save()
     .then(() => {
+      // clean up
       resume.classList.remove('pdf-export');
     });
   }
