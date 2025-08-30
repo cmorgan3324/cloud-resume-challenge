@@ -251,11 +251,12 @@ main h2 {
   color: var(--electric-blue);
   text-decoration: none;
   transition: all 0.3s ease;
+  text-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
 }
 
 .project h3 a:hover {
   color: var(--neon-purple);
-  text-shadow: 0 0 8px var(--accent-glow);
+  text-shadow: 0 0 12px var(--accent-glow);
 }
 
 .project ul {
@@ -296,9 +297,10 @@ main h2 {
 }
 
 .experience strong {
-  color: var(--text-primary);
+  color: var(--electric-blue);
   font-size: 1.1rem;
   font-weight: 600;
+  text-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
 }
 
 .experience ul {
