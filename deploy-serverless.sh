@@ -37,7 +37,7 @@ echo "📦 Uploading static files to S3..."
 aws s3 cp index.html s3://$BUCKET_NAME/ --region $AWS_REGION
 aws s3 cp styles.css s3://$BUCKET_NAME/ --region $AWS_REGION
 aws s3 cp script.js s3://$BUCKET_NAME/ --region $AWS_REGION
-aws s3 cp Cory_Morgan_Resume-11.pdf s3://$BUCKET_NAME/ --region $AWS_REGION
+aws s3 cp Cory_Morgan_SA_Resume.pdf s3://$BUCKET_NAME/ --region $AWS_REGION
 
 # Upload resume files to /resume/ prefix
 aws s3 cp resume/public/ s3://$BUCKET_NAME/resume/ --recursive --region $AWS_REGION
