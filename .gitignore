@@ -17,3 +17,6 @@ visitors.db
 crash.log
 override.tf
 override.tf.json
+# Terraform provider binaries
+.terraform/providers/
+terraform-provider-*
