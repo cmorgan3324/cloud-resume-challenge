@@ -1,0 +1,398 @@
+/* VIBEbyCory Resume Theme - Matching Main Portfolio Design */
+
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary-black: #0a0a0a;
+  --secondary-black: #1a1a1a;
+  --dark-grey: #2a2a2a;
+  --medium-grey: #404040;
+  --light-grey: #666666;
+  --silver: #c0c0c0;
+  --neon-purple: #8b5cf6;
+  --dark-purple: #6d28d9;
+  --electric-blue: #3b82f6;
+  --dark-blue: #1e40af;
+  --accent-glow: rgba(139, 92, 246, 0.3);
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+}
+
+body {
+  font-family: "Space Grotesk", sans-serif;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background-color: var(--primary-black);
+  background-image: radial-gradient(
+      circle at 20% 80%,
+      rgba(139, 92, 246, 0.1) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(59, 130, 246, 0.1) 0%,
+      transparent 50%
+    );
+  padding: 2rem;
+}
+
+/* Container */
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: rgba(26, 26, 26, 0.95);
+  backdrop-filter: blur(15px);
+  border: 1px solid var(--dark-grey);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 
+              0 0 30px rgba(139, 92, 246, 0.1);
+}
+
+/* Navigation and Download Button Styles */
+.nav-button, .download-button {
+  padding: 0.75rem 1.5rem;
+  font-family: "Orbitron", monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: linear-gradient(135deg, var(--neon-purple), var(--electric-blue));
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+  letter-spacing: 0.5px;
+}
+
+.nav-button:hover, .download-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.nav-button {
+  background: transparent;
+  border: 2px solid var(--neon-purple);
+  color: var(--neon-purple);
+}
+
+.nav-button:hover {
+  background: var(--neon-purple);
+  color: var(--text-primary);
+}
+
+/* Header */
+header {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--dark-grey);
+}
+
+header h1 {
+  font-family: "Orbitron", monospace;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--neon-purple);
+  text-shadow: 0 0 20px var(--accent-glow);
+  margin-bottom: 0.5rem;
+  letter-spacing: 1px;
+}
+
+header p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  margin: 0.5rem 0;
+  font-weight: 400;
+}
+
+header p:first-of-type {
+  font-size: 1.1rem;
+  color: var(--electric-blue);
+  font-weight: 500;
+  text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+}
+
+header a {
+  color: var(--electric-blue);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+header a:hover {
+  color: var(--neon-purple);
+  text-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* Resume Grid Layout */
+.resume-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 3rem;
+  margin-top: 2rem;
+}
+
+/* Sidebar */
+aside {
+  background: rgba(42, 42, 42, 0.5);
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid var(--medium-grey);
+  height: fit-content;
+}
+
+aside section {
+  margin-bottom: 2rem;
+}
+
+aside section:last-child {
+  margin-bottom: 0;
+}
+
+aside h2 {
+  font-family: "Orbitron", monospace;
+  font-size: 1.3rem;
+  color: var(--electric-blue);
+  margin-bottom: 1rem;
+  text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+  letter-spacing: 0.5px;
+}
+
+aside p, aside li {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+aside ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+aside li {
+  margin-bottom: 0.8rem;
+  padding-left: 1rem;
+  position: relative;
+}
+
+aside li::before {
+  content: "▸";
+  position: absolute;
+  left: 0;
+  color: var(--neon-purple);
+  font-weight: bold;
+}
+
+aside strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Main Content */
+main {
+  background: rgba(26, 26, 26, 0.3);
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid var(--dark-grey);
+}
+
+main section {
+  margin-bottom: 2.5rem;
+}
+
+main section:last-child {
+  margin-bottom: 0;
+}
+
+main h2 {
+  font-family: "Orbitron", monospace;
+  font-size: 1.5rem;
+  color: var(--neon-purple);
+  margin-bottom: 1.5rem;
+  text-shadow: 0 0 15px var(--accent-glow);
+  letter-spacing: 0.5px;
+}
+
+/* Projects */
+.project {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: rgba(42, 42, 42, 0.3);
+  border-radius: 8px;
+  border-left: 4px solid var(--electric-blue);
+  transition: all 0.3s ease;
+}
+
+.project:hover {
+  background: rgba(42, 42, 42, 0.5);
+  transform: translateX(5px);
+  box-shadow: 0 5px 15px rgba(59, 130, 246, 0.2);
+}
+
+.project h3 {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+}
+
+.project h3 a {
+  color: var(--electric-blue);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.project h3 a:hover {
+  color: var(--neon-purple);
+  text-shadow: 0 0 8px var(--accent-glow);
+}
+
+.project ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.project li {
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  padding-left: 1.2rem;
+  position: relative;
+  font-size: 0.9rem;
+}
+
+.project li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--electric-blue);
+  font-weight: bold;
+}
+
+/* Experience */
+.experience {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: rgba(42, 42, 42, 0.3);
+  border-radius: 8px;
+  border-left: 4px solid var(--neon-purple);
+  transition: all 0.3s ease;
+}
+
+.experience:hover {
+  background: rgba(42, 42, 42, 0.5);
+  transform: translateX(5px);
+  box-shadow: 0 5px 15px rgba(139, 92, 246, 0.2);
+}
+
+.experience strong {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.experience ul {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 0.8rem;
+}
+
+.experience li {
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  padding-left: 1.2rem;
+  position: relative;
+  font-size: 0.9rem;
+}
+
+.experience li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--neon-purple);
+  font-weight: bold;
+}
+
+/* Education */
+main section:last-child p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  padding: 1rem;
+  background: rgba(42, 42, 42, 0.3);
+  border-radius: 8px;
+  border-left: 4px solid var(--electric-blue);
+}
+
+main section:last-child strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--dark-grey);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+footer #count {
+  color: var(--electric-blue);
+  font-weight: 600;
+  text-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  body {
+    padding: 1rem;
+  }
+  
+  .container {
+    padding: 1.5rem;
+  }
+  
+  .resume-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  header h1 {
+    font-size: 2rem;
+  }
+  
+  aside, main {
+    padding: 1.5rem;
+  }
+  
+  .nav-button, .download-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.8rem;
+  }
+  
+  aside h2, main h2 {
+    font-size: 1.2rem;
+  }
+  
+  .project, .experience {
+    padding: 1rem;
+  }
+}

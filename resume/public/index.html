@@ -5,59 +5,37 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="Discover a cloud-native resume built with a modern AWS serverless stack. Designed to showcase skills in Lambda, API Gateway, DynamoDB, and CI/CD automation—perfect for Solutions Architect and cloud engineering roles.">
         <title>Cory Morgan | AWS Certified Solutions Architect - Associate</title>
-        <link rel="stylesheet" href="black-panther-theme.css" />
-        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="vibebycory-theme.css" />
+        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
 <body>
   <div class="container">
 
-    <!-- PDF Download button -->
-    <div style="text-align: right; margin: 1rem 0;">
-      <button
-        id="download-btn"
-        style="
-            padding: 0.2rem 0.6rem;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #ffffff;
-            background-color: #8A2BE2;
-            border: 1px solid #222;
-            border-radius: 6px;
-            box-shadow: 0 0 10px rgba(138,43,226,0.6);
-            cursor: pointer;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;"
-        onmouseover="this.style.backgroundColor='#6799FF'; this.style.boxShadow='0 0 8px rgba(103,153,255,0.6)';"
-        onmouseout="this.style.backgroundColor='#8A2BE2'; this.style.boxShadow='0 0 10px rgba(138,43,226,0.6)';">
-        Download 1-page resume
-      </button>
-    </div>
-
-    <!-- Navigation back to portfolio -->
-    <nav style="text-align: left; margin: 1rem 0;">
-      <a href="/" style="
-          padding: 0.5rem 1rem;
-          font-family: 'Orbitron', sans-serif;
-          font-size: 0.9rem;
-          font-weight: 600;
-          color: #8A2BE2;
-          text-decoration: none;
-          border: 1px solid #8A2BE2;
-          border-radius: 6px;
-          transition: all 0.3s ease;"
-        onmouseover="this.style.backgroundColor='#8A2BE2'; this.style.color='#ffffff';"
-        onmouseout="this.style.backgroundColor='transparent'; this.style.color='#8A2BE2';">
+    <!-- Navigation and Actions -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+      <a href="/" class="nav-button">
         ← Back to Portfolio
       </a>
-    </nav>
+      <button id="download-btn" class="download-button">
+        <i class="fas fa-download"></i> Download Resume
+      </button>
+    </div>
 
     <header>
       <h1>Cory Morgan</h1>
       <p>AWS Certified Solutions Architect – Associate</p>
       <p>New York City, NY | <a href="mailto:cmorgan3324@gmail.com">cmorgan3324@gmail.com</a></p>
       <p>
-        <a href="https://github.com/cmorgan3324">GitHub</a> |
-        <a href="http://www.linkedin.com/in/cory-c-morgan">LinkedIn</a>
+        <a href="https://github.com/cmorgan3324" target="_blank">
+          <i class="fab fa-github"></i> GitHub
+        </a> |
+        <a href="http://www.linkedin.com/in/cory-c-morgan" target="_blank">
+          <i class="fab fa-linkedin"></i> LinkedIn
+        </a> |
+        <a href="https://vibebycory.dev" target="_blank">
+          <i class="fas fa-globe"></i> Portfolio
+        </a>
       </p>
     </header>
 
