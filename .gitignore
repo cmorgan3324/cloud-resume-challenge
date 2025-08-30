@@ -9,3 +9,11 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+venv/
+visitors.db
+.terraform/
+*.tfstate
+*.tfstate.backup
+crash.log
+override.tf
+override.tf.json

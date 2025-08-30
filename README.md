@@ -1,6 +1,8 @@
-# AI/Cloud Portfolio Website
+# AI/Cloud Portfolio Website - AWS Cloud Resume Challenge
 
-A clean, mobile-friendly portfolio website showcasing AI and Cloud projects.
+A clean, mobile-friendly portfolio website showcasing AI and Cloud projects, built as part of the AWS Cloud Resume Challenge.
+
+Visit the live site at: <https://VIBEbyCory.dev>
 
 ## Features
 
@@ -10,80 +12,59 @@ A clean, mobile-friendly portfolio website showcasing AI and Cloud projects.
 - **Resume Download**: Direct PDF download functionality
 - **Contact Integration**: Easy-to-find contact information and social links
 - **Performance Optimized**: Fast loading with minimal dependencies
+- **Real Visitor Counter**: AWS API Gateway + Lambda + DynamoDB integration
 
-## Setup Instructions
+## Recent Updates
 
-1. **Customize Content**:
-   - Replace `[Your Name]` with your actual name throughout the files
-   - Update `[your-email]@example.com` with your email address
-   - Replace `[your-profile]` and `[your-username]` with your LinkedIn and GitHub profiles
-   - Add your actual resume PDF as `resume.pdf` in the root directory
+### ✅ Visitor Counter Fixed!
+- **Removed localStorage simulation** - The JavaScript was generating fake visitor counts (1000+ random numbers)
+- **Added real API integration** - Now calls the actual AWS API Gateway endpoint
+- **Simplified logic** - Removed localStorage and sessionStorage, now relies on the server-side counter
 
-2. **Update Projects**:
-   - Modify the 6 project cards in `index.html` with your actual projects
-   - Update project descriptions, technologies, and links
-   - Replace placeholder GitHub and demo links with real URLs
+## AWS Cloud Resume Challenge Architecture
 
-3. **Customize Styling**:
-   - Modify colors in `styles.css` to match your brand
-   - Update the gradient colors in the hero and contact sections
-   - Adjust fonts, spacing, or layout as needed
+This project demonstrates a fully serverless AWS implementation:
 
-4. **Add Your Resume**:
-   - Replace the placeholder `resume.pdf` with your actual resume
-   - Ensure the file is named exactly `resume.pdf` or update the links accordingly
+### Frontend
+- **Static Site Hosting**: S3 + CloudFront + Route 53 + ACM certificate
+- **Custom Domain**: vibebycory.dev with HTTPS
 
-## File Structure
+### Backend
+- **Visitor Counter API**: DynamoDB + Python Lambda + HTTP API Gateway
+- **Infrastructure as Code**: Terraform modules and workspaces
+- **Unit Testing**: Pytest + moto for Lambda testing
+
+### CI/CD
+- **GitHub Actions**: Automated deployments
+- **Monitoring**: CloudWatch alarms + SNS notifications
+
+## Project Structure
 
 ```
-portfolio/
-├── index.html          # Main HTML file
-├── styles.css          # All CSS styles
-├── script.js           # JavaScript functionality
-├── resume.pdf          # Your resume (add this file)
-└── README.md           # This file
+portfolio-site/
+├── index.html              # Main portfolio page
+├── styles.css              # All CSS styles
+├── script.js               # JavaScript with real API integration
+├── aws-infra-serverless/   # Terraform infrastructure code
+├── resume/                 # Resume page and assets
+└── deploy-serverless.sh    # Deployment script
 ```
 
 ## Technologies Used
 
-- **HTML5**: Semantic markup
-- **CSS3**: Modern styling with Flexbox and Grid
-- **JavaScript**: Interactive functionality
-- **Font Awesome**: Icons
-- **Google Fonts**: Typography (Inter font family)
+- **Frontend**: HTML5, CSS3, JavaScript, Font Awesome, Google Fonts
+- **Backend**: AWS Lambda (Python), DynamoDB, API Gateway
+- **Infrastructure**: Terraform, AWS S3, CloudFront, Route 53, ACM
+- **CI/CD**: GitHub Actions
+- **Testing**: Pytest, moto
 
-## Browser Support
+## Future Improvements
 
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-- Mobile browsers
+- Add Terraform staging and production workspaces
+- Integrate CloudWatch monitoring with Slack notifications
+- Add blog functionality
+- Enhance resume page styling
 
-## Deployment
+## License
 
-This is a static website that can be deployed to:
-- GitHub Pages
-- Netlify
-- Vercel
-- AWS S3 + CloudFront
-- Any static hosting service
-
-## Customization Tips
-
-1. **Colors**: Update the CSS custom properties for consistent theming
-2. **Content**: Keep project descriptions concise but informative
-3. **Images**: Consider adding project screenshots or your photo
-4. **SEO**: Add meta descriptions and Open Graph tags for better sharing
-5. **Analytics**: Add Google Analytics or similar tracking if needed
-
-## Performance
-
-- Optimized images and minimal external dependencies
-- Efficient CSS with mobile-first approach
-- Smooth animations that don't impact performance
-- Fast loading times across all devices
-
----
-
-**Note**: Remember to test the website on various devices and browsers before deploying to ensure optimal user experience.
+This project is licensed under the ISC License.
