@@ -17,6 +17,7 @@ Visit the live site at: <https://VIBEbyCory.dev>
 ## Recent Updates
 
 ### ✅ Visitor Counter Fixed!
+
 - **Removed localStorage simulation** - The JavaScript was generating fake visitor counts (1000+ random numbers)
 - **Added real API integration** - Now calls the actual AWS API Gateway endpoint
 - **Simplified logic** - Removed localStorage and sessionStorage, now relies on the server-side counter
@@ -26,15 +27,18 @@ Visit the live site at: <https://VIBEbyCory.dev>
 This project demonstrates a fully serverless AWS implementation:
 
 ### Frontend
+
 - **Static Site Hosting**: S3 + CloudFront + Route 53 + ACM certificate
 - **Custom Domain**: vibebycory.dev with HTTPS
 
 ### Backend
+
 - **Visitor Counter API**: DynamoDB + Python Lambda + HTTP API Gateway
 - **Infrastructure as Code**: Terraform modules and workspaces
 - **Unit Testing**: Pytest + moto for Lambda testing
 
 ### CI/CD
+
 - **GitHub Actions**: Automated deployments
 - **Monitoring**: CloudWatch alarms + SNS notifications
 
