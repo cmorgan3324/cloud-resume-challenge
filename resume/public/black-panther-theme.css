@@ -1,0 +1,164 @@
+/* ─── FONTS ───────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap');
+
+/* ─── RESET & BASE ────────────────────────────────────────────────── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #0b0b0b;
+  color: #d0d0d0;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.5;
+  padding: 2rem;
+}
+
+/* ─── CONTAINER ───────────────────────────────────────────────────── */
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: #141414;
+  border: 1px solid #222;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 0 20px rgba(138,43,226,0.2);
+}
+
+/* ─── HEADER ──────────────────────────────────────────────────────── */
+header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+header h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.2rem;
+  color: #8A2BE2;
+  text-shadow: 0 0 8px rgba(138,43,226,0.6);
+}
+header p {
+  color: #aaa;
+  font-size: 0.9rem;
+  margin-top: 0.3rem;
+}
+header a {
+  color: #6799FF;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+header a:hover {
+  color: #8A2BE2;
+  text-shadow: 0 0 5px rgba(138,43,226,0.5);
+}
+
+/* ─── TYPOGRAPHY ─────────────────────────────────────────────────── */
+h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.6rem;
+  color: #ccc;
+  margin-bottom: 0.5rem;
+  border-bottom: 2px solid #222;
+  padding-bottom: 0.3rem;
+}
+h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.2rem;
+  color: #6799FF;
+  margin-bottom: 0.4rem;
+}
+p, li {
+  margin-bottom: 0.4rem;
+}
+ul {
+  list-style: disc;
+  margin: 0.3rem 0 0.6rem 1rem;
+  color: #ccc;
+}
+
+/* ─── CARDS (PROJECT & EXPERIENCE) ───────────────────────────────── */
+.project, .experience {
+  background: #1e1e1e;
+  border: 1px solid #222;
+  border-radius: 6px;
+  padding: 0.8rem;
+  margin-bottom: 0.8rem;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.6);
+}
+.project h3 a {
+  color: #8A2BE2;
+}
+.project h3 a:hover {
+  text-decoration: underline;
+}
+
+/* ─── EM & LINKS ─────────────────────────────────────────────────── */
+a {
+  color: #6799FF;
+}
+a:hover {
+  color: #8A2BE2;
+}
+strong {
+  color: #fff;
+}
+em {
+  color: #8A2BE2;
+  font-style: normal;
+  text-shadow: 0 0 4px rgba(138,43,226,0.6);
+}
+
+/* ─── TWO-COLUMN GRID ─────────────────────────────────────────────── */
+.resume-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 1.5rem;
+}
+aside {
+  border-right: 1px solid #222;
+  padding-right: 1rem;
+}
+main {
+  padding-left: 1rem;
+}
+section {
+  margin-bottom: 1rem;
+}
+
+/* ─── FOOTER ─────────────────────────────────────────────────────── */
+footer {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  body {
+    padding: 1rem;
+  }
+  .container {
+    padding: 1.5rem;
+  }
+  header h1 {
+    font-size: 1.8rem;
+  }
+  h2 {
+    font-size: 1.3rem;
+  }
+  h3 {
+    font-size: 1.1rem;
+  }
+  .resume-grid {
+    grid-template-columns: 1fr;
+  }
+  aside {
+    border: none;
+    padding: 0;
+  }
+  main {
+    padding: 0;
+  }
+}

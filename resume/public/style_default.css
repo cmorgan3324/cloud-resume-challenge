@@ -1,0 +1,65 @@
+body {
+    background-color: #f9fafb;
+    color: #1f2937;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    line-height: 1.6;
+  }
+  
+  .container {
+    max-width: 850px;
+    margin: 0 auto;
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  }
+  
+  header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  h1 {
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  
+  h2 {
+    font-size: 1.3rem;
+    margin-top: 30px;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 5px;
+  }
+  
+  h3 {
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+  
+  ul {
+    padding-left: 20px;
+  }
+  
+  ul li {
+    margin-bottom: 8px;
+  }
+  
+  a {
+    color: #2563eb;
+    text-decoration: none;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  section {
+    margin-bottom: 25px;
+  }
+  
+  .project,
+  .experience {
+    margin-top: 20px;
+  }
+  

@@ -1,0 +1,1 @@
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"api_backend","Source":"./modules/api-backend","Dir":"modules/api-backend"},{"Key":"static_site","Source":"./modules/static-site","Dir":"modules/static-site"}]}
