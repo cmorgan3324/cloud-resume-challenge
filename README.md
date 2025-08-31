@@ -8,7 +8,7 @@ Visit the live site at: <https://VIBEbyCory.dev>
 
 ## Architecture Diagram
 
-![Architecture Diagram Placeholder](docs/architecture-diagram.png)
+![Architecture Diagram Placeholder](./cloud-architecture-diagram.png)
 
 ---
 
