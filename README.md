@@ -2,7 +2,7 @@
 
 A clean, mobile-friendly portfolio website showcasing AI and Cloud projects, built as part of the AWS Cloud Resume Challenge.
 
-Visit the live site to read more about the build process and lessons learned on my blog at [VIBEbyCory.dev](https://VIBEbyCory.dev/).
+Visit the live site for a deep dive into my process of developing this VIBE on my blog at [VIBEbyCory.dev](https://VIBEbyCory.dev/).
 
 ---
 
