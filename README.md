@@ -5,6 +5,7 @@ A clean, mobile-friendly portfolio website showcasing AI and Cloud projects, bui
 Read more about the build process and lessons learned on my blog: [VIBEbyCory.dev/blog](https://VIBEbyCory.dev/blog)
 
 Visit the live site at: <https://VIBEbyCory.dev>
+
 ---
 
 ## Architecture Diagram
