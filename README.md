@@ -50,3 +50,29 @@ This project demonstrates a fully serverless AWS implementation.
 - Monitoring: CloudWatch alarms + SNS notifications  
 
 ---
+
+## Project Structure
+
+portfolio-site/
+├── index.html # Main portfolio page
+├── styles.css # CSS styles
+├── script.js # JavaScript with AWS API integration
+├── aws-infra-serverless/ # Terraform infrastructure code
+├── resume/ # Resume page and assets
+└── deploy-serverless.sh # Deployment script
+
+---
+
+## Technologies Used
+
+- **Frontend**: HTML5, CSS3, JavaScript, Font Awesome, Google Fonts  
+- **Backend**: AWS Lambda (Python), DynamoDB, API Gateway  
+- **Infrastructure**: Terraform, AWS S3, CloudFront, Route 53, ACM  
+- **CI/CD**: GitHub Actions  
+- **Testing**: Pytest, moto  
+
+---
+
+## License
+
+This project is licensed under the ISC License.
