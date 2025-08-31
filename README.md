@@ -27,7 +27,6 @@ Visit the live site at: <https://VIBEbyCory.dev>
 ## Recent Updates
 
 - **Visitor Counter**  
-  - Removed localStorage simulation that generated fake counts  
   - Added real integration with AWS backend (API Gateway + Lambda + DynamoDB)  
   - Simplified logic to rely only on the server-side counter  
 
