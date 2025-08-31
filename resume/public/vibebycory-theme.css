@@ -117,9 +117,8 @@ header p {
 
 header p:first-of-type {
   font-size: 1.1rem;
-  color: var(--electric-blue);
+  color: var(--text-primary);
   font-weight: 500;
-  text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
 }
 
 header a {
@@ -127,6 +126,11 @@ header a {
   text-decoration: none;
   transition: all 0.3s ease;
   font-weight: 500;
+}
+
+header a[href^="mailto:"] {
+  color: var(--text-secondary);
+  font-weight: 400;
 }
 
 header a:hover {
@@ -162,9 +166,9 @@ aside section:last-child {
 aside h2 {
   font-family: "Orbitron", monospace;
   font-size: 1.3rem;
-  color: var(--electric-blue);
+  color: var(--neon-purple);
   margin-bottom: 1rem;
-  text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+  text-shadow: 0 0 15px var(--accent-glow);
   letter-spacing: 0.5px;
 }
 
@@ -229,14 +233,25 @@ main h2 {
   padding: 1.5rem;
   background: rgba(42, 42, 42, 0.3);
   border-radius: 8px;
-  border-left: 4px solid var(--electric-blue);
+  position: relative;
   transition: all 0.3s ease;
+}
+
+.project::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(135deg, var(--neon-purple), var(--electric-blue));
+  border-radius: 8px 0 0 8px;
 }
 
 .project:hover {
   background: rgba(42, 42, 42, 0.5);
   transform: translateX(5px);
-  box-shadow: 0 5px 15px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 5px 15px rgba(139, 92, 246, 0.2);
 }
 
 .project h3 {
@@ -248,10 +263,9 @@ main h2 {
 }
 
 .project h3 a {
-  color: var(--electric-blue);
+  color: var(--text-primary);
   text-decoration: none;
   transition: all 0.3s ease;
-  text-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
 }
 
 .project h3 a:hover {
@@ -273,10 +287,10 @@ main h2 {
 }
 
 .project li::before {
-  content: "•";
+  content: "▸";
   position: absolute;
   left: 0;
-  color: var(--electric-blue);
+  color: var(--neon-purple);
   font-weight: bold;
 }
 
@@ -286,8 +300,19 @@ main h2 {
   padding: 1.5rem;
   background: rgba(42, 42, 42, 0.3);
   border-radius: 8px;
-  border-left: 4px solid var(--neon-purple);
+  position: relative;
   transition: all 0.3s ease;
+}
+
+.experience::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(135deg, var(--neon-purple), var(--electric-blue));
+  border-radius: 8px 0 0 8px;
 }
 
 .experience:hover {
@@ -297,10 +322,9 @@ main h2 {
 }
 
 .experience strong {
-  color: var(--electric-blue);
+  color: var(--text-primary);
   font-size: 1.1rem;
   font-weight: 600;
-  text-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
 }
 
 .experience ul {
@@ -318,7 +342,7 @@ main h2 {
 }
 
 .experience li::before {
-  content: "•";
+  content: "▸";
   position: absolute;
   left: 0;
   color: var(--neon-purple);
@@ -332,7 +356,25 @@ main section:last-child p {
   padding: 1rem;
   background: rgba(42, 42, 42, 0.3);
   border-radius: 8px;
-  border-left: 4px solid var(--electric-blue);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+main section:last-child p::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(135deg, var(--neon-purple), var(--electric-blue));
+  border-radius: 8px 0 0 8px;
+}
+
+main section:last-child p:hover {
+  background: rgba(42, 42, 42, 0.5);
+  transform: translateX(5px);
+  box-shadow: 0 5px 15px rgba(139, 92, 246, 0.2);
 }
 
 main section:last-child strong {
