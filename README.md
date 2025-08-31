@@ -2,8 +2,9 @@
 
 A clean, mobile-friendly portfolio website showcasing AI and Cloud projects, built as part of the AWS Cloud Resume Challenge.
 
-Visit the live site at: <https://VIBEbyCory.dev>
+Read more about the build process and lessons learned on my blog: [VIBEbyCory.dev/blog](https://VIBEbyCory.dev/blog)
 
+Visit the live site at: <https://VIBEbyCory.dev>
 ---
 
 ## Architecture Diagram
@@ -38,7 +39,7 @@ This project demonstrates a fully serverless AWS implementation.
 
 ### Frontend
 - Static Site Hosting: S3 + CloudFront + Route 53 + ACM  
-- Custom Domain: vibebycory.dev with HTTPS  
+- Custom Domain: VIBEbyCory.dev with HTTPS  
 
 ### Backend
 - Visitor Counter API: DynamoDB + Python Lambda + HTTP API Gateway  
