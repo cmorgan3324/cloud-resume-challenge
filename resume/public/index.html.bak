@@ -17,9 +17,9 @@
       <a href="/" class="nav-button">
         ← Back to Portfolio
       </a>
-      <button id="download-btn" class="download-button">
+      <a href="/Cory_Morgan_SA_Resume.pdf" download class="download-button">
         <i class="fas fa-download"></i> Download Resume
-      </button>
+      </a>
     </div>
 
     <header>
@@ -176,13 +176,7 @@
     </footer>
   </div>
   
-  <!-- Iframe for resume download -->
-  <iframe 
-    id="pdf-frame" 
-    src="/optimized-resume.html" 
-    style="display: none;"
-    onerror="console.error('Failed to load optimized-resume.html: check path')"
-></iframe>
+
 
   <!-- Visitor Count Script -->
   <script>
