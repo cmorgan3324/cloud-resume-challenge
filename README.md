@@ -52,7 +52,7 @@ This project demonstrates a fully serverless AWS implementation.
 ---
 
 ## Project Structure
-
+```
 portfolio-site/
 ├── index.html # Main portfolio page
 ├── styles.css # CSS styles
@@ -60,7 +60,7 @@ portfolio-site/
 ├── aws-infra-serverless/ # Terraform infrastructure code
 ├── resume/ # Resume page and assets
 └── deploy-serverless.sh # Deployment script
-
+```
 ---
 
 ## Technologies Used
