@@ -283,6 +283,25 @@ body {
   box-shadow: 0 8px 25px rgba(192, 192, 192, 0.4);
 }
 
+.btn-share {
+  background: transparent;
+  border: 2px solid var(--electric-blue);
+  color: var(--electric-blue);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-share:hover {
+  background: var(--electric-blue);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+.btn-share i {
+  margin-right: 0.5rem;
+}
+
 /* About Section */
 .about {
   padding: 5rem 0;

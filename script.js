@@ -51,6 +51,51 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   });
 });
 
+// Share functionality
+document.addEventListener("DOMContentLoaded", () => {
+  const shareBtn = document.getElementById('share-btn');
+  
+  if (shareBtn) {
+    shareBtn.addEventListener('click', function() {
+      const shareData = {
+        title: 'Cory Morgan - AI/Cloud Portfolio',
+        text: 'Check out my AI and Cloud engineering portfolio featuring AWS projects and solutions architecture.',
+        url: window.location.href
+      };
+
+      // Check if Web Share API is supported
+      if (navigator.share) {
+        navigator.share(shareData)
+          .then(() => console.log('Portfolio shared successfully'))
+          .catch((err) => console.log('Error sharing:', err));
+      } else {
+        // Fallback: Copy link to clipboard
+        navigator.clipboard.writeText(window.location.href)
+          .then(() => {
+            // Show temporary feedback
+            const originalText = shareBtn.innerHTML;
+            shareBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            shareBtn.style.background = 'var(--neon-purple)';
+            shareBtn.style.color = 'var(--text-primary)';
+            shareBtn.style.borderColor = 'var(--neon-purple)';
+            
+            setTimeout(() => {
+              shareBtn.innerHTML = originalText;
+              shareBtn.style.background = 'transparent';
+              shareBtn.style.color = 'var(--electric-blue)';
+              shareBtn.style.borderColor = 'var(--electric-blue)';
+            }, 2000);
+          })
+          .catch((err) => {
+            console.log('Error copying to clipboard:', err);
+            // Fallback: Show URL in alert
+            alert('Share this portfolio: ' + window.location.href);
+          });
+      }
+    });
+  }
+});
+
 // Fade in animation on scroll
 const observerOptions = {
   threshold: 0.1,
