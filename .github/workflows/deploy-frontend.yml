@@ -45,9 +45,15 @@ jobs:
 
       - name: Sync `legacy-resume/public/` to S3
         run: |
-          aws s3 sync legacy-resume/public/ s3://${{ secrets.S3_BUCKET }} \
+          # aws s3 sync legacy-resume/public/ s3://${{ secrets.S3_BUCKET }} \
+          #   --delete \
+           aws s3 sync . s3://vibebycory-resume-content \
             --delete \
-            --cache-control "no-cache"
+            --cache-control "no-cache" \
+            --exclude ".git/*" \
+            --exclude ".github/*" \
+            --exclude ".gitignore" \
+            --exclude "README*"
             
       - name: Invalidate CloudFront
         run: |
