@@ -9,7 +9,7 @@ resource "aws_cloudfront_origin_access_identity" "oai" {
 resource "aws_cloudfront_function" "index_rewrite" {
   name    = "index-rewrite-${var.public_bucket_name}"
   runtime = "cloudfront-js-1.0"
-  comment = "Rewrite /resume/ to /resume/index.html"
+  comment = "Rewrite directory paths to index.html"
   publish = true
   code    = <<-EOT
 function handler(event) {
@@ -19,6 +19,11 @@ function handler(event) {
     // If the URI ends with /resume/, rewrite to /resume/index.html
     if (uri === '/resume/') {
         request.uri = '/resume/index.html';
+    }
+    
+    // If the URI ends with /faq-search-demo/, rewrite to /faq-search-demo/index.html
+    if (uri === '/faq-search-demo/') {
+        request.uri = '/faq-search-demo/index.html';
     }
     
     return request;
@@ -93,6 +98,54 @@ resource "aws_cloudfront_distribution" "site_cdn" {
   # Behavior for resume files
   ordered_cache_behavior {
     path_pattern           = "/resume/*"
+    target_origin_id       = "s3-${var.public_bucket_name}"
+    viewer_protocol_policy = "redirect-to-https"
+
+    allowed_methods = ["GET", "HEAD"]
+    cached_methods  = ["GET", "HEAD"]
+
+    forwarded_values {
+      query_string = false
+      cookies {
+        forward = "none"
+      }
+    }
+
+    min_ttl     = 0
+    default_ttl = 86400
+    max_ttl     = 31536000
+  }
+
+  # Behavior for FAQ demo path - exact match for directory
+  ordered_cache_behavior {
+    path_pattern           = "/faq-search-demo/"
+    target_origin_id       = "s3-${var.public_bucket_name}"
+    viewer_protocol_policy = "redirect-to-https"
+
+    allowed_methods = ["GET", "HEAD"]
+    cached_methods  = ["GET", "HEAD"]
+
+    forwarded_values {
+      query_string = false
+      cookies {
+        forward = "none"
+      }
+    }
+
+    min_ttl     = 0
+    default_ttl = 86400
+    max_ttl     = 31536000
+
+    # Add function to handle directory index
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.index_rewrite.arn
+    }
+  }
+
+  # Behavior for FAQ demo files
+  ordered_cache_behavior {
+    path_pattern           = "/faq-search-demo/*"
     target_origin_id       = "s3-${var.public_bucket_name}"
     viewer_protocol_policy = "redirect-to-https"
 
