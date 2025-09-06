@@ -3,9 +3,18 @@ name: Deploy Front-end (Static Site → S3 + CloudFront)
 on:
   push:
     # only run when front-end files change
+    branches: [ main ]
     paths:
-      - 'legacy-resume/public/**'
-      - '.github/workflows/deploy-frontend.yml'
+      - '**/*.html'
+      - '**/*.css'
+      - '**/*.js'
+      - 'src/**'
+      - 'public/**'
+      - '.github/workflows/**'
+      - 'index.html'
+      - 'error.html'
+      - 'script.js'
+      - 'style.css' 
 
 jobs:
   deploy:
