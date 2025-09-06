@@ -43,7 +43,7 @@ jobs:
           ls -R legacy-resume/public || echo ">>> legacy-resume/public is empty or missing!"
       
 
-      - name: Sync `legacy-resume/public/` to S3
+      - name: Sync project root index.html to S3
         run: |
            aws s3 sync . s3://vibebycory-portfolio-content \
             --delete \
