@@ -103,17 +103,19 @@
   
   async function loadConfig() {
     try {
-      const response = await fetch('/chatbot.config.json');
+      const response = await fetch('/public/chatbot.config.json');
       if (response.ok) {
         const config = await response.json();
         apiUrl = config.apiUrl;
+        console.log('✅ Chatbot config loaded:', { apiUrl });
       } else {
-        // Fallback - will be replaced during build
-        apiUrl = 'API_URL_PLACEHOLDER';
+        // Fallback for local testing
+        console.warn('Config file not found, using local mock API');
+        apiUrl = 'http://localhost:3000';
       }
     } catch (error) {
-      console.warn('Failed to load chatbot config, using placeholder:', error);
-      apiUrl = 'API_URL_PLACEHOLDER';
+      console.warn('Failed to load chatbot config, using local mock API:', error);
+      apiUrl = 'http://localhost:3000';
     }
   }
   
@@ -552,11 +554,16 @@
       
     } catch (error) {
       hideTypingIndicator();
-      console.error('Chat error:', error);
+      console.error('Chat error details:', {
+        message: error.message,
+        stack: error.stack,
+        retryable: error.retryable,
+        apiUrl: apiUrl
+      });
       showError(
         error.retryable ? 
           'I encountered a temporary issue. Please try again.' : 
-          'I apologize, but I was unable to process your request.',
+          `I apologize, but I was unable to process your request. Error: ${error.message}`,
         error.retryable
       );
     } finally {
