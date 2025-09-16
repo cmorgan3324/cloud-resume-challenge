@@ -1,0 +1,16 @@
+{
+  "name": "vibebycory-chatbot-handler",
+  "version": "1.0.0",
+  "description": "Lambda handler for VIBE Recruiter Assistant chatbot",
+  "main": "index.mjs",
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-bedrock-agent-runtime": "^3.490.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["aws", "lambda", "bedrock", "chatbot"],
+  "author": "Cory Morgan",
+  "license": "ISC"
+}

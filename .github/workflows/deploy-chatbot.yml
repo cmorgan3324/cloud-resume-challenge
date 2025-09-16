@@ -1,0 +1,237 @@
+name: Deploy Chatbot Infrastructure and Frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "public/chatbot.*"
+      - "infra/chatbot/**"
+      - "scripts/**"
+      - "kb/**"
+      - ".github/workflows/deploy-chatbot.yml"
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  TF_VAR_aws_region: us-east-1
+  TF_VAR_project_name: vibebycory-chatbot
+  TF_VAR_s3_bucket_name: vibebycory-resume-content
+
+jobs:
+  deploy-infrastructure:
+    runs-on: ubuntu-latest
+    outputs:
+      chat_api_url: ${{ steps.terraform-output.outputs.chat_api_url }}
+      kb_id: ${{ steps.terraform-output.outputs.kb_id }}
+      data_source_id: ${{ steps.terraform-output.outputs.data_source_id }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~1.0"
+          terraform_wrapper: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'infra/chatbot/lambda/package.json'
+
+      - name: Install Lambda dependencies
+        working-directory: infra/chatbot/lambda
+        run: npm ci --only=production
+
+      - name: Create Lambda deployment package
+        working-directory: infra/chatbot/lambda
+        run: |
+          zip -r ../terraform/chatbot-handler.zip . -x "*.git*" "*.DS_Store*"
+          ls -la ../terraform/chatbot-handler.zip
+
+      - name: Terraform Init
+        working-directory: infra/chatbot/terraform
+        run: terraform init
+
+      - name: Terraform Plan
+        working-directory: infra/chatbot/terraform
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        working-directory: infra/chatbot/terraform
+        run: terraform apply -auto-approve tfplan
+
+      - name: Get Terraform Outputs
+        id: terraform-output
+        working-directory: infra/chatbot/terraform
+        run: |
+          echo "chat_api_url=$(terraform output -raw chat_api_url)" >> $GITHUB_OUTPUT
+          echo "kb_id=$(terraform output -raw kb_id)" >> $GITHUB_OUTPUT
+          # Note: data_source_id might need to be extracted differently
+          # For now, we'll handle this in the knowledge base sync step
+
+  sync-knowledge-base:
+    runs-on: ubuntu-latest
+    needs: deploy-infrastructure
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install script dependencies
+        run: |
+          cd scripts
+          npm init -y
+          npm install @aws-sdk/client-s3 @aws-sdk/client-bedrock-agent
+
+      - name: Sync Knowledge Base
+        env:
+          KB_ID: ${{ needs.deploy-infrastructure.outputs.kb_id }}
+          S3_BUCKET_NAME: ${{ env.TF_VAR_s3_bucket_name }}
+        run: |
+          echo "Syncing knowledge base content..."
+          node scripts/publish-kb.mjs
+          echo "Knowledge base sync completed"
+
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    needs: [deploy-infrastructure, sync-knowledge-base]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Inject chatbot script into HTML files
+        env:
+          CHAT_API_URL: ${{ needs.deploy-infrastructure.outputs.chat_api_url }}
+        run: |
+          echo "Injecting chatbot script with API URL: $CHAT_API_URL"
+          node scripts/inject-chat-script.mjs "$CHAT_API_URL"
+
+      - name: Sync files to S3
+        run: |
+          echo "Syncing files to S3..."
+          aws s3 sync . s3://${{ env.TF_VAR_s3_bucket_name }} \
+            --delete \
+            --cache-control "no-cache" \
+            --exclude ".git/*" \
+            --exclude ".github/*" \
+            --exclude ".gitignore" \
+            --exclude "README*" \
+            --exclude "infra/*" \
+            --exclude "scripts/*" \
+            --exclude "kb/*" \
+            --exclude "node_modules/*" \
+            --exclude "*.zip" \
+            --exclude "*.log" \
+            --exclude ".terraform*" \
+            --exclude "terraform.*"
+
+      - name: Get CloudFront Distribution ID
+        id: get-distribution
+        run: |
+          if [ -n "${{ secrets.CLOUDFRONT_DIST_ID }}" ]; then
+            echo "distribution_id=${{ secrets.CLOUDFRONT_DIST_ID }}" >> $GITHUB_OUTPUT
+          else
+            echo "Discovering CloudFront distribution ID..."
+            DIST_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?Aliases.Items[?contains(@, 'vibebycory.dev')]].Id | [0]" --output text)
+            if [ "$DIST_ID" != "None" ] && [ -n "$DIST_ID" ]; then
+              echo "distribution_id=$DIST_ID" >> $GITHUB_OUTPUT
+              echo "Found distribution ID: $DIST_ID"
+            else
+              echo "Could not find CloudFront distribution"
+              exit 1
+            fi
+          fi
+
+      - name: Invalidate CloudFront
+        run: |
+          echo "Invalidating CloudFront distribution: ${{ steps.get-distribution.outputs.distribution_id }}"
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ steps.get-distribution.outputs.distribution_id }} \
+            --paths "/chatbot.*" "/index.html" "/*.html"
+
+      - name: Deployment Summary
+        run: |
+          echo "🎉 Chatbot deployment completed successfully!"
+          echo ""
+          echo "📊 Deployment Summary:"
+          echo "   🔗 Chat API URL: ${{ needs.deploy-infrastructure.outputs.chat_api_url }}"
+          echo "   🧠 Knowledge Base ID: ${{ needs.deploy-infrastructure.outputs.kb_id }}"
+          echo "   ☁️  CloudFront Distribution: ${{ steps.get-distribution.outputs.distribution_id }}"
+          echo "   🌐 Live Site: https://vibebycory.dev"
+          echo ""
+          echo "✅ The AI chatbot is now live on your portfolio site!"
+
+  test-deployment:
+    runs-on: ubuntu-latest
+    needs: [deploy-frontend]
+    if: always()
+    
+    steps:
+      - name: Test chatbot availability
+        run: |
+          echo "Testing chatbot deployment..."
+          
+          # Test if the main site is accessible
+          if curl -f -s https://vibebycory.dev > /dev/null; then
+            echo "✅ Main site is accessible"
+          else
+            echo "❌ Main site is not accessible"
+            exit 1
+          fi
+          
+          # Test if chatbot.js is accessible
+          if curl -f -s https://vibebycory.dev/chatbot.js > /dev/null; then
+            echo "✅ Chatbot script is accessible"
+          else
+            echo "❌ Chatbot script is not accessible"
+            exit 1
+          fi
+          
+          # Test API endpoint (basic connectivity)
+          API_URL="${{ needs.deploy-infrastructure.outputs.chat_api_url }}"
+          if [ -n "$API_URL" ]; then
+            # Test OPTIONS request (CORS preflight)
+            if curl -f -s -X OPTIONS "$API_URL/chat" > /dev/null; then
+              echo "✅ Chat API is accessible"
+            else
+              echo "⚠️  Chat API may not be fully ready (this is normal for new deployments)"
+            fi
+          fi
+          
+          echo "🎯 Deployment test completed"
