@@ -10,7 +10,7 @@ output "cloudfront_domain_name" {
 
 output "acm_certificate_arn" {
   description = "arn of the acm certificate"
-  value = aws_acm_certificate.site_cert.arn
+  value = data.aws_acm_certificate.site_cert.arn
 }
 
 output "cloudfront_zone_id" {

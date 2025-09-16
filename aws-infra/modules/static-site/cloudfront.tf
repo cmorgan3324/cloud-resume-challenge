@@ -38,7 +38,7 @@ resource "aws_cloudfront_distribution" "site_cdn" {
   }
 
   viewer_certificate {
-    acm_certificate_arn            = aws_acm_certificate_validation.site_cert_validation.certificate_arn
+    acm_certificate_arn            = data.aws_acm_certificate.site_cert.arn
     ssl_support_method             = "sni-only"
     minimum_protocol_version       = "TLSv1.2_2021"
   }

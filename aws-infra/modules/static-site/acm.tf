@@ -15,34 +15,9 @@ resource "aws_route53_zone" "primary" {
   }
 }
 
-resource "aws_acm_certificate" "site_cert" {
-  domain_name       = var.domain_name
-  validation_method = "DNS"
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  tags = {
-    Name = "TLS cert for ${var.domain_name}"
-  }
-}
-
-resource "aws_route53_record" "cert_validation" {
-  # zone_id = data.aws_route53_zone.primary.zone_id
-  zone_id = aws_route53_zone.primary.zone_id
-  name    = tolist(aws_acm_certificate.site_cert.domain_validation_options)[0].resource_record_name
-  type    = tolist(aws_acm_certificate.site_cert.domain_validation_options)[0].resource_record_type
-  ttl     = 300
-  records = [tolist(aws_acm_certificate.site_cert.domain_validation_options)[0].resource_record_value]
-}
-
-# validate the certificate once DNS is ready
-resource "aws_acm_certificate_validation" "site_cert_validation" {
-  certificate_arn         = aws_acm_certificate.site_cert.arn
-  validation_record_fqdns = [aws_route53_record.cert_validation.fqdn]
-
-  timeouts {
-    create = "30m"
-  }
+# Use the existing certificate that we know exists
+data "aws_acm_certificate" "site_cert" {
+  domain   = var.domain_name
+  statuses = ["ISSUED"]
+  most_recent = true
 }
