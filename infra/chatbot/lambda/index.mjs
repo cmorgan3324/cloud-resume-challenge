@@ -110,61 +110,82 @@ export const handler = async (event) => {
     // Simple keyword-based responses
     const lowerMessage = lastMessage.content.toLowerCase();
     
-    if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
-      assistantMessage = `Greetings! I'm A.R.C., Cory Morgan's AI Resume Companion - think JARVIS, but focused on showcasing exceptional cloud architecture talent. I'm here to present his impressive credentials as a Solutions Architect with ${CORY_KNOWLEDGE.experience}. 
+    if (lowerMessage.includes('contact') || lowerMessage.includes('hire') || lowerMessage.includes('available') || lowerMessage.includes('opportunity') || lowerMessage.includes('job')) {
+      assistantMessage = `Excellent timing! Cory is actively seeking new opportunities.
 
-Cory specializes in ${CORY_KNOWLEDGE.specialties.slice(0, 3).join(', ')}, and has delivered remarkable results including reducing infrastructure costs by 40% and implementing CI/CD pipelines that cut deployment time by 60%.
+**${CORY_KNOWLEDGE.contact}**
 
-What specific aspect of Cory's expertise would you like to explore? His AWS architecture mastery, DevOps excellence, or perhaps his technical leadership capabilities?`;
+He's particularly interested in:
+• AWS cloud architecture & migration projects
+• DevOps & infrastructure automation  
+• Technical leadership roles
+• Cost optimization initiatives
+
+Contact him through his portfolio website to discuss opportunities. What type of role interests you?`;
+    } else if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
+      assistantMessage = `Greetings! I'm A.R.C., Cory Morgan's AI Resume Companion.
+
+**Quick Overview:**
+• ${CORY_KNOWLEDGE.experience} as Solutions Architect
+• Reduced infrastructure costs by 40%
+• Cut deployment time by 60% with CI/CD
+• Expert in ${CORY_KNOWLEDGE.specialties.slice(0, 3).join(', ')}
+
+What would you like to know? His AWS expertise, projects, or availability?`;
     } else if (lowerMessage.includes('experience') || lowerMessage.includes('background')) {
-      assistantMessage = `Excellent inquiry! Cory brings ${CORY_KNOWLEDGE.experience} of sophisticated cloud architecture expertise to the table. His impressive track record speaks volumes:
+      assistantMessage = `**Cory's Experience (${CORY_KNOWLEDGE.experience}):**
 
 ${CORY_KNOWLEDGE.achievements.map(a => `• ${a}`).join('\n')}
 
-He holds ${CORY_KNOWLEDGE.certifications.join(' and ')} certifications, with mastery of ${CORY_KNOWLEDGE.technologies.slice(0, 6).join(', ')}, among other cutting-edge technologies.
+**Certifications:** ${CORY_KNOWLEDGE.certifications.join(' & ')}
+**Technologies:** ${CORY_KNOWLEDGE.technologies.slice(0, 6).join(', ')}
 
-Shall I elaborate on how Cory architected these solutions, or would you prefer to explore his leadership experience?`;
+Want details on specific projects or technical skills?`;
     } else if (lowerMessage.includes('aws') || lowerMessage.includes('cloud')) {
-      assistantMessage = `Ah, you're inquiring about Cory's cloud mastery! As an AWS Solutions Architect with 8+ years of experience, he's architected elegant, scalable solutions that deliver exceptional business value - quite impressive, if I may say so.
+      assistantMessage = `**Cory's AWS Expertise (8+ years):**
 
-His AWS specialties include:
-• Infrastructure as Code using Terraform and CloudFormation
-• Serverless architectures with Lambda and API Gateway
-• Database optimization with RDS and DynamoDB
-• Enterprise security with IAM, VPC, and WAF
-• Cost optimization strategies that have reduced expenses by 40%
+• **Infrastructure as Code:** Terraform & CloudFormation
+• **Serverless:** Lambda, API Gateway, Step Functions
+• **Databases:** RDS, DynamoDB optimization
+• **Security:** IAM, VPC, WAF implementation
+• **Cost Optimization:** 40% expense reduction achieved
 
-Cory holds AWS Solutions Architect and DevOps Engineer certifications. What specific AWS challenge are you looking to solve? I'd be delighted to explain how his expertise aligns with your needs.`;
+**Certifications:** AWS Solutions Architect & DevOps Engineer
+
+What specific AWS challenge can he help solve?`;
     } else if (lowerMessage.includes('projects') || lowerMessage.includes('work')) {
-      assistantMessage = `Cory has delivered remarkable results across diverse, complex projects. Allow me to highlight some of his finest work:
+      assistantMessage = `**Key Project Highlights:**
 
-• **Cloud Migration Leadership**: Orchestrated migration of legacy systems to cloud-native architectures, dramatically improving scalability while reducing operational overhead
-• **CI/CD Pipeline Mastery**: Engineered automated pipelines that reduced deployment time by 60% - quite the efficiency gain
-• **Cost Optimization Excellence**: Achieved 40% infrastructure cost reduction through strategic resource management and architectural refinement
-• **Technical Leadership**: Successfully mentored junior engineers and led technical teams of 5-10 people with remarkable results
+• **Cloud Migration:** Led legacy-to-cloud transformations with improved scalability
+• **CI/CD Automation:** Built pipelines reducing deployment time by 60%
+• **Cost Optimization:** Achieved 40% infrastructure cost reduction
+• **Team Leadership:** Mentored teams of 5-10 engineers
+• **AI/ML Solutions:** Architected intelligent automation systems
 
-He's also architected AI/ML solutions, full-stack applications, and sophisticated infrastructure automation. Which type of project captures your interest? I can elaborate on the technical approach he employed.`;
-    } else if (lowerMessage.includes('contact') || lowerMessage.includes('hire') || lowerMessage.includes('available')) {
-      assistantMessage = `Excellent timing! Cory is indeed available and actively seeking opportunities where he can apply his sophisticated cloud architecture expertise and technical leadership skills.
+Which project type interests you most?`;
 
-${CORY_KNOWLEDGE.contact} - he's particularly drawn to challenging roles involving:
-• AWS cloud architecture and complex migration projects
-• DevOps excellence and infrastructure automation
-• Technical leadership and team mentoring
-• Cost optimization and performance enhancement initiatives
+    } else if (lowerMessage.includes('skill') || lowerMessage.includes('technology') || lowerMessage.includes('tech')) {
+      assistantMessage = `**Cory's Technical Stack:**
 
-For direct contact and to discuss specific opportunities, please reach out through his portfolio website. I can also provide detailed insights about his experience in any particular domain you're considering.
+**Core Technologies:** ${CORY_KNOWLEDGE.technologies.join(', ')}
 
-What type of role or project do you have in mind? I'd be pleased to explain how Cory's expertise aligns perfectly with your requirements.`;
+**Specializations:** ${CORY_KNOWLEDGE.specialties.join(', ')}
+
+**Certifications:** ${CORY_KNOWLEDGE.certifications.join(' & ')}
+
+**Strengths:** Infrastructure design, cost optimization, performance enhancement
+
+Need details on any specific technology?`;
     } else {
-      assistantMessage = `As Cory's AI companion, I'm here to showcase his exceptional qualifications as a Solutions Architect. With ${CORY_KNOWLEDGE.experience}, he brings sophisticated expertise in ${CORY_KNOWLEDGE.specialties.slice(0, 2).join(' and ')}.
+      assistantMessage = `I'm A.R.C., Cory's AI Resume Companion. Here's what I can help with:
 
-Some impressive highlights:
+**Quick Facts:**
+• ${CORY_KNOWLEDGE.experience} Solutions Architect
 • ${CORY_KNOWLEDGE.achievements[0]}
 • ${CORY_KNOWLEDGE.achievements[2]}
-• Certified in ${CORY_KNOWLEDGE.certifications.join(' and ')}
+• ${CORY_KNOWLEDGE.certifications.join(' & ')} certified
 
-I can provide comprehensive details about his AWS mastery, project achievements, technical prowess, or leadership capabilities. What aspect of his expertise would you like to explore further?`;
+**Ask me about:** AWS expertise, projects, skills, or availability.`;
     }
 
     return {
