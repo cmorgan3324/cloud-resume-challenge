@@ -127,40 +127,50 @@
         position: fixed;
         bottom: 20px;
         right: 20px;
-        width: 64px;
-        height: 64px;
+        width: 80px;
+        height: 80px;
         border-radius: 50%;
-        background: radial-gradient(circle at center, rgba(139, 92, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 50%, transparent 70%);
-        border: 2px solid rgba(139, 92, 246, 0.3);
+        background: transparent;
+        border: none;
         cursor: pointer;
-        box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3), 0 0 20px rgba(139, 92, 246, 0.2);
         z-index: 1000;
         display: flex;
         align-items: center;
         justify-content: center;
         transition: all 0.3s ease;
         color: white;
-        font-size: 24px;
-        backdrop-filter: blur(10px);
+        font-size: 32px;
       }
       
       .vibe-chat-toggle:hover {
-        transform: scale(1.1);
-        box-shadow: 0 6px 25px rgba(139, 92, 246, 0.4), 0 0 30px rgba(139, 92, 246, 0.3);
+        transform: scale(1.05);
       }
       
-      .vibe-chat-toggle svg {
-        animation: arcPulse 2s ease-in-out infinite;
+      .arc-reactor {
+        width: 80px;
+        height: 80px;
+        animation: arcReactorGlow 2s ease-in-out infinite;
       }
       
-      @keyframes arcPulse {
+      .arc-reactor:hover {
+        animation: arcReactorGlowHover 1s ease-in-out infinite;
+      }
+      
+      @keyframes arcReactorGlow {
         0%, 100% { 
-          opacity: 0.8;
-          filter: drop-shadow(0 0 5px rgba(139, 92, 246, 0.5));
+          filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.8)) drop-shadow(0 0 25px rgba(0, 128, 255, 0.6)) drop-shadow(0 0 35px rgba(0, 64, 128, 0.4));
         }
         50% { 
-          opacity: 1;
-          filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.8));
+          filter: drop-shadow(0 0 20px rgba(0, 255, 255, 1)) drop-shadow(0 0 30px rgba(0, 128, 255, 0.8)) drop-shadow(0 0 40px rgba(0, 64, 128, 0.6));
+        }
+      }
+      
+      @keyframes arcReactorGlowHover {
+        0%, 100% { 
+          filter: drop-shadow(0 0 20px rgba(0, 255, 255, 1)) drop-shadow(0 0 30px rgba(0, 128, 255, 0.8)) drop-shadow(0 0 40px rgba(0, 64, 128, 0.6));
+        }
+        50% { 
+          filter: drop-shadow(0 0 25px rgba(0, 255, 255, 1)) drop-shadow(0 0 35px rgba(0, 128, 255, 1)) drop-shadow(0 0 45px rgba(0, 64, 128, 0.8));
         }
       }
       
@@ -374,32 +384,48 @@
     const toggle = document.createElement('button');
     toggle.className = 'vibe-chat-toggle';
     toggle.innerHTML = `
-      <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg class="arc-reactor" width="80" height="80" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="arcGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#ff00ff;stop-opacity:1" />
-            <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:1" />
-            <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
-          </linearGradient>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+          <radialGradient id="coreGradient" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+            <stop offset="30%" style="stop-color:#00ffff;stop-opacity:0.9" />
+            <stop offset="60%" style="stop-color:#0080ff;stop-opacity:0.8" />
+            <stop offset="100%" style="stop-color:#004080;stop-opacity:0.6" />
+          </radialGradient>
+          <radialGradient id="ringGradient" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" style="stop-color:#00ffff;stop-opacity:0.8" />
+            <stop offset="50%" style="stop-color:#0080ff;stop-opacity:0.9" />
+            <stop offset="100%" style="stop-color:#004080;stop-opacity:0.7" />
+          </radialGradient>
+          <filter id="innerGlow">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
             <feMerge> 
               <feMergeNode in="coloredBlur"/>
               <feMergeNode in="SourceGraphic"/>
             </feMerge>
           </filter>
         </defs>
+        
         <!-- Outer ring -->
-        <circle cx="50" cy="50" r="45" fill="none" stroke="url(#arcGradient)" stroke-width="6" filter="url(#glow)" opacity="0.8"/>
-        <!-- Middle ring -->
-        <circle cx="50" cy="50" r="30" fill="none" stroke="url(#arcGradient)" stroke-width="4" filter="url(#glow)" opacity="0.9"/>
-        <!-- Inner core -->
-        <circle cx="50" cy="50" r="15" fill="url(#arcGradient)" filter="url(#glow)" opacity="0.7"/>
-        <!-- Central dot -->
-        <circle cx="50" cy="50" r="6" fill="white" opacity="0.9"/>
-        <!-- Arc breaks for reactor effect -->
-        <path d="M 50 5 A 45 45 0 0 1 95 50" fill="none" stroke="url(#arcGradient)" stroke-width="6" stroke-linecap="round" opacity="0.6"/>
-        <path d="M 95 50 A 45 45 0 0 1 50 95" fill="none" stroke="url(#arcGradient)" stroke-width="6" stroke-linecap="round" opacity="0.4"/>
+        <circle cx="100" cy="100" r="90" fill="none" stroke="url(#ringGradient)" stroke-width="8" opacity="0.6"/>
+        
+        <!-- Second ring -->
+        <circle cx="100" cy="100" r="75" fill="none" stroke="url(#ringGradient)" stroke-width="6" opacity="0.7"/>
+        
+        <!-- Third ring -->
+        <circle cx="100" cy="100" r="60" fill="none" stroke="url(#ringGradient)" stroke-width="4" opacity="0.8"/>
+        
+        <!-- Fourth ring -->
+        <circle cx="100" cy="100" r="45" fill="none" stroke="url(#ringGradient)" stroke-width="3" opacity="0.9"/>
+        
+        <!-- Inner core circle -->
+        <circle cx="100" cy="100" r="30" fill="url(#coreGradient)" filter="url(#innerGlow)" opacity="0.9"/>
+        
+        <!-- Central bright core -->
+        <circle cx="100" cy="100" r="15" fill="url(#coreGradient)" filter="url(#innerGlow)"/>
+        
+        <!-- Central white dot -->
+        <circle cx="100" cy="100" r="6" fill="#ffffff" opacity="0.95"/>
       </svg>
     `;
     toggle.setAttribute('aria-label', 'Open A.R.C. - AI Resume Companion');
@@ -487,40 +513,56 @@
       elements.panel.classList.add('open');
       elements.toggle.innerHTML = '×';
       elements.toggle.setAttribute('aria-label', 'Close A.R.C.');
-      elements.toggle.style.fontSize = '32px';
+      elements.toggle.style.fontSize = '40px';
+      elements.toggle.style.fontWeight = '300';
     } else {
       elements.panel.classList.remove('open');
       elements.toggle.innerHTML = `
-        <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg class="arc-reactor" width="80" height="80" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <linearGradient id="arcGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style="stop-color:#ff00ff;stop-opacity:1" />
-              <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:1" />
-              <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
-            </linearGradient>
-            <filter id="glow">
-              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <radialGradient id="coreGradient" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+              <stop offset="30%" style="stop-color:#00ffff;stop-opacity:0.9" />
+              <stop offset="60%" style="stop-color:#0080ff;stop-opacity:0.8" />
+              <stop offset="100%" style="stop-color:#004080;stop-opacity:0.6" />
+            </radialGradient>
+            <radialGradient id="ringGradient" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" style="stop-color:#00ffff;stop-opacity:0.8" />
+              <stop offset="50%" style="stop-color:#0080ff;stop-opacity:0.9" />
+              <stop offset="100%" style="stop-color:#004080;stop-opacity:0.7" />
+            </radialGradient>
+            <filter id="innerGlow">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
               <feMerge> 
                 <feMergeNode in="coloredBlur"/>
                 <feMergeNode in="SourceGraphic"/>
               </feMerge>
             </filter>
           </defs>
+          
           <!-- Outer ring -->
-          <circle cx="50" cy="50" r="45" fill="none" stroke="url(#arcGradient)" stroke-width="6" filter="url(#glow)" opacity="0.8"/>
-          <!-- Middle ring -->
-          <circle cx="50" cy="50" r="30" fill="none" stroke="url(#arcGradient)" stroke-width="4" filter="url(#glow)" opacity="0.9"/>
-          <!-- Inner core -->
-          <circle cx="50" cy="50" r="15" fill="url(#arcGradient)" filter="url(#glow)" opacity="0.7"/>
-          <!-- Central dot -->
-          <circle cx="50" cy="50" r="6" fill="white" opacity="0.9"/>
-          <!-- Arc breaks for reactor effect -->
-          <path d="M 50 5 A 45 45 0 0 1 95 50" fill="none" stroke="url(#arcGradient)" stroke-width="6" stroke-linecap="round" opacity="0.6"/>
-          <path d="M 95 50 A 45 45 0 0 1 50 95" fill="none" stroke="url(#arcGradient)" stroke-width="6" stroke-linecap="round" opacity="0.4"/>
+          <circle cx="100" cy="100" r="90" fill="none" stroke="url(#ringGradient)" stroke-width="8" opacity="0.6"/>
+          
+          <!-- Second ring -->
+          <circle cx="100" cy="100" r="75" fill="none" stroke="url(#ringGradient)" stroke-width="6" opacity="0.7"/>
+          
+          <!-- Third ring -->
+          <circle cx="100" cy="100" r="60" fill="none" stroke="url(#ringGradient)" stroke-width="4" opacity="0.8"/>
+          
+          <!-- Fourth ring -->
+          <circle cx="100" cy="100" r="45" fill="none" stroke="url(#ringGradient)" stroke-width="3" opacity="0.9"/>
+          
+          <!-- Inner core circle -->
+          <circle cx="100" cy="100" r="30" fill="url(#coreGradient)" filter="url(#innerGlow)" opacity="0.9"/>
+          
+          <!-- Central bright core -->
+          <circle cx="100" cy="100" r="15" fill="url(#coreGradient)" filter="url(#innerGlow)"/>
+          
+          <!-- Central white dot -->
+          <circle cx="100" cy="100" r="6" fill="#ffffff" opacity="0.95"/>
         </svg>
       `;
       elements.toggle.setAttribute('aria-label', 'Open A.R.C. - AI Resume Companion');
-      elements.toggle.style.fontSize = '24px';
     }
   }
   
