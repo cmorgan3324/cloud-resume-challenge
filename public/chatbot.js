@@ -403,7 +403,7 @@
     const toggle = document.createElement("button");
     toggle.className = "vibe-chat-toggle";
     toggle.setAttribute("aria-label", "Open A.R.C. – AI Resume Companion");
-    
+
     // Exact image, no redraw — pixel-perfect replica
     toggle.innerHTML = `
       <picture>
