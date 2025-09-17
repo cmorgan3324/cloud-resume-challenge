@@ -15,7 +15,9 @@ resource "aws_route53_zone" "primary" {
   }
 }
 
-# Use the existing certificate that we know exists
+# Use the existing certificate that CloudFront is already using
+# This prevents certificate deletion conflicts since CloudFront holds a reference
+# The certificate was created outside of this Terraform configuration
 data "aws_acm_certificate" "site_cert" {
   domain   = var.domain_name
   statuses = ["ISSUED"]
