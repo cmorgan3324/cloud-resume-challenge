@@ -31,26 +31,33 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }} # e.g. us-east-1
 
-      - name: Debug list legacy-resume/public contents
+      - name: Debug list repository contents
         run: |
           echo "PWD: $(pwd)"
           echo ""
           echo "--- repo root contents ---"
-          ls -R .
-
+          ls -la
           echo ""
-          echo "--- legacy-resume/public contents ---"
-          ls -R legacy-resume/public || echo ">>> legacy-resume/public is empty or missing!"
+          echo "--- key files check ---"
+          ls -la index.html styles.css script.js public/ || echo "Some files missing"
 
-      - name: Sync project root index.html to S3
+      - name: Sync frontend files to S3
         run: |
-          aws s3 sync . s3://vibebycory-portfolio-content \
+          aws s3 sync . s3://vibebycory-resume-content \
            --delete \
            --cache-control "no-cache" \
-           --exclude ".git/*" \
-           --exclude ".github/*" \
-           --exclude ".gitignore" \
-           --exclude "README*"
+           --exclude "*" \
+           --include "index.html" \
+           --include "error.html" \
+           --include "styles.css" \
+           --include "script.js" \
+           --include "public/*" \
+           --include "*.pdf" \
+           --include "*.png" \
+           --include "*.jpg" \
+           --include "*.jpeg" \
+           --include "*.gif" \
+           --include "*.ico"
 
       - name: Invalidate CloudFront
         run: |
