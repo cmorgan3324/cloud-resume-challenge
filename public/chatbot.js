@@ -131,70 +131,65 @@
         bottom: 20px;
         right: 20px;
         width: 84px;
+        /* matches ICON_SIZE */
         height: 84px;
+        /* matches ICON_SIZE */
+        padding: 0;
+        border: 0;
         border-radius: 50%;
         background: transparent;
-        border: none;
         cursor: pointer;
         z-index: 1000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: transform 0.2s ease;
+        display: grid;
+        place-items: center;
+        transition: transform 0.15s ease;
       }
       
-      .vibe-chat-toggle:hover { transform: scale(1.05); }
+      .vibe-chat-toggle:hover { transform: scale(1.04); }
       .vibe-chat-toggle:active { transform: scale(0.98); }
       
-      /* SVG logo base */
-      .arc-logo {
-        width: 84px;
-        height: 84px;
-        /* subtle pulsing neon bloom */
-        animation: arcGlow 2.4s ease-in-out infinite;
-        will-change: filter, transform;
-        filter:
-          drop-shadow(0 0 14px rgba(155, 0, 255, 0.55))   /* purple bias */
-          drop-shadow(0 0 10px rgba(50, 140, 255, 0.35));
+      .arc-btn-img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        border-radius: 50%;
+        /* keep it round even if the asset has background */
+        image-rendering: auto;
+        /* keep it crisp, let browser choose best sampling */
       }
       
-      .vibe-chat-toggle:hover .arc-logo {
-        animation: arcGlowHover 1.6s ease-in-out infinite;
-        filter:
-          drop-shadow(0 0 18px rgba(170, 0, 255, 0.65))
-          drop-shadow(0 0 14px rgba(60, 150, 255, 0.45));
+      /* Neon bloom around the exact image (does not alter the pixels of the icon) */
+      .vibe-chat-toggle::after {
+        content: "";
+        position: absolute;
+        inset: -10px;
+        /* spread glow slightly beyond the icon edge */
+        border-radius: 50%;
+        pointer-events: none;
+        opacity: 0.85;
+        /* layered radial glows, purple bias per your latest image */
+        background:
+          radial-gradient(60% 60% at 40% 35%, rgba(177, 0, 255, 0.38), transparent 60%),
+          radial-gradient(55% 55% at 65% 60%, rgba(31, 160, 255, 0.26), transparent 65%);
+        filter: blur(12px);
+        transition: opacity .2s ease, filter .2s ease, transform .2s ease;
       }
       
-      @keyframes arcGlow {
-        0%, 100% {
-          filter:
-            drop-shadow(0 0 14px rgba(155, 0, 255, 0.55))
-            drop-shadow(0 0 10px rgba(50, 140, 255, 0.35));
-        }
-        50% {
-          filter:
-            drop-shadow(0 0 22px rgba(170, 0, 255, 0.70))
-            drop-shadow(0 0 16px rgba(70, 170, 255, 0.50));
-        }
+      .vibe-chat-toggle:hover::after {
+        opacity: 1;
+        filter: blur(14px) brightness(1.05);
+        transform: scale(1.03);
       }
       
-      @keyframes arcGlowHover {
-        0%, 100% {
-          filter:
-            drop-shadow(0 0 20px rgba(175, 0, 255, 0.75))
-            drop-shadow(0 0 18px rgba(80, 180, 255, 0.55));
+      /* Subtle breathing animation, but only if user allows motion */
+      @media (prefers-reduced-motion: no-preference) {
+        .vibe-chat-toggle::after {
+          animation: arcPulse 2.6s ease-in-out infinite;
         }
-        50% {
-          filter:
-            drop-shadow(0 0 28px rgba(195, 0, 255, 0.90))
-            drop-shadow(0 0 22px rgba(95, 195, 255, 0.70));
+        @keyframes arcPulse {
+          0%, 100% { filter: blur(12px) brightness(1.00); }
+          50%      { filter: blur(16px) brightness(1.08); }
         }
-      }
-      
-      /* Respect reduced motion */
-      @media (prefers-reduced-motion: reduce) {
-        .arc-logo { animation: none; }
-        .vibe-chat-toggle:hover .arc-logo { animation: none; }
       }
       
       .vibe-chat-panel {
@@ -404,74 +399,27 @@
     document.head.appendChild(style);
 
     // Create toggle button
+    const ICON_SIZE = 84; // button size on screen (px). Tweak if you want bigger/smaller.
     const toggle = document.createElement("button");
     toggle.className = "vibe-chat-toggle";
+    toggle.setAttribute("aria-label", "Open A.R.C. – AI Resume Companion");
+    
+    // Exact image, no redraw — pixel-perfect replica
     toggle.innerHTML = `
-      <svg class="arc-logo" width="84" height="84" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <defs>
-          <!-- Outer ring gradient (purple emphasis ~15% stronger, ~10% less blue) -->
-          <linearGradient id="outerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%"  stop-color="#B100FF"/>   <!-- neon purple -->
-            <stop offset="55%" stop-color="#7A2BFF"/>   <!-- rich purple -->
-            <stop offset="100%" stop-color="#1F7CFF"/>  <!-- blue, slightly reduced -->
-          </linearGradient>
-          
-          <!-- Inner ring gradient (cooler, blue dominant but still VIBE) -->
-          <linearGradient id="innerGrad" x1="20%" y1="0%" x2="80%" y2="100%">
-            <stop offset="0%"   stop-color="#8A3BFF"/>
-            <stop offset="70%"  stop-color="#2BA3FF"/>
-            <stop offset="100%" stop-color="#1FA0FF"/>
-          </linearGradient>
-          
-          <!-- Arc stroke gradient (blue → cyan hint at the tip) -->
-          <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%"   stop-color="#3C8BFF"/>
-            <stop offset="100%" stop-color="#40FFE3"/>
-          </linearGradient>
-          
-          <!-- Soft neon bloom -->
-          <filter id="neonBloom" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="2.4" result="blur"/>
-            <feColorMatrix in="blur" type="matrix"
-              values="1 0 0 0 0
-                      0 1 0 0 0
-                      0 0 1 0 0
-                      0 0 0 1 0" result="colored"/>
-            <feMerge>
-              <feMergeNode in="colored"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-          
-          <!-- Round caps everywhere for smooth ends -->
-          <style>
-            .stroke { fill: none; stroke-linecap: round; stroke-linejoin: round; }
-          </style>
-        </defs>
-        
-        <!-- Group rotated 90° left to match requested orientation -->
-        <g transform="translate(100,100) rotate(-90) translate(-100,-100)">
-          <!-- OUTER RING -->
-          <circle class="stroke" cx="100" cy="100" r="84"
-                  stroke="url(#outerGrad)" stroke-width="16" filter="url(#neonBloom)"/>
-          <!-- INNER RING -->
-          <circle class="stroke" cx="100" cy="100" r="56"
-                  stroke="url(#innerGrad)" stroke-width="14" filter="url(#neonBloom)"/>
-          
-          <!-- DIAGONAL INNER ARC (does NOT run into center) -->
-          <!-- Arc spans ~120° with a short angled tail; offset to avoid any "Q" read -->
-          <path class="stroke" stroke="url(#arcGrad)" stroke-width="14" filter="url(#neonBloom)"
-                d="
-                  M 132 116
-                  A 40 40 0 0 1 76 124
-                  M 108 132
-                  L 132 116
-                "/>
-        </g>
-      </svg>
+      <picture>
+        <source srcset="/arc-button-768.png 768w, /arc-button-512.png 512w, /arc-button-256.png 256w" type="image/png" />
+        <img
+          class="arc-btn-img"
+          decoding="async"
+          alt=""
+          width="${ICON_SIZE}" height="${ICON_SIZE}"
+          src="/arc-button-512.png"
+          srcset="/arc-button-768.png 768w, /arc-button-512.png 512w, /arc-button-256.png 256w"
+          sizes="${ICON_SIZE}px"
+        />
+      </picture>
     `;
-    toggle.setAttribute("aria-label", "Open A.R.C. - AI Resume Companion");
-    toggle.onclick = toggleChat;
+    toggle.onclick = toggleChat; // keep your existing handler
 
     // Create chat panel
     const panel = document.createElement("div");
@@ -561,68 +509,18 @@
     } else {
       elements.panel.classList.remove("open");
       elements.toggle.innerHTML = `
-        <svg class="arc-logo" width="84" height="84" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <defs>
-            <!-- Outer ring gradient (purple emphasis ~15% stronger, ~10% less blue) -->
-            <linearGradient id="outerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%"  stop-color="#B100FF"/>   <!-- neon purple -->
-              <stop offset="55%" stop-color="#7A2BFF"/>   <!-- rich purple -->
-              <stop offset="100%" stop-color="#1F7CFF"/>  <!-- blue, slightly reduced -->
-            </linearGradient>
-            
-            <!-- Inner ring gradient (cooler, blue dominant but still VIBE) -->
-            <linearGradient id="innerGrad" x1="20%" y1="0%" x2="80%" y2="100%">
-              <stop offset="0%"   stop-color="#8A3BFF"/>
-              <stop offset="70%"  stop-color="#2BA3FF"/>
-              <stop offset="100%" stop-color="#1FA0FF"/>
-            </linearGradient>
-            
-            <!-- Arc stroke gradient (blue → cyan hint at the tip) -->
-            <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%"   stop-color="#3C8BFF"/>
-              <stop offset="100%" stop-color="#40FFE3"/>
-            </linearGradient>
-            
-            <!-- Soft neon bloom -->
-            <filter id="neonBloom" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="2.4" result="blur"/>
-              <feColorMatrix in="blur" type="matrix"
-                values="1 0 0 0 0
-                        0 1 0 0 0
-                        0 0 1 0 0
-                        0 0 0 1 0" result="colored"/>
-              <feMerge>
-                <feMergeNode in="colored"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-            
-            <!-- Round caps everywhere for smooth ends -->
-            <style>
-              .stroke { fill: none; stroke-linecap: round; stroke-linejoin: round; }
-            </style>
-          </defs>
-          
-          <!-- Group rotated 90° left to match requested orientation -->
-          <g transform="translate(100,100) rotate(-90) translate(-100,-100)">
-            <!-- OUTER RING -->
-            <circle class="stroke" cx="100" cy="100" r="84"
-                    stroke="url(#outerGrad)" stroke-width="16" filter="url(#neonBloom)"/>
-            <!-- INNER RING -->
-            <circle class="stroke" cx="100" cy="100" r="56"
-                    stroke="url(#innerGrad)" stroke-width="14" filter="url(#neonBloom)"/>
-            
-            <!-- DIAGONAL INNER ARC (does NOT run into center) -->
-            <!-- Arc spans ~120° with a short angled tail; offset to avoid any "Q" read -->
-            <path class="stroke" stroke="url(#arcGrad)" stroke-width="14" filter="url(#neonBloom)"
-                  d="
-                    M 132 116
-                    A 40 40 0 0 1 76 124
-                    M 108 132
-                    L 132 116
-                  "/>
-          </g>
-        </svg>
+        <picture>
+          <source srcset="/arc-button-768.png 768w, /arc-button-512.png 512w, /arc-button-256.png 256w" type="image/png" />
+          <img
+            class="arc-btn-img"
+            decoding="async"
+            alt=""
+            width="84" height="84"
+            src="/arc-button-512.png"
+            srcset="/arc-button-768.png 768w, /arc-button-512.png 512w, /arc-button-256.png 256w"
+            sizes="84px"
+          />
+        </picture>
       `;
       elements.toggle.setAttribute(
         "aria-label",
