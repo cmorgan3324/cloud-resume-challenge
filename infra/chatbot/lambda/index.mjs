@@ -79,52 +79,93 @@ export const handler = async (event) => {
     }
 
     const body = JSON.parse(event.body || '{}');
-    const { message, conversationHistory = [] } = body;
+    const { messages = [], sessionId } = body;
 
-    if (!message) {
+    if (!messages || messages.length === 0) {
       return {
         statusCode: 400,
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ error: 'Message is required' })
+        body: JSON.stringify({ error: 'Messages array is required' })
       };
     }
 
-    // Build conversation context
-    let conversationContext = SYSTEM_PROMPT + "\n\nCory's Background:\n";
-    conversationContext += `Experience: ${CORY_KNOWLEDGE.experience}\n`;
-    conversationContext += `Specialties: ${CORY_KNOWLEDGE.specialties.join(', ')}\n`;
-    conversationContext += `Key Achievements:\n${CORY_KNOWLEDGE.achievements.map(a => `- ${a}`).join('\n')}\n`;
-    conversationContext += `Certifications: ${CORY_KNOWLEDGE.certifications.join(', ')}\n`;
-    conversationContext += `Technologies: ${CORY_KNOWLEDGE.technologies.join(', ')}\n\n`;
+    const lastMessage = messages[messages.length - 1];
+    if (!lastMessage || lastMessage.role !== 'user') {
+      return {
+        statusCode: 400,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ error: 'Last message must be from user' })
+      };
+    }
 
-    // Add conversation history
-    const messages = [
-      {
-        role: "user",
-        content: conversationContext + "\n\nUser: " + message
-      }
-    ];
-
-    // Call Claude via Bedrock
-    const command = new InvokeModelCommand({
-      modelId: "anthropic.claude-3-sonnet-20240229-v1:0",
-      contentType: "application/json",
-      accept: "application/json",
-      body: JSON.stringify({
-        anthropic_version: "bedrock-2023-05-31",
-        max_tokens: 1000,
-        messages: messages,
-        temperature: 0.7
-      })
-    });
-
-    const response = await client.send(command);
-    const responseBody = JSON.parse(new TextDecoder().decode(response.body));
+    // For now, provide a fallback response until Bedrock model access is enabled
+    let assistantMessage;
     
-    const assistantMessage = responseBody.content[0].text;
+    // Simple keyword-based responses
+    const lowerMessage = lastMessage.content.toLowerCase();
+    
+    if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
+      assistantMessage = `Greetings! I'm A.R.C., Cory Morgan's AI Resume Companion - think JARVIS, but focused on showcasing exceptional cloud architecture talent. I'm here to present his impressive credentials as a Solutions Architect with ${CORY_KNOWLEDGE.experience}. 
+
+Cory specializes in ${CORY_KNOWLEDGE.specialties.slice(0, 3).join(', ')}, and has delivered remarkable results including reducing infrastructure costs by 40% and implementing CI/CD pipelines that cut deployment time by 60%.
+
+What specific aspect of Cory's expertise would you like to explore? His AWS architecture mastery, DevOps excellence, or perhaps his technical leadership capabilities?`;
+    } else if (lowerMessage.includes('experience') || lowerMessage.includes('background')) {
+      assistantMessage = `Excellent inquiry! Cory brings ${CORY_KNOWLEDGE.experience} of sophisticated cloud architecture expertise to the table. His impressive track record speaks volumes:
+
+${CORY_KNOWLEDGE.achievements.map(a => `• ${a}`).join('\n')}
+
+He holds ${CORY_KNOWLEDGE.certifications.join(' and ')} certifications, with mastery of ${CORY_KNOWLEDGE.technologies.slice(0, 6).join(', ')}, among other cutting-edge technologies.
+
+Shall I elaborate on how Cory architected these solutions, or would you prefer to explore his leadership experience?`;
+    } else if (lowerMessage.includes('aws') || lowerMessage.includes('cloud')) {
+      assistantMessage = `Ah, you're inquiring about Cory's cloud mastery! As an AWS Solutions Architect with 8+ years of experience, he's architected elegant, scalable solutions that deliver exceptional business value - quite impressive, if I may say so.
+
+His AWS specialties include:
+• Infrastructure as Code using Terraform and CloudFormation
+• Serverless architectures with Lambda and API Gateway
+• Database optimization with RDS and DynamoDB
+• Enterprise security with IAM, VPC, and WAF
+• Cost optimization strategies that have reduced expenses by 40%
+
+Cory holds AWS Solutions Architect and DevOps Engineer certifications. What specific AWS challenge are you looking to solve? I'd be delighted to explain how his expertise aligns with your needs.`;
+    } else if (lowerMessage.includes('projects') || lowerMessage.includes('work')) {
+      assistantMessage = `Cory has delivered remarkable results across diverse, complex projects. Allow me to highlight some of his finest work:
+
+• **Cloud Migration Leadership**: Orchestrated migration of legacy systems to cloud-native architectures, dramatically improving scalability while reducing operational overhead
+• **CI/CD Pipeline Mastery**: Engineered automated pipelines that reduced deployment time by 60% - quite the efficiency gain
+• **Cost Optimization Excellence**: Achieved 40% infrastructure cost reduction through strategic resource management and architectural refinement
+• **Technical Leadership**: Successfully mentored junior engineers and led technical teams of 5-10 people with remarkable results
+
+He's also architected AI/ML solutions, full-stack applications, and sophisticated infrastructure automation. Which type of project captures your interest? I can elaborate on the technical approach he employed.`;
+    } else if (lowerMessage.includes('contact') || lowerMessage.includes('hire') || lowerMessage.includes('available')) {
+      assistantMessage = `Excellent timing! Cory is indeed available and actively seeking opportunities where he can apply his sophisticated cloud architecture expertise and technical leadership skills.
+
+${CORY_KNOWLEDGE.contact} - he's particularly drawn to challenging roles involving:
+• AWS cloud architecture and complex migration projects
+• DevOps excellence and infrastructure automation
+• Technical leadership and team mentoring
+• Cost optimization and performance enhancement initiatives
+
+For direct contact and to discuss specific opportunities, please reach out through his portfolio website. I can also provide detailed insights about his experience in any particular domain you're considering.
+
+What type of role or project do you have in mind? I'd be pleased to explain how Cory's expertise aligns perfectly with your requirements.`;
+    } else {
+      assistantMessage = `As Cory's AI companion, I'm here to showcase his exceptional qualifications as a Solutions Architect. With ${CORY_KNOWLEDGE.experience}, he brings sophisticated expertise in ${CORY_KNOWLEDGE.specialties.slice(0, 2).join(' and ')}.
+
+Some impressive highlights:
+• ${CORY_KNOWLEDGE.achievements[0]}
+• ${CORY_KNOWLEDGE.achievements[2]}
+• Certified in ${CORY_KNOWLEDGE.certifications.join(' and ')}
+
+I can provide comprehensive details about his AWS mastery, project achievements, technical prowess, or leadership capabilities. What aspect of his expertise would you like to explore further?`;
+    }
 
     return {
       statusCode: 200,
@@ -133,8 +174,11 @@ export const handler = async (event) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        message: assistantMessage,
-        conversationId: event.requestContext?.requestId || 'default'
+        message: {
+          role: 'assistant',
+          content: assistantMessage
+        },
+        sessionId: sessionId || event.requestContext?.requestId || 'default'
       })
     };
 
@@ -149,7 +193,10 @@ export const handler = async (event) => {
       },
       body: JSON.stringify({
         error: 'Internal server error',
-        message: 'I apologize, but I\'m experiencing technical difficulties. Please try again in a moment, or feel free to contact Cory directly for immediate assistance.'
+        message: {
+          role: 'assistant',
+          content: 'I apologize, but I\'m experiencing technical difficulties at the moment. Please try again shortly, or feel free to contact Cory directly for immediate assistance. Even the most sophisticated AI systems occasionally require recalibration.'
+        }
       })
     };
   }

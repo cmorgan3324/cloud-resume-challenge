@@ -2,8 +2,8 @@
   'use strict';
   
   // Configuration
-  const STORAGE_KEY = 'vibeChatState:v1';
-  const BROADCAST_CHANNEL = 'vibeChat';
+  const STORAGE_KEY = 'arcChatState:v1';
+  const BROADCAST_CHANNEL = 'arcChat';
   const MAX_HISTORY_LENGTH = 20;
   const MAX_RETRIES = 2;
   const BASE_DELAY = 1000;
@@ -130,10 +130,10 @@
         width: 60px;
         height: 60px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%);
         border: none;
         cursor: pointer;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 4px 20px rgba(30, 58, 138, 0.3), 0 0 20px rgba(59, 130, 246, 0.2);
         z-index: 1000;
         display: flex;
         align-items: center;
@@ -145,7 +145,7 @@
       
       .vibe-chat-toggle:hover {
         transform: scale(1.1);
-        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 6px 25px rgba(30, 58, 138, 0.4), 0 0 30px rgba(59, 130, 246, 0.3);
       }
       
       .vibe-chat-panel {
@@ -169,7 +169,7 @@
       }
       
       .vibe-chat-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%);
         color: white;
         padding: 16px;
         display: flex;
@@ -226,7 +226,7 @@
       
       .vibe-chat-message.user {
         align-self: flex-end;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%);
         color: white;
       }
       
@@ -287,14 +287,14 @@
       }
       
       .vibe-chat-input:focus {
-        border-color: #667eea;
+        border-color: #3b82f6;
       }
       
       .vibe-chat-send {
         position: absolute;
         right: 24px;
         bottom: 28px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%);
         border: none;
         color: white;
         width: 32px;
@@ -327,7 +327,7 @@
       }
       
       .vibe-chat-retry {
-        background: #667eea;
+        background: #3b82f6;
         color: white;
         border: none;
         padding: 6px 12px;
@@ -357,8 +357,8 @@
     // Create toggle button
     const toggle = document.createElement('button');
     toggle.className = 'vibe-chat-toggle';
-    toggle.innerHTML = '💬';
-    toggle.setAttribute('aria-label', 'Open chat assistant');
+    toggle.innerHTML = '⚡';
+    toggle.setAttribute('aria-label', 'Open A.R.C. - AI Resume Companion');
     toggle.onclick = toggleChat;
     
     // Create chat panel
@@ -366,7 +366,7 @@
     panel.className = 'vibe-chat-panel';
     panel.innerHTML = `
       <div class="vibe-chat-header">
-        <h3 class="vibe-chat-title">Ask Cory's Assistant</h3>
+        <h3 class="vibe-chat-title">A.R.C. - AI Resume Companion</h3>
         <div class="vibe-chat-controls">
           <button class="vibe-chat-btn" onclick="clearChat()" title="Clear chat">🗑️</button>
           <button class="vibe-chat-btn" onclick="toggleChat()" title="Minimize">−</button>
@@ -377,7 +377,7 @@
         <textarea 
           id="vibe-chat-input" 
           class="vibe-chat-input" 
-          placeholder="Ask me about Cory's experience, projects, or skills..."
+          placeholder="Greetings! Ask me about Cory's expertise, achievements, or availability..."
           rows="1"
         ></textarea>
         <button id="vibe-chat-send" class="vibe-chat-send">→</button>
@@ -442,11 +442,11 @@
     if (chatState.isOpen) {
       elements.panel.classList.add('open');
       elements.toggle.innerHTML = '×';
-      elements.toggle.setAttribute('aria-label', 'Close chat assistant');
+      elements.toggle.setAttribute('aria-label', 'Close A.R.C.');
     } else {
       elements.panel.classList.remove('open');
-      elements.toggle.innerHTML = '💬';
-      elements.toggle.setAttribute('aria-label', 'Open chat assistant');
+      elements.toggle.innerHTML = '⚡';
+      elements.toggle.setAttribute('aria-label', 'Open A.R.C. - AI Resume Companion');
     }
   }
   
@@ -465,7 +465,7 @@
       const welcome = document.createElement('div');
       welcome.className = 'vibe-chat-message assistant';
       welcome.innerHTML = `
-        Hi! I'm Cory's AI assistant. I can help you learn about his experience, projects, and skills. What would you like to know?
+        Greetings! I'm A.R.C., Cory Morgan's AI Resume Companion. I'm here to showcase his exceptional qualifications as a Solutions Architect with 8+ years of cloud expertise. How may I assist you in discovering his capabilities?
         <button class="copy-btn" onclick="copyToClipboard(this)" title="Copy message">📋</button>
       `;
       elements.messages.appendChild(welcome);
@@ -493,7 +493,7 @@
   function showTypingIndicator() {
     const typing = document.createElement('div');
     typing.className = 'vibe-chat-message vibe-chat-typing';
-    typing.textContent = 'Thinking...';
+    typing.textContent = 'Processing your inquiry...';
     typing.id = 'typing-indicator';
     elements.messages.appendChild(typing);
     elements.messages.scrollTop = elements.messages.scrollHeight;

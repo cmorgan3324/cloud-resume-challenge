@@ -25,5 +25,5 @@ variable "kb_embed_model_id" {
 variable "gen_model_id" {
   description = "Bedrock generation model ID for chat responses"
   type        = string
-  default     = "anthropic.claude-3-haiku-20240307-v1:0"
+  default     = "meta.llama3-8b-instruct-v1:0"
 }
