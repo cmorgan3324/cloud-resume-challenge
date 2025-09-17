@@ -127,11 +127,11 @@
         position: fixed;
         bottom: 20px;
         right: 20px;
-        width: 60px;
-        height: 60px;
+        width: 64px;
+        height: 64px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
-        border: none;
+        background: radial-gradient(circle at center, rgba(139, 92, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 50%, transparent 70%);
+        border: 2px solid rgba(139, 92, 246, 0.3);
         cursor: pointer;
         box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3), 0 0 20px rgba(139, 92, 246, 0.2);
         z-index: 1000;
@@ -141,11 +141,27 @@
         transition: all 0.3s ease;
         color: white;
         font-size: 24px;
+        backdrop-filter: blur(10px);
       }
       
       .vibe-chat-toggle:hover {
         transform: scale(1.1);
         box-shadow: 0 6px 25px rgba(139, 92, 246, 0.4), 0 0 30px rgba(139, 92, 246, 0.3);
+      }
+      
+      .vibe-chat-toggle svg {
+        animation: arcPulse 2s ease-in-out infinite;
+      }
+      
+      @keyframes arcPulse {
+        0%, 100% { 
+          opacity: 0.8;
+          filter: drop-shadow(0 0 5px rgba(139, 92, 246, 0.5));
+        }
+        50% { 
+          opacity: 1;
+          filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.8));
+        }
       }
       
       .vibe-chat-panel {
@@ -357,7 +373,35 @@
     // Create toggle button
     const toggle = document.createElement('button');
     toggle.className = 'vibe-chat-toggle';
-    toggle.innerHTML = '⚡';
+    toggle.innerHTML = `
+      <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="arcGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#ff00ff;stop-opacity:1" />
+            <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <feMerge> 
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        <!-- Outer ring -->
+        <circle cx="50" cy="50" r="45" fill="none" stroke="url(#arcGradient)" stroke-width="6" filter="url(#glow)" opacity="0.8"/>
+        <!-- Middle ring -->
+        <circle cx="50" cy="50" r="30" fill="none" stroke="url(#arcGradient)" stroke-width="4" filter="url(#glow)" opacity="0.9"/>
+        <!-- Inner core -->
+        <circle cx="50" cy="50" r="15" fill="url(#arcGradient)" filter="url(#glow)" opacity="0.7"/>
+        <!-- Central dot -->
+        <circle cx="50" cy="50" r="6" fill="white" opacity="0.9"/>
+        <!-- Arc breaks for reactor effect -->
+        <path d="M 50 5 A 45 45 0 0 1 95 50" fill="none" stroke="url(#arcGradient)" stroke-width="6" stroke-linecap="round" opacity="0.6"/>
+        <path d="M 95 50 A 45 45 0 0 1 50 95" fill="none" stroke="url(#arcGradient)" stroke-width="6" stroke-linecap="round" opacity="0.4"/>
+      </svg>
+    `;
     toggle.setAttribute('aria-label', 'Open A.R.C. - AI Resume Companion');
     toggle.onclick = toggleChat;
     
@@ -443,10 +487,40 @@
       elements.panel.classList.add('open');
       elements.toggle.innerHTML = '×';
       elements.toggle.setAttribute('aria-label', 'Close A.R.C.');
+      elements.toggle.style.fontSize = '32px';
     } else {
       elements.panel.classList.remove('open');
-      elements.toggle.innerHTML = '⚡';
+      elements.toggle.innerHTML = `
+        <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="arcGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#ff00ff;stop-opacity:1" />
+              <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <feMerge> 
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          <!-- Outer ring -->
+          <circle cx="50" cy="50" r="45" fill="none" stroke="url(#arcGradient)" stroke-width="6" filter="url(#glow)" opacity="0.8"/>
+          <!-- Middle ring -->
+          <circle cx="50" cy="50" r="30" fill="none" stroke="url(#arcGradient)" stroke-width="4" filter="url(#glow)" opacity="0.9"/>
+          <!-- Inner core -->
+          <circle cx="50" cy="50" r="15" fill="url(#arcGradient)" filter="url(#glow)" opacity="0.7"/>
+          <!-- Central dot -->
+          <circle cx="50" cy="50" r="6" fill="white" opacity="0.9"/>
+          <!-- Arc breaks for reactor effect -->
+          <path d="M 50 5 A 45 45 0 0 1 95 50" fill="none" stroke="url(#arcGradient)" stroke-width="6" stroke-linecap="round" opacity="0.6"/>
+          <path d="M 95 50 A 45 45 0 0 1 50 95" fill="none" stroke="url(#arcGradient)" stroke-width="6" stroke-linecap="round" opacity="0.4"/>
+        </svg>
+      `;
       elements.toggle.setAttribute('aria-label', 'Open A.R.C. - AI Resume Companion');
+      elements.toggle.style.fontSize = '24px';
     }
   }
   
