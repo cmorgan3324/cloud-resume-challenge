@@ -407,14 +407,14 @@
     // Exact image, no redraw — pixel-perfect replica
     toggle.innerHTML = `
       <picture>
-        <source srcset="/arc-button-768.png 768w, /arc-button-512.png 512w, /arc-button-256.png 256w" type="image/png" />
+        <source srcset="./arc-button-768.png 768w, ./arc-button-512.png 512w, ./arc-button-256.png 256w" type="image/png" />
         <img
           class="arc-btn-img"
           decoding="async"
           alt=""
           width="${ICON_SIZE}" height="${ICON_SIZE}"
-          src="/arc-button-512.png"
-          srcset="/arc-button-768.png 768w, /arc-button-512.png 512w, /arc-button-256.png 256w"
+          src="./arc-button-512.png"
+          srcset="./arc-button-768.png 768w, ./arc-button-512.png 512w, ./arc-button-256.png 256w"
           sizes="${ICON_SIZE}px"
         />
       </picture>
@@ -510,14 +510,14 @@
       elements.panel.classList.remove("open");
       elements.toggle.innerHTML = `
         <picture>
-          <source srcset="/arc-button-768.png 768w, /arc-button-512.png 512w, /arc-button-256.png 256w" type="image/png" />
+          <source srcset="./arc-button-768.png 768w, ./arc-button-512.png 512w, ./arc-button-256.png 256w" type="image/png" />
           <img
             class="arc-btn-img"
             decoding="async"
             alt=""
             width="84" height="84"
-            src="/arc-button-512.png"
-            srcset="/arc-button-768.png 768w, /arc-button-512.png 512w, /arc-button-256.png 256w"
+            src="./arc-button-512.png"
+            srcset="./arc-button-768.png 768w, ./arc-button-512.png 512w, ./arc-button-256.png 256w"
             sizes="84px"
           />
         </picture>
