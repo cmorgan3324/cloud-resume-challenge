@@ -1,30 +1,30 @@
-(function() {
-  'use strict';
-  
+(function () {
+  "use strict";
+
   // Configuration
-  const STORAGE_KEY = 'arcChatState:v1';
-  const BROADCAST_CHANNEL = 'arcChat';
+  const STORAGE_KEY = "arcChatState:v1";
+  const BROADCAST_CHANNEL = "arcChat";
   const MAX_HISTORY_LENGTH = 20;
   const MAX_RETRIES = 2;
   const BASE_DELAY = 1000;
-  
+
   let chatState = {
     sessionId: null,
     history: [],
     lastUsed: Date.now(),
-    isOpen: false
+    isOpen: false,
   };
-  
+
   let elements = {};
   let broadcastChannel;
-  let apiUrl = '';
+  let apiUrl = "";
   let isRequestInFlight = false;
-  
+
   // Utility functions
   function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
-  
+
   function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
@@ -36,60 +36,60 @@
       timeout = setTimeout(later, wait);
     };
   }
-  
+
   const debouncedSaveState = debounce(saveState, 500);
-  
+
   function loadState() {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
         chatState = { ...chatState, ...parsed };
-        
+
         // Clean old history
         if (chatState.history.length > MAX_HISTORY_LENGTH) {
           chatState.history = chatState.history.slice(-MAX_HISTORY_LENGTH);
         }
       }
     } catch (error) {
-      console.warn('Failed to load chat state:', error);
+      console.warn("Failed to load chat state:", error);
     }
   }
-  
+
   function saveState() {
     try {
       chatState.lastUsed = Date.now();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(chatState));
     } catch (error) {
-      console.warn('Failed to save chat state:', error);
+      console.warn("Failed to save chat state:", error);
     }
   }
-  
+
   function broadcastUpdate(type, data) {
     if (broadcastChannel) {
       try {
         broadcastChannel.postMessage({ type, data, timestamp: Date.now() });
       } catch (error) {
-        console.warn('Failed to broadcast update:', error);
+        console.warn("Failed to broadcast update:", error);
       }
     }
   }
-  
+
   function setupBroadcastChannel() {
-    if (typeof BroadcastChannel !== 'undefined') {
+    if (typeof BroadcastChannel !== "undefined") {
       broadcastChannel = new BroadcastChannel(BROADCAST_CHANNEL);
       broadcastChannel.onmessage = (event) => {
         const { type, data } = event.data;
-        
+
         switch (type) {
-          case 'messageAdded':
+          case "messageAdded":
             if (data.sessionId === chatState.sessionId) {
               chatState.history = data.history;
               renderMessages();
               debouncedSaveState();
             }
             break;
-          case 'stateSync':
+          case "stateSync":
             if (data.lastUsed > chatState.lastUsed) {
               chatState = { ...chatState, ...data };
               renderMessages();
@@ -100,35 +100,38 @@
       };
     }
   }
-  
+
   async function loadConfig() {
     try {
-      const response = await fetch('/public/chatbot.config.json');
+      const response = await fetch("/public/chatbot.config.json");
       if (response.ok) {
         const config = await response.json();
         apiUrl = config.apiUrl;
-        console.log('✅ Chatbot config loaded:', { apiUrl });
+        console.log("✅ Chatbot config loaded:", { apiUrl });
       } else {
         // Fallback for local testing
-        console.warn('Config file not found, using local mock API');
-        apiUrl = 'http://localhost:3000';
+        console.warn("Config file not found, using local mock API");
+        apiUrl = "http://localhost:3000";
       }
     } catch (error) {
-      console.warn('Failed to load chatbot config, using local mock API:', error);
-      apiUrl = 'http://localhost:3000';
+      console.warn(
+        "Failed to load chatbot config, using local mock API:",
+        error
+      );
+      apiUrl = "http://localhost:3000";
     }
   }
-  
+
   function createElements() {
     // Create styles
-    const style = document.createElement('style');
+    const style = document.createElement("style");
     style.textContent = `
       .vibe-chat-toggle {
         position: fixed;
         bottom: 20px;
         right: 20px;
-        width: 80px;
-        height: 80px;
+        width: 84px;
+        height: 84px;
         border-radius: 50%;
         background: transparent;
         border: none;
@@ -137,41 +140,61 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.3s ease;
-        color: white;
-        font-size: 32px;
+        transition: transform 0.2s ease;
       }
       
-      .vibe-chat-toggle:hover {
-        transform: scale(1.05);
+      .vibe-chat-toggle:hover { transform: scale(1.05); }
+      .vibe-chat-toggle:active { transform: scale(0.98); }
+      
+      /* SVG logo base */
+      .arc-logo {
+        width: 84px;
+        height: 84px;
+        /* subtle pulsing neon bloom */
+        animation: arcGlow 2.4s ease-in-out infinite;
+        will-change: filter, transform;
+        filter:
+          drop-shadow(0 0 14px rgba(155, 0, 255, 0.55))   /* purple bias */
+          drop-shadow(0 0 10px rgba(50, 140, 255, 0.35));
       }
       
-      .arc-reactor {
-        width: 80px;
-        height: 80px;
-        animation: arcReactorGlow 2s ease-in-out infinite;
+      .vibe-chat-toggle:hover .arc-logo {
+        animation: arcGlowHover 1.6s ease-in-out infinite;
+        filter:
+          drop-shadow(0 0 18px rgba(170, 0, 255, 0.65))
+          drop-shadow(0 0 14px rgba(60, 150, 255, 0.45));
       }
       
-      .arc-reactor:hover {
-        animation: arcReactorGlowHover 1s ease-in-out infinite;
-      }
-      
-      @keyframes arcReactorGlow {
-        0%, 100% { 
-          filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.8)) drop-shadow(0 0 25px rgba(0, 128, 255, 0.6)) drop-shadow(0 0 35px rgba(0, 64, 128, 0.4));
+      @keyframes arcGlow {
+        0%, 100% {
+          filter:
+            drop-shadow(0 0 14px rgba(155, 0, 255, 0.55))
+            drop-shadow(0 0 10px rgba(50, 140, 255, 0.35));
         }
-        50% { 
-          filter: drop-shadow(0 0 20px rgba(0, 255, 255, 1)) drop-shadow(0 0 30px rgba(0, 128, 255, 0.8)) drop-shadow(0 0 40px rgba(0, 64, 128, 0.6));
+        50% {
+          filter:
+            drop-shadow(0 0 22px rgba(170, 0, 255, 0.70))
+            drop-shadow(0 0 16px rgba(70, 170, 255, 0.50));
         }
       }
       
-      @keyframes arcReactorGlowHover {
-        0%, 100% { 
-          filter: drop-shadow(0 0 20px rgba(0, 255, 255, 1)) drop-shadow(0 0 30px rgba(0, 128, 255, 0.8)) drop-shadow(0 0 40px rgba(0, 64, 128, 0.6));
+      @keyframes arcGlowHover {
+        0%, 100% {
+          filter:
+            drop-shadow(0 0 20px rgba(175, 0, 255, 0.75))
+            drop-shadow(0 0 18px rgba(80, 180, 255, 0.55));
         }
-        50% { 
-          filter: drop-shadow(0 0 25px rgba(0, 255, 255, 1)) drop-shadow(0 0 35px rgba(0, 128, 255, 1)) drop-shadow(0 0 45px rgba(0, 64, 128, 0.8));
+        50% {
+          filter:
+            drop-shadow(0 0 28px rgba(195, 0, 255, 0.90))
+            drop-shadow(0 0 22px rgba(95, 195, 255, 0.70));
         }
+      }
+      
+      /* Respect reduced motion */
+      @media (prefers-reduced-motion: reduce) {
+        .arc-logo { animation: none; }
+        .vibe-chat-toggle:hover .arc-logo { animation: none; }
       }
       
       .vibe-chat-panel {
@@ -379,61 +402,80 @@
       }
     `;
     document.head.appendChild(style);
-    
+
     // Create toggle button
-    const toggle = document.createElement('button');
-    toggle.className = 'vibe-chat-toggle';
+    const toggle = document.createElement("button");
+    toggle.className = "vibe-chat-toggle";
     toggle.innerHTML = `
-      <svg class="arc-reactor" width="80" height="80" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg class="arc-logo" width="84" height="84" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
-          <radialGradient id="coreGradient" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
-            <stop offset="30%" style="stop-color:#00ffff;stop-opacity:0.9" />
-            <stop offset="60%" style="stop-color:#0080ff;stop-opacity:0.8" />
-            <stop offset="100%" style="stop-color:#004080;stop-opacity:0.6" />
-          </radialGradient>
-          <radialGradient id="ringGradient" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" style="stop-color:#00ffff;stop-opacity:0.8" />
-            <stop offset="50%" style="stop-color:#0080ff;stop-opacity:0.9" />
-            <stop offset="100%" style="stop-color:#004080;stop-opacity:0.7" />
-          </radialGradient>
-          <filter id="innerGlow">
-            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-            <feMerge> 
-              <feMergeNode in="coloredBlur"/>
+          <!-- Outer ring gradient (purple emphasis ~15% stronger, ~10% less blue) -->
+          <linearGradient id="outerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%"  stop-color="#B100FF"/>   <!-- neon purple -->
+            <stop offset="55%" stop-color="#7A2BFF"/>   <!-- rich purple -->
+            <stop offset="100%" stop-color="#1F7CFF"/>  <!-- blue, slightly reduced -->
+          </linearGradient>
+          
+          <!-- Inner ring gradient (cooler, blue dominant but still VIBE) -->
+          <linearGradient id="innerGrad" x1="20%" y1="0%" x2="80%" y2="100%">
+            <stop offset="0%"   stop-color="#8A3BFF"/>
+            <stop offset="70%"  stop-color="#2BA3FF"/>
+            <stop offset="100%" stop-color="#1FA0FF"/>
+          </linearGradient>
+          
+          <!-- Arc stroke gradient (blue → cyan hint at the tip) -->
+          <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stop-color="#3C8BFF"/>
+            <stop offset="100%" stop-color="#40FFE3"/>
+          </linearGradient>
+          
+          <!-- Soft neon bloom -->
+          <filter id="neonBloom" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="2.4" result="blur"/>
+            <feColorMatrix in="blur" type="matrix"
+              values="1 0 0 0 0
+                      0 1 0 0 0
+                      0 0 1 0 0
+                      0 0 0 1 0" result="colored"/>
+            <feMerge>
+              <feMergeNode in="colored"/>
               <feMergeNode in="SourceGraphic"/>
             </feMerge>
           </filter>
+          
+          <!-- Round caps everywhere for smooth ends -->
+          <style>
+            .stroke { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+          </style>
         </defs>
         
-        <!-- Outer ring -->
-        <circle cx="100" cy="100" r="90" fill="none" stroke="url(#ringGradient)" stroke-width="8" opacity="0.6"/>
-        
-        <!-- Second ring -->
-        <circle cx="100" cy="100" r="75" fill="none" stroke="url(#ringGradient)" stroke-width="6" opacity="0.7"/>
-        
-        <!-- Third ring -->
-        <circle cx="100" cy="100" r="60" fill="none" stroke="url(#ringGradient)" stroke-width="4" opacity="0.8"/>
-        
-        <!-- Fourth ring -->
-        <circle cx="100" cy="100" r="45" fill="none" stroke="url(#ringGradient)" stroke-width="3" opacity="0.9"/>
-        
-        <!-- Inner core circle -->
-        <circle cx="100" cy="100" r="30" fill="url(#coreGradient)" filter="url(#innerGlow)" opacity="0.9"/>
-        
-        <!-- Central bright core -->
-        <circle cx="100" cy="100" r="15" fill="url(#coreGradient)" filter="url(#innerGlow)"/>
-        
-        <!-- Central white dot -->
-        <circle cx="100" cy="100" r="6" fill="#ffffff" opacity="0.95"/>
+        <!-- Group rotated 90° left to match requested orientation -->
+        <g transform="translate(100,100) rotate(-90) translate(-100,-100)">
+          <!-- OUTER RING -->
+          <circle class="stroke" cx="100" cy="100" r="84"
+                  stroke="url(#outerGrad)" stroke-width="16" filter="url(#neonBloom)"/>
+          <!-- INNER RING -->
+          <circle class="stroke" cx="100" cy="100" r="56"
+                  stroke="url(#innerGrad)" stroke-width="14" filter="url(#neonBloom)"/>
+          
+          <!-- DIAGONAL INNER ARC (does NOT run into center) -->
+          <!-- Arc spans ~120° with a short angled tail; offset to avoid any "Q" read -->
+          <path class="stroke" stroke="url(#arcGrad)" stroke-width="14" filter="url(#neonBloom)"
+                d="
+                  M 132 116
+                  A 40 40 0 0 1 76 124
+                  M 108 132
+                  L 132 116
+                "/>
+        </g>
       </svg>
     `;
-    toggle.setAttribute('aria-label', 'Open A.R.C. - AI Resume Companion');
+    toggle.setAttribute("aria-label", "Open A.R.C. - AI Resume Companion");
     toggle.onclick = toggleChat;
-    
+
     // Create chat panel
-    const panel = document.createElement('div');
-    panel.className = 'vibe-chat-panel';
+    const panel = document.createElement("div");
+    panel.className = "vibe-chat-panel";
     panel.innerHTML = `
       <div class="vibe-chat-header">
         <h3 class="vibe-chat-title">A.R.C. - AI Resume Companion</h3>
@@ -453,144 +495,167 @@
         <button id="vibe-chat-send" class="vibe-chat-send">→</button>
       </div>
     `;
-    
+
     document.body.appendChild(toggle);
     document.body.appendChild(panel);
-    
+
     // Store element references
     elements = {
       toggle,
       panel,
-      messages: document.getElementById('vibe-chat-messages'),
-      input: document.getElementById('vibe-chat-input'),
-      send: document.getElementById('vibe-chat-send')
+      messages: document.getElementById("vibe-chat-messages"),
+      input: document.getElementById("vibe-chat-input"),
+      send: document.getElementById("vibe-chat-send"),
     };
-    
+
     // Setup event listeners
     setupEventListeners();
   }
-  
+
   function setupEventListeners() {
     // Input handling
-    elements.input.addEventListener('input', handleInputChange);
-    elements.input.addEventListener('keydown', handleKeyDown);
-    elements.send.addEventListener('click', sendMessage);
-    
+    elements.input.addEventListener("input", handleInputChange);
+    elements.input.addEventListener("keydown", handleKeyDown);
+    elements.send.addEventListener("click", sendMessage);
+
     // Global escape key
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && chatState.isOpen) {
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && chatState.isOpen) {
         toggleChat();
       }
     });
-    
+
     // Auto-resize textarea
     function handleInputChange() {
-      elements.input.style.height = 'auto';
-      elements.input.style.height = Math.min(elements.input.scrollHeight, 120) + 'px';
+      elements.input.style.height = "auto";
+      elements.input.style.height =
+        Math.min(elements.input.scrollHeight, 120) + "px";
     }
-    
+
     function handleKeyDown(e) {
-      if (e.key === 'Enter' && !e.shiftKey) {
+      if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         sendMessage();
       }
     }
   }
-  
+
   function toggleChat() {
     chatState.isOpen = !chatState.isOpen;
     updateToggleState();
     debouncedSaveState();
-    broadcastUpdate('stateSync', chatState);
-    
+    broadcastUpdate("stateSync", chatState);
+
     if (chatState.isOpen) {
       elements.input.focus();
     }
   }
-  
+
   function updateToggleState() {
     if (chatState.isOpen) {
-      elements.panel.classList.add('open');
-      elements.toggle.innerHTML = '×';
-      elements.toggle.setAttribute('aria-label', 'Close A.R.C.');
-      elements.toggle.style.fontSize = '40px';
-      elements.toggle.style.fontWeight = '300';
+      elements.panel.classList.add("open");
+      elements.toggle.innerHTML = "×";
+      elements.toggle.setAttribute("aria-label", "Close A.R.C.");
+      elements.toggle.style.fontSize = "40px";
+      elements.toggle.style.fontWeight = "300";
     } else {
-      elements.panel.classList.remove('open');
+      elements.panel.classList.remove("open");
       elements.toggle.innerHTML = `
-        <svg class="arc-reactor" width="80" height="80" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg class="arc-logo" width="84" height="84" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <defs>
-            <radialGradient id="coreGradient" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
-              <stop offset="30%" style="stop-color:#00ffff;stop-opacity:0.9" />
-              <stop offset="60%" style="stop-color:#0080ff;stop-opacity:0.8" />
-              <stop offset="100%" style="stop-color:#004080;stop-opacity:0.6" />
-            </radialGradient>
-            <radialGradient id="ringGradient" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" style="stop-color:#00ffff;stop-opacity:0.8" />
-              <stop offset="50%" style="stop-color:#0080ff;stop-opacity:0.9" />
-              <stop offset="100%" style="stop-color:#004080;stop-opacity:0.7" />
-            </radialGradient>
-            <filter id="innerGlow">
-              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-              <feMerge> 
-                <feMergeNode in="coloredBlur"/>
+            <!-- Outer ring gradient (purple emphasis ~15% stronger, ~10% less blue) -->
+            <linearGradient id="outerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%"  stop-color="#B100FF"/>   <!-- neon purple -->
+              <stop offset="55%" stop-color="#7A2BFF"/>   <!-- rich purple -->
+              <stop offset="100%" stop-color="#1F7CFF"/>  <!-- blue, slightly reduced -->
+            </linearGradient>
+            
+            <!-- Inner ring gradient (cooler, blue dominant but still VIBE) -->
+            <linearGradient id="innerGrad" x1="20%" y1="0%" x2="80%" y2="100%">
+              <stop offset="0%"   stop-color="#8A3BFF"/>
+              <stop offset="70%"  stop-color="#2BA3FF"/>
+              <stop offset="100%" stop-color="#1FA0FF"/>
+            </linearGradient>
+            
+            <!-- Arc stroke gradient (blue → cyan hint at the tip) -->
+            <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%"   stop-color="#3C8BFF"/>
+              <stop offset="100%" stop-color="#40FFE3"/>
+            </linearGradient>
+            
+            <!-- Soft neon bloom -->
+            <filter id="neonBloom" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="2.4" result="blur"/>
+              <feColorMatrix in="blur" type="matrix"
+                values="1 0 0 0 0
+                        0 1 0 0 0
+                        0 0 1 0 0
+                        0 0 0 1 0" result="colored"/>
+              <feMerge>
+                <feMergeNode in="colored"/>
                 <feMergeNode in="SourceGraphic"/>
               </feMerge>
             </filter>
+            
+            <!-- Round caps everywhere for smooth ends -->
+            <style>
+              .stroke { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+            </style>
           </defs>
           
-          <!-- Outer ring -->
-          <circle cx="100" cy="100" r="90" fill="none" stroke="url(#ringGradient)" stroke-width="8" opacity="0.6"/>
-          
-          <!-- Second ring -->
-          <circle cx="100" cy="100" r="75" fill="none" stroke="url(#ringGradient)" stroke-width="6" opacity="0.7"/>
-          
-          <!-- Third ring -->
-          <circle cx="100" cy="100" r="60" fill="none" stroke="url(#ringGradient)" stroke-width="4" opacity="0.8"/>
-          
-          <!-- Fourth ring -->
-          <circle cx="100" cy="100" r="45" fill="none" stroke="url(#ringGradient)" stroke-width="3" opacity="0.9"/>
-          
-          <!-- Inner core circle -->
-          <circle cx="100" cy="100" r="30" fill="url(#coreGradient)" filter="url(#innerGlow)" opacity="0.9"/>
-          
-          <!-- Central bright core -->
-          <circle cx="100" cy="100" r="15" fill="url(#coreGradient)" filter="url(#innerGlow)"/>
-          
-          <!-- Central white dot -->
-          <circle cx="100" cy="100" r="6" fill="#ffffff" opacity="0.95"/>
+          <!-- Group rotated 90° left to match requested orientation -->
+          <g transform="translate(100,100) rotate(-90) translate(-100,-100)">
+            <!-- OUTER RING -->
+            <circle class="stroke" cx="100" cy="100" r="84"
+                    stroke="url(#outerGrad)" stroke-width="16" filter="url(#neonBloom)"/>
+            <!-- INNER RING -->
+            <circle class="stroke" cx="100" cy="100" r="56"
+                    stroke="url(#innerGrad)" stroke-width="14" filter="url(#neonBloom)"/>
+            
+            <!-- DIAGONAL INNER ARC (does NOT run into center) -->
+            <!-- Arc spans ~120° with a short angled tail; offset to avoid any "Q" read -->
+            <path class="stroke" stroke="url(#arcGrad)" stroke-width="14" filter="url(#neonBloom)"
+                  d="
+                    M 132 116
+                    A 40 40 0 0 1 76 124
+                    M 108 132
+                    L 132 116
+                  "/>
+          </g>
         </svg>
       `;
-      elements.toggle.setAttribute('aria-label', 'Open A.R.C. - AI Resume Companion');
+      elements.toggle.setAttribute(
+        "aria-label",
+        "Open A.R.C. - AI Resume Companion"
+      );
     }
   }
-  
+
   function clearChat() {
     chatState.history = [];
     chatState.sessionId = null;
     renderMessages();
     debouncedSaveState();
-    broadcastUpdate('stateSync', chatState);
+    broadcastUpdate("stateSync", chatState);
   }
-  
+
   function renderMessages() {
-    elements.messages.innerHTML = '';
-    
+    elements.messages.innerHTML = "";
+
     if (chatState.history.length === 0) {
-      const welcome = document.createElement('div');
-      welcome.className = 'vibe-chat-message assistant';
+      const welcome = document.createElement("div");
+      welcome.className = "vibe-chat-message assistant";
       welcome.innerHTML = `
         Hello! I'm A.R.C., Cory's AI Resume Companion. I can tell you about his AWS expertise, projects, skills, and availability. What interests you?
         <button class="copy-btn" onclick="copyToClipboard(this)" title="Copy message">📋</button>
       `;
       elements.messages.appendChild(welcome);
     } else {
-      chatState.history.forEach(message => {
-        const messageEl = document.createElement('div');
+      chatState.history.forEach((message) => {
+        const messageEl = document.createElement("div");
         messageEl.className = `vibe-chat-message ${message.role}`;
-        
-        if (message.role === 'assistant') {
+
+        if (message.role === "assistant") {
           messageEl.innerHTML = `
             ${message.content}
             <button class="copy-btn" onclick="copyToClipboard(this)" title="Copy message">📋</button>
@@ -598,88 +663,91 @@
         } else {
           messageEl.textContent = message.content;
         }
-        
+
         elements.messages.appendChild(messageEl);
       });
     }
-    
+
     elements.messages.scrollTop = elements.messages.scrollHeight;
   }
-  
+
   function showTypingIndicator() {
-    const typing = document.createElement('div');
-    typing.className = 'vibe-chat-message vibe-chat-typing';
-    typing.textContent = 'Processing your inquiry...';
-    typing.id = 'typing-indicator';
+    const typing = document.createElement("div");
+    typing.className = "vibe-chat-message vibe-chat-typing";
+    typing.textContent = "Processing your inquiry...";
+    typing.id = "typing-indicator";
     elements.messages.appendChild(typing);
     elements.messages.scrollTop = elements.messages.scrollHeight;
   }
-  
+
   function hideTypingIndicator() {
-    const typing = document.getElementById('typing-indicator');
+    const typing = document.getElementById("typing-indicator");
     if (typing) {
       typing.remove();
     }
   }
-  
+
   function showError(message, retryable = false) {
-    const error = document.createElement('div');
-    error.className = 'vibe-chat-error';
+    const error = document.createElement("div");
+    error.className = "vibe-chat-error";
     error.innerHTML = `
       ${message}
-      ${retryable ? '<button class="vibe-chat-retry" onclick="retryLastMessage()">Try Again</button>' : ''}
+      ${
+        retryable
+          ? '<button class="vibe-chat-retry" onclick="retryLastMessage()">Try Again</button>'
+          : ""
+      }
     `;
     elements.messages.appendChild(error);
     elements.messages.scrollTop = elements.messages.scrollHeight;
   }
-  
+
   async function sendMessage() {
     const message = elements.input.value.trim();
     if (!message || isRequestInFlight) return;
-    
+
     // Add user message
-    chatState.history.push({ role: 'user', content: message });
-    elements.input.value = '';
-    elements.input.style.height = 'auto';
-    
+    chatState.history.push({ role: "user", content: message });
+    elements.input.value = "";
+    elements.input.style.height = "auto";
+
     renderMessages();
     showTypingIndicator();
-    
+
     isRequestInFlight = true;
     elements.send.disabled = true;
-    
+
     try {
       const response = await sendWithRetry({
         sessionId: chatState.sessionId,
-        messages: chatState.history
+        messages: chatState.history,
       });
-      
+
       hideTypingIndicator();
-      
+
       if (response.sessionId && !chatState.sessionId) {
         chatState.sessionId = response.sessionId;
       }
-      
+
       chatState.history.push(response.message);
       renderMessages();
-      
-      broadcastUpdate('messageAdded', {
+
+      broadcastUpdate("messageAdded", {
         sessionId: chatState.sessionId,
-        history: chatState.history
+        history: chatState.history,
       });
-      
     } catch (error) {
       hideTypingIndicator();
-      console.error('Chat error details:', {
+      console.error("Chat error details:", {
         message: error.message,
         stack: error.stack,
         retryable: error.retryable,
-        apiUrl: apiUrl
+        apiUrl: apiUrl,
       });
       showError(
-        error.retryable ? 
-          'I encountered a temporary issue. Please try again.' : 
-          `I apologize, but I was unable to process your request. Error: ${error.message}`,
+        error.retryable
+          ? "I encountered a temporary issue. Please try again."
+          : `I apologize, but I was unable to process your request. Error: ${error.message}`,
         error.retryable
       );
     } finally {
@@ -688,78 +756,84 @@
       debouncedSaveState();
     }
   }
-  
+
   async function sendWithRetry(payload, maxRetries = MAX_RETRIES) {
     let lastError;
-    
+
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
         const response = await fetch(`${apiUrl}/chat`, {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         });
-        
+
         const data = await response.json();
-        
+
         if (!response.ok) {
-          throw new Error(data.error || 'Request failed', {
-            cause: { retryable: data.retryable !== false }
+          throw new Error(data.error || "Request failed", {
+            cause: { retryable: data.retryable !== false },
           });
         }
-        
+
         return data;
-        
       } catch (error) {
         lastError = error;
-        
-        const isRetryable = error.cause?.retryable !== false && 
-                           (error.name === 'TypeError' || // Network error
-                            (error.status >= 500));
-        
+
+        const isRetryable =
+          error.cause?.retryable !== false &&
+          (error.name === "TypeError" || // Network error
+            error.status >= 500);
+
         if (!isRetryable || attempt === maxRetries - 1) {
           error.retryable = isRetryable;
           throw error;
         }
-        
+
         const delay = BASE_DELAY * Math.pow(2, attempt) + Math.random() * 1000;
         await sleep(delay);
       }
     }
-    
+
     throw lastError;
   }
-  
+
   function retryLastMessage() {
     // Remove the last user message and try again
-    if (chatState.history.length > 0 && chatState.history[chatState.history.length - 1].role === 'user') {
+    if (
+      chatState.history.length > 0 &&
+      chatState.history[chatState.history.length - 1].role === "user"
+    ) {
       const lastMessage = chatState.history.pop();
       elements.input.value = lastMessage.content;
       renderMessages();
       sendMessage();
     }
   }
-  
+
   function copyToClipboard(button) {
-    const message = button.parentElement.textContent.replace('📋', '').trim();
-    navigator.clipboard.writeText(message).then(() => {
-      button.textContent = '✓';
-      setTimeout(() => {
-        button.textContent = '📋';
-      }, 2000);
-    }).catch(() => {
-      console.warn('Failed to copy to clipboard');
-    });
+    const message = button.parentElement.textContent.replace("📋", "").trim();
+    navigator.clipboard
+      .writeText(message)
+      .then(() => {
+        button.textContent = "✓";
+        setTimeout(() => {
+          button.textContent = "📋";
+        }, 2000);
+      })
+      .catch(() => {
+        console.warn("Failed to copy to clipboard");
+      });
   }
-  
+
   // Global functions for inline event handlers
   window.toggleChat = toggleChat;
   window.clearChat = clearChat;
   window.copyToClipboard = copyToClipboard;
   window.retryLastMessage = retryLastMessage;
-  
+
   // Initialize
   async function init() {
     await loadConfig();
@@ -769,10 +843,10 @@
     updateToggleState();
     renderMessages();
   }
-  
+
   // Start when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
   } else {
     init();
   }
