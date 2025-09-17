@@ -3,10 +3,10 @@ output "chat_api_url" {
   value       = aws_apigatewayv2_api.chatbot_api.api_endpoint
 }
 
-output "kb_id" {
-  description = "Bedrock Knowledge Base ID"
-  value       = aws_bedrockagent_knowledge_base.chatbot_kb.id
-}
+# output "kb_id" {
+#   description = "Bedrock Knowledge Base ID"
+#   value       = aws_bedrockagent_knowledge_base.chatbot_kb.id
+# }
 
 output "lambda_function_name" {
   description = "Lambda function name"

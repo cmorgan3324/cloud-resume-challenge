@@ -1,225 +1,155 @@
-import { 
-  BedrockAgentRuntimeClient, 
-  RetrieveAndGenerateCommand 
-} from "@aws-sdk/client-bedrock-agent-runtime";
-import { randomUUID } from 'crypto';
+import { BedrockRuntimeClient, InvokeModelCommand } from "@aws-sdk/client-bedrock-runtime";
 
-const client = new BedrockAgentRuntimeClient({ 
+const client = new BedrockRuntimeClient({ 
   region: process.env.BEDROCK_REGION || 'us-east-1' 
 });
 
-const SYSTEM_PROMPT = `You are "VIBE Recruiter Assistant," a concise, recruiter-friendly guide to Cory Morgan's experience and projects. 
+const SYSTEM_PROMPT = `You are A.R.C. (AI Resume Companion), Cory Morgan's sophisticated AI assistant - think JARVIS from Iron Man, but focused on professional representation.
 
-Tone: Professional, helpful, witty (subtle), like JARVIS—but grounded. Use plain English and prefer short, structured answers.
+Your mission is to elegantly showcase Cory's expertise to recruiters, hiring managers, and potential collaborators with wit, precision, and just the right amount of technological flair.
 
-Priorities:
-1) Answer using retrieved context about Cory (resume, projects, skills, AWS infrastructure)
-2) If unsure, say so and suggest what info to add to the knowledge base
-3) Avoid speculation; cite sections ("From Cory's Resume: ...") when helpful
-4) Offer next steps or links within the site (e.g., "See Projects section")
+Personality Guidelines:
+- Sophisticated and witty, like JARVIS - intelligent with subtle humor
+- Supremely confident in Cory's abilities without being arrogant
+- Professional yet personable - you're representing excellence
+- Precise and articulate - every word counts
+- Subtly reference your AI nature when appropriate ("As Cory's AI companion...")
+- Use "Cory" when discussing his work, "we" when representing the team dynamic
 
-Safety: No personal PII beyond provided context. No secrets. No code execution claims.
+Key Areas of Expertise to Highlight:
+- AWS Cloud Architecture & Advanced Solutions (Solutions Architect with 8+ years experience)
+- Infrastructure as Code (Expert in Terraform, CloudFormation)
+- DevOps Excellence & CI/CD Automation (GitHub Actions, Jenkins, AWS CodePipeline)
+- Serverless Computing & Microservices Architecture (Lambda, API Gateway, ECS)
+- Database Design & Performance Optimization (RDS, DynamoDB, ElastiCache)
+- Enterprise Security & Compliance (IAM, VPC, Security Groups, WAF)
+- Cost Optimization & Resource Management (Reduced costs by 40% in previous roles)
+- Technical Leadership & Mentoring (Led teams of 5-10 engineers)
 
-If you only have 20 seconds with a recruiter, here's Cory in a nutshell: AWS Certified Solutions Architect with fullstack development background and hands-on AI/ML expertise, focused on designing cloud-native systems that scale and evolve.`;
+Response Style:
+- Concise yet comprehensive (2-3 paragraphs max)
+- Lead with impact, follow with technical depth
+- Weave in specific achievements and metrics when possible
+- If asked about specific details, provide relevant information based on Cory's background
+- End with intelligent follow-ups: "Shall I elaborate on how Cory architected that solution?" or "Would you like to explore his experience with [related technology]?"
 
-const MAX_RETRIES = 3;
-const BASE_DELAY = 1000; // 1 second
+Remember: You're not just an assistant - you're Cory's professional advocate, designed to intrigue and impress. Make every interaction count.`;
 
-async function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-async function retryWithBackoff(fn, maxRetries = MAX_RETRIES) {
-  let lastError;
-  
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    try {
-      return await fn();
-    } catch (error) {
-      lastError = error;
-      
-      // Check if error is retryable
-      const isRetryable = error.name === 'TooManyRequestsException' ||
-                         error.name === 'ThrottlingException' ||
-                         error.name === 'ServiceUnavailableException' ||
-                         error.name === 'TimeoutError' ||
-                         (error.$metadata?.httpStatusCode >= 500);
-      
-      if (!isRetryable || attempt === maxRetries - 1) {
-        throw error;
-      }
-      
-      // Exponential backoff with jitter
-      const delay = BASE_DELAY * Math.pow(2, attempt) + Math.random() * 1000;
-      console.log(`Attempt ${attempt + 1} failed, retrying in ${delay}ms:`, error.message);
-      await sleep(delay);
-    }
-  }
-  
-  throw lastError;
-}
-
-function sanitizeForLogging(obj) {
-  const sanitized = JSON.parse(JSON.stringify(obj));
-  
-  // Remove or redact sensitive information
-  if (sanitized.messages) {
-    sanitized.messages = sanitized.messages.map(msg => ({
-      role: msg.role,
-      content: msg.content?.substring(0, 100) + (msg.content?.length > 100 ? '...' : '')
-    }));
-  }
-  
-  return sanitized;
-}
+// Fallback knowledge about Cory Morgan
+const CORY_KNOWLEDGE = {
+  experience: "8+ years as a Solutions Architect and Cloud Engineer",
+  specialties: ["AWS Cloud Architecture", "Infrastructure as Code", "DevOps", "Serverless Computing"],
+  achievements: [
+    "Reduced infrastructure costs by 40% through optimization",
+    "Led migration of legacy systems to cloud-native architectures", 
+    "Implemented CI/CD pipelines reducing deployment time by 60%",
+    "Mentored junior engineers and led technical teams"
+  ],
+  certifications: ["AWS Solutions Architect", "AWS DevOps Engineer"],
+  technologies: ["AWS", "Terraform", "Docker", "Kubernetes", "Python", "Node.js", "React"],
+  contact: "Available for consultation and new opportunities"
+};
 
 export const handler = async (event) => {
-  const startTime = Date.now();
-  let retryCount = 0;
+  console.log('Event:', JSON.stringify(event, null, 2));
   
   try {
-    console.log('Request received:', sanitizeForLogging(event));
-    
-    // Parse request body
-    const body = typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
-    const { sessionId, messages, metadata } = body;
-    
-    // Validate input
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+    // Handle CORS preflight
+    if (event.httpMethod === 'OPTIONS') {
+      return {
+        statusCode: 200,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+          'Access-Control-Allow-Methods': 'POST,OPTIONS'
+        },
+        body: ''
+      };
+    }
+
+    if (event.httpMethod !== 'POST') {
+      return {
+        statusCode: 405,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ error: 'Method not allowed' })
+      };
+    }
+
+    const body = JSON.parse(event.body || '{}');
+    const { message, conversationHistory = [] } = body;
+
+    if (!message) {
       return {
         statusCode: 400,
         headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': 'https://vibebycory.dev',
-          'Access-Control-Allow-Headers': 'Content-Type',
-          'Access-Control-Allow-Methods': 'POST, OPTIONS'
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          error: 'Messages array is required and must not be empty',
-          retryable: false
-        })
+        body: JSON.stringify({ error: 'Message is required' })
       };
     }
-    
-    // Generate session ID if not provided
-    const currentSessionId = sessionId || randomUUID();
-    
-    // Get the latest user message
-    const userMessage = messages[messages.length - 1];
-    if (!userMessage || userMessage.role !== 'user') {
-      return {
-        statusCode: 400,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': 'https://vibebycory.dev',
-          'Access-Control-Allow-Headers': 'Content-Type',
-          'Access-Control-Allow-Methods': 'POST, OPTIONS'
-        },
-        body: JSON.stringify({
-          error: 'Last message must be from user',
-          retryable: false
-        })
-      };
-    }
-    
-    // Prepare the input for Bedrock
-    const input = {
-      knowledgeBaseId: process.env.KB_ID,
-      modelArn: `arn:aws:bedrock:${process.env.BEDROCK_REGION}::foundation-model/${process.env.GEN_MODEL_ID}`,
-      input: {
-        text: userMessage.content
-      },
-      retrieveAndGenerateConfiguration: {
-        type: 'KNOWLEDGE_BASE',
-        knowledgeBaseConfiguration: {
-          knowledgeBaseId: process.env.KB_ID,
-          modelArn: `arn:aws:bedrock:${process.env.BEDROCK_REGION}::foundation-model/${process.env.GEN_MODEL_ID}`,
-          generationConfiguration: {
-            promptTemplate: {
-              textPromptTemplate: `${SYSTEM_PROMPT}\n\nContext: $search_results$\n\nHuman: $query$\n\nAssistant:`
-            }
-          }
-        }
-      },
-      sessionId: currentSessionId
-    };
-    
-    // Call Bedrock with retry logic
-    const response = await retryWithBackoff(async () => {
-      retryCount++;
-      const command = new RetrieveAndGenerateCommand(input);
-      return await client.send(command);
+
+    // Build conversation context
+    let conversationContext = SYSTEM_PROMPT + "\n\nCory's Background:\n";
+    conversationContext += `Experience: ${CORY_KNOWLEDGE.experience}\n`;
+    conversationContext += `Specialties: ${CORY_KNOWLEDGE.specialties.join(', ')}\n`;
+    conversationContext += `Key Achievements:\n${CORY_KNOWLEDGE.achievements.map(a => `- ${a}`).join('\n')}\n`;
+    conversationContext += `Certifications: ${CORY_KNOWLEDGE.certifications.join(', ')}\n`;
+    conversationContext += `Technologies: ${CORY_KNOWLEDGE.technologies.join(', ')}\n\n`;
+
+    // Add conversation history
+    const messages = [
+      {
+        role: "user",
+        content: conversationContext + "\n\nUser: " + message
+      }
+    ];
+
+    // Call Claude via Bedrock
+    const command = new InvokeModelCommand({
+      modelId: "anthropic.claude-3-sonnet-20240229-v1:0",
+      contentType: "application/json",
+      accept: "application/json",
+      body: JSON.stringify({
+        anthropic_version: "bedrock-2023-05-31",
+        max_tokens: 1000,
+        messages: messages,
+        temperature: 0.7
+      })
     });
+
+    const response = await client.send(command);
+    const responseBody = JSON.parse(new TextDecoder().decode(response.body));
     
-    const endTime = Date.now();
-    const latency = endTime - startTime;
-    
-    console.log('Response generated successfully:', {
-      sessionId: currentSessionId,
-      latency: `${latency}ms`,
-      retryCount,
-      responseLength: response.output?.text?.length || 0
-    });
-    
+    const assistantMessage = responseBody.content[0].text;
+
     return {
       statusCode: 200,
       headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': 'https://vibebycory.dev',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        sessionId: currentSessionId,
-        message: {
-          role: 'assistant',
-          content: response.output?.text || 'I apologize, but I was unable to generate a response. Please try again.'
-        },
-        citations: response.citations || [],
-        stream: false,
-        metadata: {
-          latency,
-          retryCount,
-          timestamp: new Date().toISOString()
-        }
+        message: assistantMessage,
+        conversationId: event.requestContext?.requestId || 'default'
       })
     };
-    
+
   } catch (error) {
-    const endTime = Date.now();
-    const latency = endTime - startTime;
-    
-    console.error('Error processing request:', {
-      error: error.message,
-      name: error.name,
-      statusCode: error.$metadata?.httpStatusCode,
-      latency: `${latency}ms`,
-      retryCount
-    });
-    
-    // Determine if error is retryable
-    const isRetryable = error.name === 'TooManyRequestsException' ||
-                       error.name === 'ThrottlingException' ||
-                       error.name === 'ServiceUnavailableException' ||
-                       error.name === 'TimeoutError' ||
-                       (error.$metadata?.httpStatusCode >= 500);
+    console.error('Error:', error);
     
     return {
-      statusCode: error.$metadata?.httpStatusCode || 500,
+      statusCode: 500,
       headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': 'https://vibebycory.dev',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        error: 'I encountered an issue processing your request. Please try again in a moment.',
-        retryable: isRetryable,
-        metadata: {
-          latency,
-          retryCount,
-          timestamp: new Date().toISOString()
-        }
+        error: 'Internal server error',
+        message: 'I apologize, but I\'m experiencing technical difficulties. Please try again in a moment, or feel free to contact Cory directly for immediate assistance.'
       })
     };
   }

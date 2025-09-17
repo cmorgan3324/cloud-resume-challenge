@@ -62,6 +62,13 @@ resource "aws_iam_policy" "bedrock_kb_policy" {
           "bedrock:InvokeModel"
         ]
         Resource = "arn:aws:bedrock:${data.aws_region.current.name}::foundation-model/${var.kb_embed_model_id}"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "aoss:APIAccessAll"
+        ]
+        Resource = "*"
       }
     ]
   })
@@ -72,128 +79,39 @@ resource "aws_iam_role_policy_attachment" "bedrock_kb_policy_attachment" {
   policy_arn = aws_iam_policy.bedrock_kb_policy.arn
 }
 
-# Bedrock Knowledge Base
-resource "aws_bedrockagent_knowledge_base" "chatbot_kb" {
-  name     = "${var.project_name}-knowledge-base"
-  role_arn = aws_iam_role.bedrock_kb_role.arn
+# Bedrock Knowledge Base - temporarily disabled
+# resource "aws_bedrockagent_knowledge_base" "chatbot_kb" {
+#   name     = "${var.project_name}-knowledge-base"
+#   role_arn = aws_iam_role.bedrock_kb_role.arn
+# }
 
-  knowledge_base_configuration {
-    vector_knowledge_base_configuration {
-      embedding_model_arn = "arn:aws:bedrock:${data.aws_region.current.name}::foundation-model/${var.kb_embed_model_id}"
-    }
-    type = "VECTOR"
-  }
+# OpenSearch Serverless collection - temporarily disabled
+# resource "aws_opensearchserverless_collection" "kb_collection" {
+#   name = "vbc-kb-collection"
+#   type = "VECTORSEARCH"
+# }
 
-  storage_configuration {
-    type = "OPENSEARCH_SERVERLESS"
-    opensearch_serverless_configuration {
-      collection_arn    = aws_opensearchserverless_collection.kb_collection.arn
-      vector_index_name = "bedrock-knowledge-base-default-index"
-      field_mapping {
-        vector_field   = "bedrock-knowledge-base-default-vector"
-        text_field     = "AMAZON_BEDROCK_TEXT_CHUNK"
-        metadata_field = "AMAZON_BEDROCK_METADATA"
-      }
-    }
-  }
-}
+# OpenSearch Serverless resources - temporarily disabled
+# resource "aws_opensearchserverless_security_policy" "kb_encryption_policy" {
+#   name = "vbc-kb-encryption-policy"
+#   type = "encryption"
+# }
+# 
+# resource "aws_opensearchserverless_security_policy" "kb_network_policy" {
+#   name = "vbc-kb-network-policy"
+#   type = "network"
+# }
+# 
+# resource "aws_opensearchserverless_access_policy" "kb_data_policy" {
+#   name = "vbc-kb-data-policy"
+#   type = "data"
+# }
 
-# OpenSearch Serverless collection for vector storage
-resource "aws_opensearchserverless_collection" "kb_collection" {
-  name = "${var.project_name}-kb-collection"
-  type = "VECTORSEARCH"
-}
-
-# OpenSearch Serverless security policy
-resource "aws_opensearchserverless_security_policy" "kb_encryption_policy" {
-  name = "${var.project_name}-kb-encryption-policy"
-  type = "encryption"
-  policy = jsonencode({
-    Rules = [
-      {
-        Resource = [
-          "collection/${var.project_name}-kb-collection"
-        ]
-        ResourceType = "collection"
-      }
-    ]
-    AWSOwnedKey = true
-  })
-}
-
-resource "aws_opensearchserverless_security_policy" "kb_network_policy" {
-  name = "${var.project_name}-kb-network-policy"
-  type = "network"
-  policy = jsonencode([
-    {
-      Rules = [
-        {
-          Resource = [
-            "collection/${var.project_name}-kb-collection"
-          ]
-          ResourceType = "collection"
-        }
-      ]
-      AllowFromPublic = true
-    }
-  ])
-}
-
-# Data access policy for OpenSearch Serverless
-resource "aws_opensearchserverless_access_policy" "kb_data_policy" {
-  name = "${var.project_name}-kb-data-policy"
-  type = "data"
-  policy = jsonencode([
-    {
-      Rules = [
-        {
-          Resource = [
-            "collection/${var.project_name}-kb-collection"
-          ]
-          Permission = [
-            "aoss:CreateCollectionItems",
-            "aoss:DeleteCollectionItems",
-            "aoss:UpdateCollectionItems",
-            "aoss:DescribeCollectionItems"
-          ]
-          ResourceType = "collection"
-        },
-        {
-          Resource = [
-            "index/${var.project_name}-kb-collection/*"
-          ]
-          Permission = [
-            "aoss:CreateIndex",
-            "aoss:DeleteIndex",
-            "aoss:UpdateIndex",
-            "aoss:DescribeIndex",
-            "aoss:ReadDocument",
-            "aoss:WriteDocument"
-          ]
-          ResourceType = "index"
-        }
-      ]
-      Principal = [
-        aws_iam_role.bedrock_kb_role.arn,
-        aws_iam_role.lambda_role.arn
-      ]
-    }
-  ])
-}
-
-# Bedrock Knowledge Base Data Source
-resource "aws_bedrockagent_data_source" "kb_data_source" {
-  knowledge_base_id = aws_bedrockagent_knowledge_base.chatbot_kb.id
-  name              = "${var.project_name}-s3-data-source"
-
-  data_source_configuration {
-    type = "S3"
-    s3_configuration {
-      bucket_arn = data.aws_s3_bucket.resume_content.arn
-      inclusion_prefixes = ["kb/"]
-    }
-  }
-}
+# Bedrock Knowledge Base Data Source - temporarily disabled
+# resource "aws_bedrockagent_data_source" "kb_data_source" {
+#   knowledge_base_id = aws_bedrockagent_knowledge_base.chatbot_kb.id
+#   name              = "${var.project_name}-s3-data-source"
+# }
 
 # IAM role for Lambda
 resource "aws_iam_role" "lambda_role" {
@@ -236,14 +154,7 @@ resource "aws_iam_policy" "lambda_policy" {
         ]
         Resource = "arn:aws:bedrock:${data.aws_region.current.name}::foundation-model/${var.gen_model_id}"
       },
-      {
-        Effect = "Allow"
-        Action = [
-          "bedrock:Retrieve",
-          "bedrock:RetrieveAndGenerate"
-        ]
-        Resource = aws_bedrockagent_knowledge_base.chatbot_kb.arn
-      }
+
     ]
   })
 }
@@ -265,7 +176,6 @@ resource "aws_lambda_function" "chatbot_handler" {
   environment {
     variables = {
       BEDROCK_REGION = var.aws_region
-      KB_ID         = aws_bedrockagent_knowledge_base.chatbot_kb.id
       GEN_MODEL_ID  = var.gen_model_id
     }
   }
