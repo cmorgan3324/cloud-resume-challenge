@@ -158,37 +158,91 @@
         /* keep it crisp, let browser choose best sampling */
       }
       
-      /* Neon bloom around the exact image (does not alter the pixels of the icon) */
+      /* Living, breathing neon bloom around the exact image */
       .vibe-chat-toggle::after {
         content: "";
         position: absolute;
-        inset: -10px;
-        /* spread glow slightly beyond the icon edge */
+        inset: -15px;
+        /* spread glow beyond the icon edge for breathing effect */
         border-radius: 50%;
         pointer-events: none;
-        opacity: 0.85;
-        /* layered radial glows, purple bias per your latest image */
+        opacity: 0.9;
+        /* Multi-layered radial glows for depth */
         background:
-          radial-gradient(60% 60% at 40% 35%, rgba(177, 0, 255, 0.38), transparent 60%),
-          radial-gradient(55% 55% at 65% 60%, rgba(31, 160, 255, 0.26), transparent 65%);
-        filter: blur(12px);
-        transition: opacity .2s ease, filter .2s ease, transform .2s ease;
+          radial-gradient(70% 70% at 40% 35%, rgba(177, 0, 255, 0.45), transparent 65%),
+          radial-gradient(60% 60% at 65% 60%, rgba(31, 160, 255, 0.35), transparent 70%),
+          radial-gradient(50% 50% at 50% 50%, rgba(138, 59, 255, 0.25), transparent 75%);
+        filter: blur(14px) brightness(1.1);
+        transition: opacity .3s ease, filter .3s ease, transform .3s ease;
       }
       
       .vibe-chat-toggle:hover::after {
         opacity: 1;
-        filter: blur(14px) brightness(1.05);
-        transform: scale(1.03);
+        filter: blur(18px) brightness(1.25);
+        transform: scale(1.08);
       }
       
-      /* Subtle breathing animation, but only if user allows motion */
+      /* Living, breathing animation with multiple phases */
       @media (prefers-reduced-motion: no-preference) {
         .vibe-chat-toggle::after {
-          animation: arcPulse 2.6s ease-in-out infinite;
+          animation: arcReactorBreathing 3.2s ease-in-out infinite;
         }
-        @keyframes arcPulse {
-          0%, 100% { filter: blur(12px) brightness(1.00); }
-          50%      { filter: blur(16px) brightness(1.08); }
+        
+        .vibe-chat-toggle {
+          animation: arcReactorPulse 4.8s ease-in-out infinite;
+        }
+        
+        @keyframes arcReactorBreathing {
+          0%, 100% { 
+            filter: blur(14px) brightness(1.1);
+            opacity: 0.9;
+            transform: scale(1);
+          }
+          25% { 
+            filter: blur(18px) brightness(1.2);
+            opacity: 0.95;
+            transform: scale(1.02);
+          }
+          50% { 
+            filter: blur(22px) brightness(1.3);
+            opacity: 1;
+            transform: scale(1.05);
+          }
+          75% { 
+            filter: blur(16px) brightness(1.15);
+            opacity: 0.92;
+            transform: scale(1.01);
+          }
+        }
+        
+        @keyframes arcReactorPulse {
+          0%, 100% { 
+            transform: scale(1);
+            box-shadow: 0 0 20px rgba(177, 0, 255, 0.3);
+          }
+          33% { 
+            transform: scale(1.01);
+            box-shadow: 0 0 25px rgba(177, 0, 255, 0.4);
+          }
+          66% { 
+            transform: scale(1.005);
+            box-shadow: 0 0 30px rgba(31, 160, 255, 0.35);
+          }
+        }
+        
+        .vibe-chat-toggle:hover {
+          animation: arcReactorPulseHover 2.4s ease-in-out infinite;
+        }
+        
+        @keyframes arcReactorPulseHover {
+          0%, 100% { 
+            transform: scale(1.04);
+            box-shadow: 0 0 35px rgba(177, 0, 255, 0.5);
+          }
+          50% { 
+            transform: scale(1.06);
+            box-shadow: 0 0 40px rgba(31, 160, 255, 0.6);
+          }
         }
       }
       
