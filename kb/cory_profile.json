@@ -9,16 +9,66 @@
       "name": "AWS Certified Solutions Architect - Associate",
       "issuer": "Amazon Web Services",
       "status": "Active",
-      "focus_areas": ["Cloud Architecture", "Security", "Cost Optimization", "Performance"]
+      "focus_areas": [
+        "Cloud Architecture",
+        "Security",
+        "Cost Optimization",
+        "Performance"
+      ]
     }
   ],
   "core_skills": {
     "programming": ["Python", "JavaScript", "TypeScript", "Node.js"],
-    "web_development": ["React", "Next.js", "Express", "HTML/CSS", "Bootstrap", "Tailwind"],
-    "ai_ml": ["TensorFlow", "PyTorch", "Scikit-Learn", "Keras", "Computer Vision", "Deep Learning", "NLP", "LLMs", "OpenAI API", "LangChain", "Prompt Engineering"],
-    "data_science": ["NumPy", "Pandas", "Matplotlib", "Seaborn", "Data Pipelines", "ETL"],
-    "cloud_aws": ["S3", "EC2", "Lambda", "DynamoDB", "RDS", "API Gateway", "CloudWatch", "IAM", "Route 53", "CloudFront", "SageMaker"],
-    "devops": ["Docker", "CI/CD", "Git", "GitHub Actions", "Terraform", "Infrastructure as Code"]
+    "web_development": [
+      "React",
+      "Next.js",
+      "Express",
+      "HTML/CSS",
+      "Bootstrap",
+      "Tailwind"
+    ],
+    "ai_ml": [
+      "TensorFlow",
+      "PyTorch",
+      "Scikit-Learn",
+      "Keras",
+      "Computer Vision",
+      "Deep Learning",
+      "NLP",
+      "LLMs",
+      "OpenAI API",
+      "LangChain",
+      "Prompt Engineering"
+    ],
+    "data_science": [
+      "NumPy",
+      "Pandas",
+      "Matplotlib",
+      "Seaborn",
+      "Data Pipelines",
+      "ETL"
+    ],
+    "cloud_aws": [
+      "S3",
+      "EC2",
+      "Lambda",
+      "DynamoDB",
+      "RDS",
+      "API Gateway",
+      "CloudWatch",
+      "IAM",
+      "Route 53",
+      "CloudFront",
+      "SageMaker"
+    ],
+    "devops": [
+      "Docker",
+      "CI/CD",
+      "Git",
+      "GitHub Actions",
+      "Terraform",
+      "Infrastructure as Code"
+    ]
   },
   "specializations": [
     "Serverless Architecture Design",
@@ -28,10 +78,20 @@
     "Automated CI/CD Pipelines"
   ],
   "work_preferences": {
-    "role_types": ["Solutions Architect", "Cloud Engineer", "AI/ML Engineer", "Fullstack Developer"],
+    "role_types": [
+      "Solutions Architect",
+      "Cloud Engineer",
+      "AI/ML Engineer",
+      "Fullstack Developer"
+    ],
     "company_size": "Open to startups through enterprise",
     "remote_work": "Preferred, open to hybrid arrangements",
-    "project_types": ["Cloud Migration", "AI/ML Implementation", "Serverless Applications", "Infrastructure Modernization"]
+    "project_types": [
+      "Cloud Migration",
+      "AI/ML Implementation",
+      "Serverless Applications",
+      "Infrastructure Modernization"
+    ]
   },
   "availability": "Actively seeking new opportunities",
   "portfolio_site": "https://vibebycory.dev",
