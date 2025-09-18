@@ -37,10 +37,44 @@ resource "aws_cloudfront_distribution" "site_cdn" {
     }
   }
 
+  # Cache behavior for resume directory
+  ordered_cache_behavior {
+    path_pattern           = "/resume/*"
+    target_origin_id       = "s3-${var.public_bucket_name}"
+    viewer_protocol_policy = "redirect-to-https"
+
+    allowed_methods = ["GET", "HEAD"]
+    cached_methods  = ["GET", "HEAD"]
+
+    forwarded_values {
+      query_string = false
+      cookies {
+        forward = "none"
+      }
+    }
+
+    min_ttl     = 0
+    default_ttl = 86400
+    max_ttl     = 31536000
+  }
+
   viewer_certificate {
     acm_certificate_arn            = data.aws_acm_certificate.site_cert.arn
     ssl_support_method             = "sni-only"
     minimum_protocol_version       = "TLSv1.2_2021"
+  }
+
+  # Custom error pages to handle SPA routing and directory index files
+  custom_error_response {
+    error_code         = 403
+    response_code      = 200
+    response_page_path = "/index.html"
+  }
+
+  custom_error_response {
+    error_code         = 404
+    response_code      = 200
+    response_page_path = "/index.html"
   }
 
   restrictions {
