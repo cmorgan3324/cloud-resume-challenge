@@ -52,6 +52,7 @@ jobs:
            --include "styles.css" \
            --include "script.js" \
            --include "public/*" \
+           --include "resume/*" \
            --include "*.pdf" \
            --include "*.png" \
            --include "*.jpg" \
