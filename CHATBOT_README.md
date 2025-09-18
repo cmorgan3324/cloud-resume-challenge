@@ -1,4 +1,4 @@
-# VIBE Recruiter Assistant - AI Chatbot
+# A.R.C - AI Resume Companion
 
 A floating AI chatbot widget powered by Amazon Bedrock that appears on all pages of the portfolio site. The chatbot provides recruiter-friendly information about Cory's experience, projects, and skills with persistent state across page loads and browser tabs.
 

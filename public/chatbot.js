@@ -279,6 +279,16 @@
         font-weight: 600;
         font-size: 16px;
         margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      
+      .vibe-chat-title-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        filter: drop-shadow(0 0 4px rgba(177, 0, 255, 0.4));
       }
       
       .vibe-chat-controls {
@@ -460,7 +470,9 @@
 
     // Exact image, no redraw — pixel-perfect replica
     // Try multiple path strategies for robust deployment
-    const basePath = window.location.pathname.includes('/public/') ? './' : 'public/';
+    const basePath = window.location.pathname.includes("/public/")
+      ? "./"
+      : "public/";
     toggle.innerHTML = `
       <picture>
         <source srcset="${basePath}arc-button-768.png 768w, ${basePath}arc-button-512.png 512w, ${basePath}arc-button-256.png 256w" type="image/png" />
@@ -481,9 +493,13 @@
     // Create chat panel
     const panel = document.createElement("div");
     panel.className = "vibe-chat-panel";
+    const basePath = window.location.pathname.includes('/public/') ? './' : 'public/';
     panel.innerHTML = `
       <div class="vibe-chat-header">
-        <h3 class="vibe-chat-title">A.R.C. - AI Resume Companion</h3>
+        <h3 class="vibe-chat-title">
+          <img class="vibe-chat-title-icon" src="${basePath}arc-button-256.png" alt="ARC" />
+          A.R.C
+        </h3>
         <div class="vibe-chat-controls">
           <button class="vibe-chat-btn" onclick="clearChat()" title="Clear chat">🗑️</button>
           <button class="vibe-chat-btn" onclick="toggleChat()" title="Minimize">−</button>
@@ -565,7 +581,9 @@
       elements.toggle.style.fontWeight = "300";
     } else {
       elements.panel.classList.remove("open");
-      const basePath = window.location.pathname.includes('/public/') ? './' : 'public/';
+      const basePath = window.location.pathname.includes("/public/")
+        ? "./"
+        : "public/";
       elements.toggle.innerHTML = `
         <picture>
           <source srcset="${basePath}arc-button-768.png 768w, ${basePath}arc-button-512.png 512w, ${basePath}arc-button-256.png 256w" type="image/png" />

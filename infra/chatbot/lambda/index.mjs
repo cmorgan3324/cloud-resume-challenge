@@ -37,7 +37,7 @@ Remember: You're not just an assistant - you're Cory's professional advocate, de
 
 // Fallback knowledge about Cory Morgan
 const CORY_KNOWLEDGE = {
-  experience: "8+ years as a Solutions Architect and Cloud Engineer",
+  experience: "1+ years as a Solutions Architect and Cloud Engineer",
   specialties: ["AWS Cloud Architecture", "Infrastructure as Code", "DevOps", "Serverless Computing"],
   achievements: [
     "Reduced infrastructure costs by 40% through optimization",
