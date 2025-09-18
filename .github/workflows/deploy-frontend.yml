@@ -10,6 +10,7 @@ on:
       - "**/*.js"
       - "src/**"
       - "public/**"
+      - "resume/**"
       - ".github/workflows/**"
       - "index.html"
       - "error.html"
@@ -39,10 +40,14 @@ jobs:
           ls -la
           echo ""
           echo "--- key files check ---"
-          ls -la index.html styles.css script.js public/ || echo "Some files missing"
+          ls -la index.html styles.css script.js public/ resume/ || echo "Some files missing"
+          echo ""
+          echo "--- resume directory contents ---"
+          ls -la resume/ || echo "Resume directory missing"
 
       - name: Sync frontend files to S3
         run: |
+          # Sync main site files
           aws s3 sync . s3://vibebycory-resume-content \
            --delete \
            --cache-control "no-cache" \
@@ -51,14 +56,20 @@ jobs:
            --include "error.html" \
            --include "styles.css" \
            --include "script.js" \
-           --include "public/*" \
-           --include "resume/*" \
            --include "*.pdf" \
            --include "*.png" \
            --include "*.jpg" \
            --include "*.jpeg" \
            --include "*.gif" \
            --include "*.ico"
+          
+          # Sync public directory
+          aws s3 sync public/ s3://vibebycory-resume-content/public/ \
+           --cache-control "no-cache"
+          
+          # Sync resume directory
+          aws s3 sync resume/ s3://vibebycory-resume-content/resume/ \
+           --cache-control "no-cache"
 
       - name: Invalidate CloudFront
         run: |
