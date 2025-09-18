@@ -123,6 +123,11 @@
   }
 
   function createElements() {
+    // Helper function for image paths
+    function getImagePath() {
+      return window.location.pathname.includes("/public/") ? "./" : "public/";
+    }
+    
     // Create styles
     const style = document.createElement("style");
     style.textContent = `
@@ -469,20 +474,17 @@
     toggle.setAttribute("aria-label", "Open A.R.C. – AI Resume Companion");
 
     // Exact image, no redraw — pixel-perfect replica
-    // Try multiple path strategies for robust deployment
-    const basePath = window.location.pathname.includes("/public/")
-      ? "./"
-      : "public/";
+    const imagePath = getImagePath();
     toggle.innerHTML = `
       <picture>
-        <source srcset="${basePath}arc-button-768.png 768w, ${basePath}arc-button-512.png 512w, ${basePath}arc-button-256.png 256w" type="image/png" />
+        <source srcset="${imagePath}arc-button-768.png 768w, ${imagePath}arc-button-512.png 512w, ${imagePath}arc-button-256.png 256w" type="image/png" />
         <img
           class="arc-btn-img"
           decoding="async"
           alt=""
           width="${ICON_SIZE}" height="${ICON_SIZE}"
-          src="${basePath}arc-button-512.png"
-          srcset="${basePath}arc-button-768.png 768w, ${basePath}arc-button-512.png 512w, ${basePath}arc-button-256.png 256w"
+          src="${imagePath}arc-button-512.png"
+          srcset="${imagePath}arc-button-768.png 768w, ${imagePath}arc-button-512.png 512w, ${imagePath}arc-button-256.png 256w"
           sizes="${ICON_SIZE}px"
           onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODQiIGhlaWdodD0iODQiIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODAiIHN0cm9rZT0iIzgwODBmZiIgc3Ryb2tlLXdpZHRoPSI4IiBmaWxsPSJub25lIi8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI1MCIgc3Ryb2tlPSIjYjAwMGZmIiBzdHJva2Utd2lkdGg9IjYiIGZpbGw9Im5vbmUiLz48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjIwIiBmaWxsPSIjZmZmZmZmIiBvcGFjaXR5PSIwLjkiLz48L3N2Zz4=';"
         />
@@ -493,11 +495,10 @@
     // Create chat panel
     const panel = document.createElement("div");
     panel.className = "vibe-chat-panel";
-    const basePath = window.location.pathname.includes('/public/') ? './' : 'public/';
     panel.innerHTML = `
       <div class="vibe-chat-header">
         <h3 class="vibe-chat-title">
-          <img class="vibe-chat-title-icon" src="${basePath}arc-button-256.png" alt="ARC" />
+          <img class="vibe-chat-title-icon" src="${imagePath}arc-button-256.png" alt="ARC" />
           A.R.C
         </h3>
         <div class="vibe-chat-controls">
@@ -581,19 +582,17 @@
       elements.toggle.style.fontWeight = "300";
     } else {
       elements.panel.classList.remove("open");
-      const basePath = window.location.pathname.includes("/public/")
-        ? "./"
-        : "public/";
+      const imagePath = window.location.pathname.includes("/public/") ? "./" : "public/";
       elements.toggle.innerHTML = `
         <picture>
-          <source srcset="${basePath}arc-button-768.png 768w, ${basePath}arc-button-512.png 512w, ${basePath}arc-button-256.png 256w" type="image/png" />
+          <source srcset="${imagePath}arc-button-768.png 768w, ${imagePath}arc-button-512.png 512w, ${imagePath}arc-button-256.png 256w" type="image/png" />
           <img
             class="arc-btn-img"
             decoding="async"
             alt=""
             width="84" height="84"
-            src="${basePath}arc-button-512.png"
-            srcset="${basePath}arc-button-768.png 768w, ${basePath}arc-button-512.png 512w, ${basePath}arc-button-256.png 256w"
+            src="${imagePath}arc-button-512.png"
+            srcset="${imagePath}arc-button-768.png 768w, ${imagePath}arc-button-512.png 512w, ${imagePath}arc-button-256.png 256w"
             sizes="84px"
             onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODQiIGhlaWdodD0iODQiIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODAiIHN0cm9rZT0iIzgwODBmZiIgc3Ryb2tlLXdpZHRoPSI4IiBmaWxsPSJub25lIi8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI1MCIgc3Ryb2tlPSIjYjAwMGZmIiBzdHJva2Utd2lkdGg9IjYiIGZpbGw9Im5vbmUiLz48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjIwIiBmaWxsPSIjZmZmZmZmIiBvcGFjaXR5PSIwLjkiLz48L3N2Zz4=';"
           />
