@@ -37,15 +37,15 @@ function getSessionState(sessionId) {
 function getOpening(state) {
   if (!state.hasShownIntro) {
     state.hasShownIntro = true;
-    return "Greetings! I'm **A.R.C.** (AI Resume Companion), Cory Morgan's professional AI assistant.";
+    return "Hi there! I'm A.R.C., Cory Morgan's resume companion. Ask me anything about his work.";
   }
   
   const openings = [
-    "Excellent question!",
-    "Let me share that with you.",
-    "Here's what you need to know:",
-    "Perfect timing for that question.",
-    "I'd be happy to elaborate."
+    "Absolutely—happy to help.",
+    "Great question.",
+    "Here's the quick version.",
+    "Let me walk you through it.",
+    "Glad you asked."
   ];
   
   return openings[Math.floor(Math.random() * openings.length)];
@@ -54,36 +54,36 @@ function getOpening(state) {
 // Response functions
 const stackAnswer = (state) => `${getOpening(state)}
 
-## Technical Stack
-**Core**: AWS (S3, Lambda, DynamoDB, API Gateway), Python, Node.js, React, Terraform
-**Specializations**: Serverless architecture, cost optimization, RAG/vector search
-**Certifications**: AWS Solutions Architect – Associate (May 2025)
+Here's how Cory likes to build software:
+• Core tools: AWS (S3, Lambda, DynamoDB, API Gateway), Python, Node.js, React, Terraform
+• Focus areas: Serverless architecture, cost optimization, RAG/vector search
+• Credential: AWS Solutions Architect – Associate (earned May 2025)
 
-Want details on any specific area?`;
+Happy to dive deeper into anything that catches your eye.`;
 
 const awsAnswer = (state) => `${getOpening(state)}
 
-## AWS Experience (1-2 years)
-**Infrastructure**: Terraform IaC, serverless-first architectures
-**Cost Optimization**: < $1/month operational costs for portfolio projects
-**CI/CD**: 50s → 20s deployment improvements, 60% cost reduction
-**Specializations**: Lambda, API Gateway, DynamoDB, S3, CloudFront
+Here's the shape of Cory's AWS experience (about 1–2 years hands-on):
+• Infrastructure: Terraform IaC and serverless-first architectures
+• Cost wins: Keeps portfolio projects under $1/month to run
+• Deployment: Took CI/CD from 50 seconds down to ~20 seconds with a 60% cost drop
+• Daily drivers: Lambda, API Gateway, DynamoDB, S3, and CloudFront
 
-Which AWS service interests you most?`;
+Want to explore one of those services in more detail?`;
 
 const projectsAnswer = (state) => `${getOpening(state)}
 
-## Featured Projects
-**AWS Cloud Resume**: < $1/month serverless portfolio with 50s → 20s CI/CD
-**AI FAQ Search**: ~$7-8/month semantic search with Weaviate + OpenAI
-**Monarch Finance App**: Hackathon AI assistant with PostgreSQL + OpenAI integration
-**Video Segmentation**: YOLOv8 → ONNX real-time inference pipeline
+A few projects recruiters usually ask about:
+• AWS Cloud Resume – serverless portfolio that stays under $1/month while deploying in ~20 seconds
+• AI FAQ Search – semantic search stack with Weaviate and OpenAI, runs for about $7–8/month
+• Monarch Finance App – hackathon AI assistant that connects PostgreSQL with OpenAI
+• Video Segmentation – YOLOv8 converted to ONNX for near real-time inference
 
-Want details on any specific project?`;
+Let me know which one you'd like to unpack.`;
 
 const fallbackAnswer = (state) => `${getOpening(state)}
 
-I can walk you through **AWS experience**, **projects**, or **technical stack**. Pick one.`;
+I can dig into Cory's AWS experience, showcase his projects, or outline his technical stack. Just tell me where you’d like to start.`;
 
 // Intake system functions
 const startIntake = (state) => {
@@ -92,11 +92,9 @@ const startIntake = (state) => {
   
   return `${getOpening(state)}
 
-## Job Opportunity Intake
+Sounds like there's an opportunity—great news. I'll grab a few details so Cory can follow up quickly.
 
-I'd love to learn about this opportunity! Let me gather some details:
-
-**Step 1/8: What's your name?**`;
+Step 1 of 8: What's your name?`;
 };
 
 const continueIntake = (state, userInput) => {
@@ -107,15 +105,15 @@ const continueIntake = (state, userInput) => {
     state.intakeStep++;
     const questions = {
       2: "What's your email address?",
-      3: "What's your company and role?",
-      4: "Work location (remote/hybrid/onsite + city)?",
-      5: "Ideal start date?",
-      6: "Salary range?",
-      7: "Key technical requirements?",
-      8: "Any specific questions for Cory?"
+      3: "Which company are you with, and what's your role?",
+      4: "Where is the work based (remote, hybrid, onsite, and city)?",
+      5: "When would you like someone to start?",
+      6: "What salary range should Cory keep in mind?",
+      7: "Any key technical requirements or must-have skills?",
+      8: "Do you have any questions you'd like Cory to cover when he reaches out?"
     };
     
-    return `**Step ${state.intakeStep}/8: ${questions[state.intakeStep]}**`;
+    return `Step ${state.intakeStep} of 8: ${questions[state.intakeStep]}`;
   } else {
     // Complete intake
     return completeIntake(state);
@@ -128,35 +126,29 @@ const completeIntake = async (state) => {
     state.intakeStep = 0; // Reset
     
     if (result.success) {
-      return `## Intake Complete! ✅
+      return `All set—thanks for the details. I've shared everything with Cory at ${INTAKE_EMAIL}.
 
-Thanks for the details! I've forwarded everything to Cory at ${INTAKE_EMAIL}.
+What happens next:
+• He’ll review within the next 24–48 hours
+• Expect his first response via email
+• He’ll suggest a time to connect once he’s had a look
 
-**Next Steps:**
-• Cory will review within 24-48 hours
-• Expect initial response via email
-• He'll reach out to schedule a conversation
-
-Looking forward to connecting you two!`;
+Looking forward to getting you two in touch!`;
     } else {
-      return `## Intake Submitted ⚠️
+      return `I captured your answers, but the email didn't go through.
 
-I've logged your details, but there was an issue with email delivery. 
+Backup plan:
+• Copy of what you shared: ${JSON.stringify(state.intakeData, null, 2)}
+• Please email Cory directly at ${INTAKE_EMAIL}
+• Mention that A.R.C. collected your details just now
 
-**Backup Plan:**
-• Your information: ${JSON.stringify(state.intakeData, null, 2)}
-• Please email Cory directly: ${INTAKE_EMAIL}
-• Reference this conversation for context
-
-Apologies for the technical hiccup!`;
+Sorry for the detour—thanks for your patience.`;
     }
   } catch (error) {
     console.error('Intake completion error:', error);
-    return `## Technical Issue ❌
+    return `Looks like something went wrong on my side. Please send Cory an email at ${INTAKE_EMAIL} with the details below so nothing gets lost.
 
-Sorry, there was a problem processing your intake. Please email Cory directly at ${INTAKE_EMAIL} with your details.
-
-Your responses were: ${JSON.stringify(state.intakeData, null, 2)}`;
+Your responses: ${JSON.stringify(state.intakeData, null, 2)}`;
   }
 };
 
