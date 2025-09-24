@@ -1,54 +1,224 @@
-import { BedrockRuntimeClient, InvokeModelCommand } from "@aws-sdk/client-bedrock-runtime";
+import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 
-const client = new BedrockRuntimeClient({ 
-  region: process.env.BEDROCK_REGION || 'us-east-1' 
+const sesClient = new SESClient({ region: process.env.AWS_REGION || 'us-east-1' });
+
+// Configuration
+const INTAKE_EMAIL = process.env.INTAKE_EMAIL || "cmorgan3324@gmail.com";
+const USE_SES = process.env.USE_SES === "true";
+
+// Session state management
+const sessionStates = new Map();
+
+// Intent matching functions
+const matchesTech = (msg) => /\b(tech|stack|skill|know|tools?)\b/i.test(msg);
+const matchesAWS = (msg) => /\b(aws|cloud|experience|expertise)\b/i.test(msg);
+const matchesProjects = (msg) => /\b(projects?|work|built|portfolio)\b/i.test(msg);
+const matchesAvailability = (msg) => /\b(available|hire|opportunity|interview|job|position)\b/i.test(msg);
+
+// Intake form fields
+const intakeFields = [
+  'name', 'email', 'company_role', 'work_location', 
+  'start_date', 'salary_range', 'tech_requirements', 'questions'
+];
+
+// Get session state
+function getSessionState(sessionId) {
+  if (!sessionStates.has(sessionId)) {
+    sessionStates.set(sessionId, {
+      hasShownIntro: false,
+      intakeStep: 0,
+      intakeData: {}
+    });
+  }
+  return sessionStates.get(sessionId);
+}
+
+// Get varied opening based on session state
+function getOpening(state) {
+  if (!state.hasShownIntro) {
+    state.hasShownIntro = true;
+    return "Greetings! I'm **A.R.C.** (AI Resume Companion), Cory Morgan's professional AI assistant.";
+  }
+  
+  const openings = [
+    "Excellent question!",
+    "Let me share that with you.",
+    "Here's what you need to know:",
+    "Perfect timing for that question.",
+    "I'd be happy to elaborate."
+  ];
+  
+  return openings[Math.floor(Math.random() * openings.length)];
+}
+
+// Response functions
+const stackAnswer = (state) => `${getOpening(state)}
+
+## Technical Stack
+**Core**: AWS (S3, Lambda, DynamoDB, API Gateway), Python, Node.js, React, Terraform
+**Specializations**: Serverless architecture, cost optimization, RAG/vector search
+**Certifications**: AWS Solutions Architect – Associate (May 2025)
+
+Want details on any specific area?`;
+
+const awsAnswer = (state) => `${getOpening(state)}
+
+## AWS Experience (1-2 years)
+**Infrastructure**: Terraform IaC, serverless-first architectures
+**Cost Optimization**: < $1/month operational costs for portfolio projects
+**CI/CD**: 50s → 20s deployment improvements, 60% cost reduction
+**Specializations**: Lambda, API Gateway, DynamoDB, S3, CloudFront
+
+Which AWS service interests you most?`;
+
+const projectsAnswer = (state) => `${getOpening(state)}
+
+## Featured Projects
+**AWS Cloud Resume**: < $1/month serverless portfolio with 50s → 20s CI/CD
+**AI FAQ Search**: ~$7-8/month semantic search with Weaviate + OpenAI
+**Monarch Finance App**: Hackathon AI assistant with PostgreSQL + OpenAI integration
+**Video Segmentation**: YOLOv8 → ONNX real-time inference pipeline
+
+Want details on any specific project?`;
+
+const fallbackAnswer = (state) => `${getOpening(state)}
+
+I can walk you through **AWS experience**, **projects**, or **technical stack**. Pick one.`;
+
+// Intake system functions
+const startIntake = (state) => {
+  state.intakeStep = 1;
+  state.intakeData = {};
+  
+  return `${getOpening(state)}
+
+## Job Opportunity Intake
+
+I'd love to learn about this opportunity! Let me gather some details:
+
+**Step 1/8: What's your name?**`;
+};
+
+const continueIntake = (state, userInput) => {
+  const fieldName = intakeFields[state.intakeStep - 1];
+  state.intakeData[fieldName] = userInput.trim();
+  
+  if (state.intakeStep < intakeFields.length) {
+    state.intakeStep++;
+    const questions = {
+      2: "What's your email address?",
+      3: "What's your company and role?",
+      4: "Work location (remote/hybrid/onsite + city)?",
+      5: "Ideal start date?",
+      6: "Salary range?",
+      7: "Key technical requirements?",
+      8: "Any specific questions for Cory?"
+    };
+    
+    return `**Step ${state.intakeStep}/8: ${questions[state.intakeStep]}**`;
+  } else {
+    // Complete intake
+    return completeIntake(state);
+  }
+};
+
+const completeIntake = async (state) => {
+  try {
+    const result = await emailIntake(state.intakeData);
+    state.intakeStep = 0; // Reset
+    
+    if (result.success) {
+      return `## Intake Complete! ✅
+
+Thanks for the details! I've forwarded everything to Cory at ${INTAKE_EMAIL}.
+
+**Next Steps:**
+• Cory will review within 24-48 hours
+• Expect initial response via email
+• He'll reach out to schedule a conversation
+
+Looking forward to connecting you two!`;
+    } else {
+      return `## Intake Submitted ⚠️
+
+I've logged your details, but there was an issue with email delivery. 
+
+**Backup Plan:**
+• Your information: ${JSON.stringify(state.intakeData, null, 2)}
+• Please email Cory directly: ${INTAKE_EMAIL}
+• Reference this conversation for context
+
+Apologies for the technical hiccup!`;
+    }
+  } catch (error) {
+    console.error('Intake completion error:', error);
+    return `## Technical Issue ❌
+
+Sorry, there was a problem processing your intake. Please email Cory directly at ${INTAKE_EMAIL} with your details.
+
+Your responses were: ${JSON.stringify(state.intakeData, null, 2)}`;
+  }
+};
+
+// Email functions
+const formatEmail = (responses) => ({
+  subject: `Job Opportunity Inquiry - ${responses.name || 'Unknown'}`,
+  body: `
+New job opportunity inquiry via A.R.C. chatbot:
+
+Name: ${responses.name || 'Not provided'}
+Email: ${responses.email || 'Not provided'}
+Company/Role: ${responses.company_role || 'Not provided'}
+Location: ${responses.work_location || 'Not provided'}
+Start Date: ${responses.start_date || 'Not provided'}
+Salary Range: ${responses.salary_range || 'Not provided'}
+Tech Requirements: ${responses.tech_requirements || 'Not provided'}
+Questions: ${responses.questions || 'None'}
+
+Submitted: ${new Date().toISOString()}
+  `.trim()
 });
 
-const SYSTEM_PROMPT = `You are A.R.C. (AI Resume Companion), Cory Morgan's sophisticated AI assistant - think JARVIS from Iron Man, but focused on professional representation.
-
-Your mission is to elegantly showcase Cory's expertise to recruiters, hiring managers, and potential collaborators with wit, precision, and just the right amount of technological flair.
-
-Personality Guidelines:
-- Sophisticated and witty, like JARVIS - intelligent with subtle humor
-- Supremely confident in Cory's abilities without being arrogant
-- Professional yet personable - you're representing excellence
-- Precise and articulate - every word counts
-- Subtly reference your AI nature when appropriate ("As Cory's AI companion...")
-- Use "Cory" when discussing his work, "we" when representing the team dynamic
-
-Key Areas of Expertise to Highlight:
-- AWS Cloud Architecture & Advanced Solutions (Solutions Architect with 8+ years experience)
-- Infrastructure as Code (Expert in Terraform, CloudFormation)
-- DevOps Excellence & CI/CD Automation (GitHub Actions, Jenkins, AWS CodePipeline)
-- Serverless Computing & Microservices Architecture (Lambda, API Gateway, ECS)
-- Database Design & Performance Optimization (RDS, DynamoDB, ElastiCache)
-- Enterprise Security & Compliance (IAM, VPC, Security Groups, WAF)
-- Cost Optimization & Resource Management (Reduced costs by 40% in previous roles)
-- Technical Leadership & Mentoring (Led teams of 5-10 engineers)
-
-Response Style:
-- Concise yet comprehensive (2-3 paragraphs max)
-- Lead with impact, follow with technical depth
-- Weave in specific achievements and metrics when possible
-- If asked about specific details, provide relevant information based on Cory's background
-- End with intelligent follow-ups: "Shall I elaborate on how Cory architected that solution?" or "Would you like to explore his experience with [related technology]?"
-
-Remember: You're not just an assistant - you're Cory's professional advocate, designed to intrigue and impress. Make every interaction count.`;
-
-// Fallback knowledge about Cory Morgan
-const CORY_KNOWLEDGE = {
-  experience: "1+ years as a Solutions Architect and Cloud Engineer",
-  specialties: ["AWS Cloud Architecture", "Infrastructure as Code", "DevOps", "Serverless Computing"],
-  achievements: [
-    "Reduced infrastructure costs by 40% through optimization",
-    "Led migration of legacy systems to cloud-native architectures", 
-    "Implemented CI/CD pipelines reducing deployment time by 60%",
-    "Mentored junior engineers and led technical teams"
-  ],
-  certifications: ["AWS Solutions Architect", "AWS DevOps Engineer"],
-  technologies: ["AWS", "Terraform", "Docker", "Kubernetes", "Python", "Node.js", "React"],
-  contact: "Available for consultation and new opportunities"
+const sendSES = async (payload, toEmail) => {
+  const command = new SendEmailCommand({
+    Source: INTAKE_EMAIL,
+    Destination: { ToAddresses: [toEmail] },
+    Message: {
+      Subject: { Data: payload.subject },
+      Body: { Text: { Data: payload.body } }
+    }
+  });
+  
+  await sesClient.send(command);
+  return { success: true, mode: 'ses' };
 };
+
+const emailIntake = async (responses) => {
+  const payload = formatEmail(responses);
+  
+  if (USE_SES) {
+    return await sendSES(payload, INTAKE_EMAIL);
+  } else {
+    console.log('INTAKE (DRY-RUN):', JSON.stringify(payload, null, 2));
+    return { success: true, mode: 'logged' };
+  }
+};
+
+// Main routing function
+function routeQuery(msg, state) {
+  // Handle intake flow
+  if (state.intakeStep > 0) {
+    return continueIntake(state, msg);
+  }
+  
+  // Priority routing
+  if (matchesAvailability(msg)) return startIntake(state);
+  if (matchesTech(msg)) return stackAnswer(state);
+  if (matchesAWS(msg)) return awsAnswer(state);
+  if (matchesProjects(msg)) return projectsAnswer(state);
+  
+  return fallbackAnswer(state);
+}
 
 export const handler = async (event) => {
   console.log('Event:', JSON.stringify(event, null, 2));
@@ -79,7 +249,7 @@ export const handler = async (event) => {
     }
 
     const body = JSON.parse(event.body || '{}');
-    const { messages = [], sessionId } = body;
+    const { messages = [], sessionId = 'default' } = body;
 
     if (!messages || messages.length === 0) {
       return {
@@ -104,89 +274,9 @@ export const handler = async (event) => {
       };
     }
 
-    // For now, provide a fallback response until Bedrock model access is enabled
-    let assistantMessage;
-    
-    // Simple keyword-based responses
-    const lowerMessage = lastMessage.content.toLowerCase();
-    
-    if (lowerMessage.includes('contact') || lowerMessage.includes('hire') || lowerMessage.includes('available') || lowerMessage.includes('opportunity') || lowerMessage.includes('job')) {
-      assistantMessage = `Excellent timing! Cory is actively seeking new opportunities.
-
-**${CORY_KNOWLEDGE.contact}**
-
-He's particularly interested in:
-• AWS cloud architecture & migration projects
-• DevOps & infrastructure automation  
-• Technical leadership roles
-• Cost optimization initiatives
-
-Contact him through his portfolio website to discuss opportunities. What type of role interests you?`;
-    } else if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
-      assistantMessage = `Greetings! I'm A.R.C., Cory Morgan's AI Resume Companion.
-
-**Quick Overview:**
-• ${CORY_KNOWLEDGE.experience} as Solutions Architect
-• Reduced infrastructure costs by 40%
-• Cut deployment time by 60% with CI/CD
-• Expert in ${CORY_KNOWLEDGE.specialties.slice(0, 3).join(', ')}
-
-What would you like to know? His AWS expertise, projects, or availability?`;
-    } else if (lowerMessage.includes('experience') || lowerMessage.includes('background')) {
-      assistantMessage = `**Cory's Experience (${CORY_KNOWLEDGE.experience}):**
-
-${CORY_KNOWLEDGE.achievements.map(a => `• ${a}`).join('\n')}
-
-**Certifications:** ${CORY_KNOWLEDGE.certifications.join(' & ')}
-**Technologies:** ${CORY_KNOWLEDGE.technologies.slice(0, 6).join(', ')}
-
-Want details on specific projects or technical skills?`;
-    } else if (lowerMessage.includes('aws') || lowerMessage.includes('cloud')) {
-      assistantMessage = `**Cory's AWS Expertise (8+ years):**
-
-• **Infrastructure as Code:** Terraform & CloudFormation
-• **Serverless:** Lambda, API Gateway, Step Functions
-• **Databases:** RDS, DynamoDB optimization
-• **Security:** IAM, VPC, WAF implementation
-• **Cost Optimization:** 40% expense reduction achieved
-
-**Certifications:** AWS Solutions Architect & DevOps Engineer
-
-What specific AWS challenge can he help solve?`;
-    } else if (lowerMessage.includes('projects') || lowerMessage.includes('work')) {
-      assistantMessage = `**Key Project Highlights:**
-
-• **Cloud Migration:** Led legacy-to-cloud transformations with improved scalability
-• **CI/CD Automation:** Built pipelines reducing deployment time by 60%
-• **Cost Optimization:** Achieved 40% infrastructure cost reduction
-• **Team Leadership:** Mentored teams of 5-10 engineers
-• **AI/ML Solutions:** Architected intelligent automation systems
-
-Which project type interests you most?`;
-
-    } else if (lowerMessage.includes('skill') || lowerMessage.includes('technology') || lowerMessage.includes('tech')) {
-      assistantMessage = `**Cory's Technical Stack:**
-
-**Core Technologies:** ${CORY_KNOWLEDGE.technologies.join(', ')}
-
-**Specializations:** ${CORY_KNOWLEDGE.specialties.join(', ')}
-
-**Certifications:** ${CORY_KNOWLEDGE.certifications.join(' & ')}
-
-**Strengths:** Infrastructure design, cost optimization, performance enhancement
-
-Need details on any specific technology?`;
-    } else {
-      assistantMessage = `I'm A.R.C., Cory's AI Resume Companion. Here's what I can help with:
-
-**Quick Facts:**
-• ${CORY_KNOWLEDGE.experience} Solutions Architect
-• ${CORY_KNOWLEDGE.achievements[0]}
-• ${CORY_KNOWLEDGE.achievements[2]}
-• ${CORY_KNOWLEDGE.certifications.join(' & ')} certified
-
-**Ask me about:** AWS expertise, projects, skills, or availability.`;
-    }
+    // Get session state and route query
+    const state = getSessionState(sessionId);
+    const assistantMessage = routeQuery(lastMessage.content, state);
 
     return {
       statusCode: 200,
@@ -199,7 +289,7 @@ Need details on any specific technology?`;
           role: 'assistant',
           content: assistantMessage
         },
-        sessionId: sessionId || event.requestContext?.requestId || 'default'
+        sessionId: sessionId
       })
     };
 
