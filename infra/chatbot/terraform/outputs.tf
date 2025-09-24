@@ -1,6 +1,6 @@
 output "chat_api_url" {
   description = "Chat API Gateway URL"
-  value       = aws_apigatewayv2_api.chatbot_api.api_endpoint
+  value       = "${aws_apigatewayv2_api.chatbot_api.api_endpoint}/${aws_apigatewayv2_stage.chatbot_api_stage.name}"
 }
 
 # output "kb_id" {

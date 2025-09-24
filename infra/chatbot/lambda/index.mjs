@@ -224,24 +224,27 @@ export const handler = async (event) => {
   console.log('Event:', JSON.stringify(event, null, 2));
   
   try {
-    // Handle CORS preflight
-    if (event.httpMethod === 'OPTIONS') {
+    // Handle CORS preflight - API Gateway v2 uses requestContext.http.method
+    const httpMethod = event.requestContext?.http?.method || event.httpMethod;
+    
+    if (httpMethod === 'OPTIONS') {
       return {
         statusCode: 200,
         headers: {
-          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Origin': 'https://vibebycory.dev',
           'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-          'Access-Control-Allow-Methods': 'POST,OPTIONS'
+          'Access-Control-Allow-Methods': 'POST,OPTIONS',
+          'Access-Control-Max-Age': '86400'
         },
         body: ''
       };
     }
 
-    if (event.httpMethod !== 'POST') {
+    if (httpMethod !== 'POST') {
       return {
         statusCode: 405,
         headers: {
-          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Origin': 'https://vibebycory.dev',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ error: 'Method not allowed' })
@@ -255,7 +258,7 @@ export const handler = async (event) => {
       return {
         statusCode: 400,
         headers: {
-          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Origin': 'https://vibebycory.dev',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ error: 'Messages array is required' })
@@ -267,7 +270,7 @@ export const handler = async (event) => {
       return {
         statusCode: 400,
         headers: {
-          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Origin': 'https://vibebycory.dev',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ error: 'Last message must be from user' })
@@ -281,7 +284,7 @@ export const handler = async (event) => {
     return {
       statusCode: 200,
       headers: {
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': 'https://vibebycory.dev',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
@@ -299,7 +302,7 @@ export const handler = async (event) => {
     return {
       statusCode: 500,
       headers: {
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': 'https://vibebycory.dev',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({

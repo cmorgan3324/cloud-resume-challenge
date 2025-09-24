@@ -252,6 +252,12 @@ resource "aws_apigatewayv2_route" "chat_route" {
   target    = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
 }
 
+resource "aws_apigatewayv2_route" "chat_options_route" {
+  api_id    = aws_apigatewayv2_api.chatbot_api.id
+  route_key = "OPTIONS /chat"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
+}
+
 resource "aws_lambda_permission" "api_gw_lambda" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
