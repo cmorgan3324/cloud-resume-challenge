@@ -3,7 +3,7 @@
   "title": "AWS Certified Solutions Architect - Associate",
   "location": "Remote/Flexible",
   "contact_policy": "Open to opportunities in cloud architecture, AI/ML engineering, and fullstack development roles",
-  "summary": "AWS Certified Solutions Architect with fullstack development background and hands-on AI/ML expertise. Focused on designing Virtual Infrastructures Built for Evolution (VIBEs) — cloud-native systems that scale, recover, and continuously adapt to modern business needs.",
+  "summary": "AWS Certified Solutions Architect with 1-2 years cloud/AI-ML experience and fullstack development background. Focused on designing Virtual Infrastructures Built for Evolution (VIBEs) — cloud-native systems that scale, recover, and continuously adapt to modern business needs.",
   "certifications": [
     {
       "name": "AWS Certified Solutions Architect - Associate",
@@ -94,6 +94,13 @@
     ]
   },
   "availability": "Actively seeking new opportunities",
+  "experience_metrics": {
+    "cloud_ai_ml_years": "1-2 years",
+    "ci_cd_improvements": {
+      "deployment_time_reduction": "50s to 20s",
+      "cost_reduction": "60% cost reduction"
+    }
+  },
   "portfolio_site": "https://vibebycory.dev",
   "blog": "https://dev.to/cmorgan3324"
 }
