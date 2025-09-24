@@ -39,7 +39,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "~1.0"
+          terraform_version: "1.12.1"
           terraform_wrapper: false
 
       - name: Setup Node.js
@@ -61,11 +61,23 @@ jobs:
 
       - name: Terraform Init
         working-directory: infra/chatbot/terraform
-        run: terraform init
+        run: |
+          echo "Initializing Terraform with S3 backend..."
+          terraform init -input=false
+          echo "Terraform initialization completed"
+          echo "Checking backend configuration..."
+          terraform version
+          echo "Verifying state access..."
+          terraform state list || echo "No state found or state access failed"
 
       - name: Terraform Plan
         working-directory: infra/chatbot/terraform
-        run: terraform plan -out=tfplan
+        run: |
+          echo "Running Terraform plan..."
+          echo "Current working directory: $(pwd)"
+          echo "Backend configuration:"
+          grep -A 10 'backend "s3"' main.tf || echo "Backend configuration not found"
+          terraform plan -out=tfplan -detailed-exitcode
 
       - name: Terraform Apply
         working-directory: infra/chatbot/terraform
