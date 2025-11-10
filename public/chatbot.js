@@ -25,6 +25,14 @@
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
+  function toHtml(text) {
+    return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\n/g, "<br>");
+  }
+
   function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
@@ -361,13 +369,37 @@
         align-self: flex-start;
         background: #f1f3f4;
         color: #666;
-        font-style: italic;
-        animation: pulse 1.5s infinite;
+        display: inline-flex;
+        gap: 4px;
+        align-items: center;
+        padding: 12px 16px;
       }
       
-      @keyframes pulse {
-        0%, 100% { opacity: 0.6; }
-        50% { opacity: 1; }
+      .vibe-chat-typing .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #9ca3af;
+        animation: blink 1.2s infinite ease-in-out;
+      }
+      
+      .vibe-chat-typing .dot:nth-child(2) {
+        animation-delay: .15s;
+      }
+      
+      .vibe-chat-typing .dot:nth-child(3) {
+        animation-delay: .3s;
+      }
+      
+      @keyframes blink {
+        0%, 80%, 100% {
+          opacity: .3;
+          transform: translateY(0);
+        }
+        40% {
+          opacity: 1;
+          transform: translateY(-2px);
+        }
       }
       
       .vibe-chat-input-area {
@@ -609,7 +641,7 @@
       const welcome = document.createElement("div");
       welcome.className = "vibe-chat-message assistant";
       welcome.innerHTML = `
-        Hello! I'm A.R.C., Cory's AI Resume Companion. I can tell you about his AWS expertise, projects, skills, and availability. What interests you?
+        ${toHtml("Hello! I'm A.R.C., Cory's AI Resume Companion. I can tell you about his AWS expertise, projects, skills, and availability. What interests you?")}
         <button class="copy-btn" onclick="copyToClipboard(this)" title="Copy message">📋</button>
       `;
       elements.messages.appendChild(welcome);
@@ -620,11 +652,11 @@
 
         if (message.role === "assistant") {
           messageEl.innerHTML = `
-            ${message.content}
+            ${toHtml(message.content)}
             <button class="copy-btn" onclick="copyToClipboard(this)" title="Copy message">📋</button>
           `;
         } else {
-          messageEl.textContent = message.content;
+          messageEl.innerHTML = toHtml(message.content);
         }
 
         elements.messages.appendChild(messageEl);
@@ -637,7 +669,7 @@
   function showTypingIndicator() {
     const typing = document.createElement("div");
     typing.className = "vibe-chat-message vibe-chat-typing";
-    typing.textContent = "Processing your inquiry...";
+    typing.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
     typing.id = "typing-indicator";
     elements.messages.appendChild(typing);
     elements.messages.scrollTop = elements.messages.scrollHeight;
@@ -694,6 +726,21 @@
 
       chatState.history.push(response.message);
       renderMessages();
+
+      // Handle follow-up message if present
+      if (response.followUp) {
+        const delay = 700 + Math.random() * 500; // 0.7-1.2 seconds
+        setTimeout(() => {
+          const followUpEl = document.createElement("div");
+          followUpEl.className = "vibe-chat-message assistant";
+          followUpEl.innerHTML = `
+            ${toHtml(response.followUp)}
+            <button class="copy-btn" onclick="copyToClipboard(this)" title="Copy message">📋</button>
+          `;
+          elements.messages.appendChild(followUpEl);
+          elements.messages.scrollTop = elements.messages.scrollHeight;
+        }, delay);
+      }
 
       broadcastUpdate("messageAdded", {
         sessionId: chatState.sessionId,
