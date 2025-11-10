@@ -1,6 +1,8 @@
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 
-const sesClient = new SESClient({ region: process.env.AWS_REGION || 'us-east-1' });
+const sesClient = new SESClient({
+  region: process.env.AWS_REGION || "us-east-1",
+});
 
 // Configuration
 const INTAKE_EMAIL = process.env.INTAKE_EMAIL || "cmorgan3324@gmail.com";
@@ -12,13 +14,21 @@ const sessionStates = new Map();
 // Intent matching functions
 const matchesTech = (msg) => /\b(tech|stack|skill|know|tools?)\b/i.test(msg);
 const matchesAWS = (msg) => /\b(aws|cloud|experience|expertise)\b/i.test(msg);
-const matchesProjects = (msg) => /\b(projects?|work|built|portfolio)\b/i.test(msg);
-const matchesAvailability = (msg) => /\b(available|hire|opportunity|interview|job|position)\b/i.test(msg);
+const matchesProjects = (msg) =>
+  /\b(projects?|work|built|portfolio)\b/i.test(msg);
+const matchesAvailability = (msg) =>
+  /\b(available|hire|opportunity|interview|job|position)\b/i.test(msg);
 
 // Intake form fields
 const intakeFields = [
-  'name', 'email', 'company_role', 'work_location', 
-  'start_date', 'salary_range', 'tech_requirements', 'questions'
+  "name",
+  "email",
+  "company_role",
+  "work_location",
+  "start_date",
+  "salary_range",
+  "tech_requirements",
+  "questions",
 ];
 
 // Get session state
@@ -27,7 +37,7 @@ function getSessionState(sessionId) {
     sessionStates.set(sessionId, {
       hasShownIntro: false,
       intakeStep: 0,
-      intakeData: {}
+      intakeData: {},
     });
   }
   return sessionStates.get(sessionId);
@@ -35,19 +45,17 @@ function getSessionState(sessionId) {
 
 // Get varied opening based on session state
 function getOpening(state) {
-  if (!state.hasShownIntro) {
+  if (!state?.hasShownIntro) {
     state.hasShownIntro = true;
-    return "Hi there! I'm A.R.C., Cory Morgan's resume companion. Ask me anything about his work.";
+    return "Hey—I'm A.R.C. What do you want to dive into?";
   }
-  
+
   const openings = [
-    "Absolutely—happy to help.",
-    "Great question.",
-    "Here's the quick version.",
-    "Let me walk you through it.",
-    "Glad you asked."
+    "Where should we start?",
+    "Want the quick version or the deep dive?",
+    "We can keep it simple or get specific—your call.",
   ];
-  
+
   return openings[Math.floor(Math.random() * openings.length)];
 }
 
@@ -58,7 +66,7 @@ function maybeFollowUp() {
     const options = [
       "Want a quick diagram or a 60-sec rundown?",
       "I can keep it high level or get specific — what's better?",
-      "Need links to repos or a quick summary?"
+      "Need links to repos or a quick summary?",
     ];
     return options[Math.floor(Math.random() * options.length)];
   }
@@ -76,7 +84,7 @@ const stackAnswer = (state) => {
     "• Python, Node.js/TypeScript, React/Next.js",
     "• Terraform, Docker, GitHub Actions",
     "",
-    "Want me to zoom in on anything?"
+    "Want me to zoom in on anything?",
   ].join("\n");
 };
 
@@ -85,13 +93,13 @@ const awsAnswer = (state) => {
   return [
     opening,
     "",
-    "Here's the shape of Cory's AWS experience (about 1-2 years hands-on):",
-    "• Infrastructure: Terraform IaC and serverless-first architectures",
-    "• Cost wins: Keeps portfolio projects under $1/month to run",
-    "• Deployment: Took CI/CD from 50 seconds down to ~20 seconds with a 60% cost drop",
-    "• Daily drivers: Lambda, API Gateway, DynamoDB, S3, and CloudFront",
+    "Cory's been using AWS for about 1–2 years, focusing on:",
+    "• Static sites and CDNs: S3, CloudFront, Route 53, ACM",
+    "• Serverless APIs: API Gateway, Lambda, DynamoDB",
+    "• AI integrations: Bedrock KBs and OpenSearch Serverless",
+    "• CI/CD improvements: front-end deploys from ~50s → ~20s, back-end from minutes → seconds, and about 60% lower build cost.",
     "",
-    "Want to explore one of those services in more detail?"
+    "Want to talk about one of those?",
   ].join("\n");
 };
 
@@ -100,13 +108,13 @@ const projectsAnswer = (state) => {
   return [
     opening,
     "",
-    "A few projects recruiters usually ask about:",
-    "• AWS Cloud Resume - serverless portfolio that stays under $1/month while deploying in ~20 seconds",
-    "• AI FAQ Search - semantic search stack with Weaviate and OpenAI, runs for about $7-8/month",
-    "• Monarch Finance App - hackathon AI assistant that connects PostgreSQL with OpenAI",
-    "• Video Segmentation - YOLOv8 converted to ONNX for near real-time inference",
+    "Cory has a few projects that show off his AWS and AI experience.",
+    "Cloud Resume: an S3 + CloudFront site with a serverless counter using API Gateway, Lambda, and DynamoDB. It runs for under a dollar a month.",
+    "AI FAQ Search: built with Weaviate and OpenAI embeddings on an EC2 t3.micro. It uses hybrid BM25 + vector search and a simple Streamlit UI, all for about $7–8 per month.",
+    "Monarch (hackathon): Express + Postgres backend with an AI assistant that handles quick portfolio Q&A.",
+    "SageMaker segmentation: real-time inference endpoints, plus YOLO and Detectron work exported to ONNX for fast GPU inference.",
     "",
-    "Let me know which one you'd like to unpack."
+    "Want links or a 60-second rundown on one of those?",
   ].join("\n");
 };
 
@@ -115,7 +123,7 @@ const fallbackAnswer = (state) => {
   return [
     opening,
     "",
-    "I can dig into Cory's AWS experience, showcase his projects, or outline his technical stack. Just tell me where you'd like to start."
+    "I can walk you through AWS experience, projects, or technical stack. What would you like to explore?",
   ].join("\n");
 };
 
@@ -123,20 +131,20 @@ const fallbackAnswer = (state) => {
 const startIntake = (state) => {
   state.intakeStep = 1;
   state.intakeData = {};
-  
+
   return [
     getOpening(state),
     "",
     "Sounds like there's an opportunity—great news. I'll grab a few details so Cory can follow up quickly.",
     "",
-    "Step 1 of 8: What's your name?"
+    "Step 1 of 8: What's your name?",
   ].join("\n");
 };
 
 const continueIntake = (state, userInput) => {
   const fieldName = intakeFields[state.intakeStep - 1];
   state.intakeData[fieldName] = userInput.trim();
-  
+
   if (state.intakeStep < intakeFields.length) {
     state.intakeStep++;
     const questions = {
@@ -146,9 +154,9 @@ const continueIntake = (state, userInput) => {
       5: "When would you like someone to start?",
       6: "What salary range should Cory keep in mind?",
       7: "Any key technical requirements or must-have skills?",
-      8: "Do you have any questions you'd like Cory to cover when he reaches out?"
+      8: "Do you have any questions you'd like Cory to cover when he reaches out?",
     };
-    
+
     return `Step ${state.intakeStep} of 8: ${questions[state.intakeStep]}`;
   } else {
     // Complete intake
@@ -160,7 +168,7 @@ const completeIntake = async (state) => {
   try {
     const result = await emailIntake(state.intakeData);
     state.intakeStep = 0; // Reset
-    
+
     if (result.success) {
       return [
         `All set—thanks for the details. I've shared everything with Cory at ${INTAKE_EMAIL}.`,
@@ -170,48 +178,52 @@ const completeIntake = async (state) => {
         "• Expect his first response via email",
         "• He'll suggest a time to connect once he's had a look",
         "",
-        "Looking forward to getting you two in touch!"
+        "Looking forward to getting you two in touch!",
       ].join("\n");
     } else {
       return [
         "I captured your answers, but the email didn't go through.",
         "",
         "Backup plan:",
-        `• Copy of what you shared: ${JSON.stringify(state.intakeData, null, 2)}`,
+        `• Copy of what you shared: ${JSON.stringify(
+          state.intakeData,
+          null,
+          2
+        )}`,
         `• Please email Cory directly at ${INTAKE_EMAIL}`,
         "• Mention that A.R.C. collected your details just now",
         "",
-        "Sorry for the detour—thanks for your patience."
+        "Sorry for the detour—thanks for your patience.",
       ].join("\n");
     }
   } catch (error) {
-    console.error('Intake completion error:', error);
+    console.error("Intake completion error:", error);
     return [
       "Looks like something went wrong on my side. Please send Cory an email at",
       `${INTAKE_EMAIL} with the details below so nothing gets lost.`,
       "",
-      `Your responses: ${JSON.stringify(state.intakeData, null, 2)}`
+      `Your responses: ${JSON.stringify(state.intakeData, null, 2)}`,
     ].join("\n");
   }
 };
 
 // Email functions
 const formatEmail = (responses) => ({
-  subject: `Job Opportunity Inquiry - ${responses.name || 'Unknown'}`,
+  subject: `Job Opportunity Inquiry - ${responses.name || "Unknown"}`,
   body: `
 New job opportunity inquiry via A.R.C. chatbot:
 
-Name: ${responses.name || 'Not provided'}
-Email: ${responses.email || 'Not provided'}
-Company/Role: ${responses.company_role || 'Not provided'}
-Location: ${responses.work_location || 'Not provided'}
-Start Date: ${responses.start_date || 'Not provided'}
-Salary Range: ${responses.salary_range || 'Not provided'}
-Tech Requirements: ${responses.tech_requirements || 'Not provided'}
-Questions: ${responses.questions || 'None'}
+Name: ${responses.name || "Not provided"}
+Email: ${responses.email || "Not provided"}
+Company/Role: ${responses.company_role || "Not provided"}
+Location: ${responses.work_location || "Not provided"}
+Start Date: ${responses.start_date || "Not provided"}
+Salary Range: ${responses.salary_range || "Not provided"}
+Tech Requirements: ${responses.tech_requirements || "Not provided"}
+Questions: ${responses.questions || "None"}
 
 Submitted: ${new Date().toISOString()}
-  `.trim()
+  `.trim(),
 });
 
 const sendSES = async (payload, toEmail) => {
@@ -220,22 +232,22 @@ const sendSES = async (payload, toEmail) => {
     Destination: { ToAddresses: [toEmail] },
     Message: {
       Subject: { Data: payload.subject },
-      Body: { Text: { Data: payload.body } }
-    }
+      Body: { Text: { Data: payload.body } },
+    },
   });
-  
+
   await sesClient.send(command);
-  return { success: true, mode: 'ses' };
+  return { success: true, mode: "ses" };
 };
 
 const emailIntake = async (responses) => {
   const payload = formatEmail(responses);
-  
+
   if (USE_SES) {
     return await sendSES(payload, INTAKE_EMAIL);
   } else {
-    console.log('INTAKE (DRY-RUN):', JSON.stringify(payload, null, 2));
-    return { success: true, mode: 'logged' };
+    console.log("INTAKE (DRY-RUN):", JSON.stringify(payload, null, 2));
+    return { success: true, mode: "logged" };
   }
 };
 
@@ -245,70 +257,70 @@ function routeQuery(msg, state) {
   if (state.intakeStep > 0) {
     return continueIntake(state, msg);
   }
-  
+
   // Priority routing
   if (matchesAvailability(msg)) return startIntake(state);
   if (matchesTech(msg)) return stackAnswer(state);
   if (matchesAWS(msg)) return awsAnswer(state);
   if (matchesProjects(msg)) return projectsAnswer(state);
-  
+
   return fallbackAnswer(state);
 }
 
 export const handler = async (event) => {
-  console.log('Event:', JSON.stringify(event, null, 2));
-  
+  console.log("Event:", JSON.stringify(event, null, 2));
+
   try {
     // Handle CORS preflight - API Gateway v2 uses requestContext.http.method
     const httpMethod = event.requestContext?.http?.method || event.httpMethod;
-    
-    if (httpMethod === 'OPTIONS') {
+
+    if (httpMethod === "OPTIONS") {
       return {
         statusCode: 200,
         headers: {
-          'Access-Control-Allow-Origin': 'https://vibebycory.dev',
-          'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-          'Access-Control-Allow-Methods': 'POST,OPTIONS',
-          'Access-Control-Max-Age': '86400'
+          "Access-Control-Allow-Origin": "https://vibebycory.dev",
+          "Access-Control-Allow-Headers": "Content-Type,Authorization",
+          "Access-Control-Allow-Methods": "POST,OPTIONS",
+          "Access-Control-Max-Age": "86400",
         },
-        body: ''
+        body: "",
       };
     }
 
-    if (httpMethod !== 'POST') {
+    if (httpMethod !== "POST") {
       return {
         statusCode: 405,
         headers: {
-          'Access-Control-Allow-Origin': 'https://vibebycory.dev',
-          'Content-Type': 'application/json'
+          "Access-Control-Allow-Origin": "https://vibebycory.dev",
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ error: 'Method not allowed' })
+        body: JSON.stringify({ error: "Method not allowed" }),
       };
     }
 
-    const body = JSON.parse(event.body || '{}');
-    const { messages = [], sessionId = 'default' } = body;
+    const body = JSON.parse(event.body || "{}");
+    const { messages = [], sessionId = "default" } = body;
 
     if (!messages || messages.length === 0) {
       return {
         statusCode: 400,
         headers: {
-          'Access-Control-Allow-Origin': 'https://vibebycory.dev',
-          'Content-Type': 'application/json'
+          "Access-Control-Allow-Origin": "https://vibebycory.dev",
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ error: 'Messages array is required' })
+        body: JSON.stringify({ error: "Messages array is required" }),
       };
     }
 
     const lastMessage = messages[messages.length - 1];
-    if (!lastMessage || lastMessage.role !== 'user') {
+    if (!lastMessage || lastMessage.role !== "user") {
       return {
         statusCode: 400,
         headers: {
-          'Access-Control-Allow-Origin': 'https://vibebycory.dev',
-          'Content-Type': 'application/json'
+          "Access-Control-Allow-Origin": "https://vibebycory.dev",
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ error: 'Last message must be from user' })
+        body: JSON.stringify({ error: "Last message must be from user" }),
       };
     }
 
@@ -320,35 +332,35 @@ export const handler = async (event) => {
     return {
       statusCode: 200,
       headers: {
-        'Access-Control-Allow-Origin': 'https://vibebycory.dev',
-        'Content-Type': 'application/json'
+        "Access-Control-Allow-Origin": "https://vibebycory.dev",
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         message: {
-          role: 'assistant',
-          content: assistantMessage
+          role: "assistant",
+          content: assistantMessage,
         },
         followUp: followUp,
-        sessionId: sessionId
-      })
+        sessionId: sessionId,
+      }),
     };
-
   } catch (error) {
-    console.error('Error:', error);
-    
+    console.error("Error:", error);
+
     return {
       statusCode: 500,
       headers: {
-        'Access-Control-Allow-Origin': 'https://vibebycory.dev',
-        'Content-Type': 'application/json'
+        "Access-Control-Allow-Origin": "https://vibebycory.dev",
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        error: 'Internal server error',
+        error: "Internal server error",
         message: {
-          role: 'assistant',
-          content: 'I apologize, but I\'m experiencing technical difficulties at the moment. Please try again shortly, or feel free to contact Cory directly for immediate assistance. Even the most sophisticated AI systems occasionally require recalibration.'
-        }
-      })
+          role: "assistant",
+          content:
+            "I apologize, but I'm experiencing technical difficulties at the moment. Please try again shortly, or feel free to contact Cory directly for immediate assistance. Even the most sophisticated AI systems occasionally require recalibration.",
+        },
+      }),
     };
   }
 };

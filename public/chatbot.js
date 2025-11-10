@@ -25,12 +25,23 @@
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
+  function stripMarkdown(s) {
+    return String(s)
+      .replace(/^#{1,6}\s+/gm, "")        // headers
+      .replace(/\*\*(.*?)\*\*/g, "$1")    // bold
+      .replace(/\*(.*?)\*/g, "$1")        // italics
+      .replace(/`{1,3}[^`]*`{1,3}/g, m => m.replace(/`/g, "")) // inline code
+      .replace(/^\s*-\s+/gm, "• ")        // dash lists
+      .replace(/^\s*\*\s+/gm, "• ");      // star lists
+  }
+
   function toHtml(text) {
-    return text
+    const t = stripMarkdown(text)
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .replace(/\n/g, "<br>");
+    return t;
   }
 
   function debounce(func, wait) {
