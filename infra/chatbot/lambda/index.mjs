@@ -47,7 +47,7 @@ function getSessionState(sessionId) {
 function getOpening(state) {
   if (!state?.hasShownIntro) {
     state.hasShownIntro = true;
-    return "Hey—I'm A.R.C. What do you want to dive into?";
+    return "Hey—I'm A.R.C.. What do you want to dive into?";
   }
 
   const openings = [
@@ -191,7 +191,7 @@ const completeIntake = async (state) => {
           2
         )}`,
         `• Please email Cory directly at ${INTAKE_EMAIL}`,
-        "• Mention that A.R.C. collected your details just now",
+        "• Mention that A.R.C.. collected your details just now",
         "",
         "Sorry for the detour—thanks for your patience.",
       ].join("\n");
@@ -211,7 +211,7 @@ const completeIntake = async (state) => {
 const formatEmail = (responses) => ({
   subject: `Job Opportunity Inquiry - ${responses.name || "Unknown"}`,
   body: `
-New job opportunity inquiry via A.R.C. chatbot:
+New job opportunity inquiry via A.R.C.. chatbot:
 
 Name: ${responses.name || "Not provided"}
 Email: ${responses.email || "Not provided"}
