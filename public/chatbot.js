@@ -504,7 +504,7 @@
     const ICON_SIZE = 84; // button size on screen (px). Tweak if you want bigger/smaller.
     const toggle = document.createElement("button");
     toggle.className = "vibe-chat-toggle";
-    toggle.setAttribute("aria-label", "Open A.R.C.. – AI Resume Companion");
+    toggle.setAttribute("aria-label", "Open A.R.C. – AI Resume Companion");
 
     // Exact image, no redraw — pixel-perfect replica
     const imagePath = getImagePath();
@@ -607,7 +607,7 @@
     if (chatState.isOpen) {
       elements.panel.classList.add("open");
       elements.toggle.innerHTML = "×";
-      elements.toggle.setAttribute("aria-label", "Close A.R.C..");
+      elements.toggle.setAttribute("aria-label", "Close A.R.C.");
       elements.toggle.style.fontSize = "40px";
       elements.toggle.style.fontWeight = "300";
     } else {
@@ -632,7 +632,7 @@
       `;
       elements.toggle.setAttribute(
         "aria-label",
-        "Open A.R.C.. - AI Resume Companion"
+        "Open A.R.C. - AI Resume Companion"
       );
     }
   }
@@ -652,7 +652,7 @@
       const welcome = document.createElement("div");
       welcome.className = "vibe-chat-message assistant";
       welcome.innerHTML = `
-        ${toHtml("Hello! I'm A.R.C.., Cory's AI Resume Companion. I can tell you about his AWS expertise, projects, skills, and availability. What interests you?")}
+        ${toHtml("Hello! I'm A.R.C., Cory's AI Resume Companion. I can tell you about his AWS expertise, projects, skills, and availability. What interests you?")}
         <button class="copy-btn" onclick="copyToClipboard(this)" title="Copy message">📋</button>
       `;
       elements.messages.appendChild(welcome);
