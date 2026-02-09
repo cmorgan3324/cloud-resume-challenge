@@ -530,7 +530,7 @@
     panel.className = "vibe-chat-panel";
     panel.innerHTML = `
       <div class="vibe-chat-header">
-        <h3 class="vibe-chat-title">A.R.C</h3>
+        <h3 class="vibe-chat-title">A.R.C.</h3>
         <div class="vibe-chat-controls">
           <button class="vibe-chat-btn" onclick="clearChat()" title="Clear chat">🗑️</button>
           <button class="vibe-chat-btn" onclick="toggleChat()" title="Minimize">−</button>
